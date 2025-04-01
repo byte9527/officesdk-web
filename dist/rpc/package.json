@@ -1,0 +1,34 @@
+{
+  "name": "@officesdk/rpc",
+  "version": "1.0.0",
+  "description": "RPC library for the Office SDK",
+  "main": "dist/index.js",
+  "author": {
+    "name": "magicismight",
+    "email": "master@horcrux.cn",
+    "url": "https://github.com/magicismight"
+  },
+  "keywords": [
+    "office",
+    "officesdk",
+    "weboffice",
+    "word",
+    "excel",
+    "powerpoint",
+    "document",
+    "spreadsheet",
+    "xlsx",
+    "pptx",
+    "docx",
+    "xls",
+    "doc",
+    "ppt",
+    "pdf"
+  ],
+  "license": "MIT",
+  "files": [
+  ],
+  "dependencies": {
+    "penpal": "^7.0.4"
+  }
+}
