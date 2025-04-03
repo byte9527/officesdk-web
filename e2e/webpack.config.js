@@ -3,10 +3,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.js',
+  entry: {
+    index: './pages/index/index.ts',
+    connection: './pages/rpc/connection.ts',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
     clean: true,
   },
   module: {
@@ -29,7 +32,13 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html',
+      chunks: ['index'],
+      template: './pages/index/index.html',
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'connection.html',
+      chunks: ['connection'],
+      template: './pages/rpc/connection.html',
     }),
   ],
   devServer: {
@@ -38,12 +47,8 @@ module.exports = {
         directory: path.join(__dirname, 'dist'),
       },
       {
-        directory: path.join(__dirname, 'src/styles'),
-        publicPath: '/styles',
-      },
-      {
-        directory: path.join(__dirname, 'src/images'),
-        publicPath: '/images',
+        directory: path.join(__dirname, 'static'),
+        publicPath: '/static',
       },
     ],
     compress: true,

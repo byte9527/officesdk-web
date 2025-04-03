@@ -2,7 +2,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "examples"
+    "e2e"
   ],
   "engines": {
     "node": ">=18.0.0"
@@ -11,7 +11,7 @@
     "start:rpc": "echo \"Error: no test specified\" && exit 1",
     "test:rpc": "echo \"Error: no test specified\" && exit 1",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:examples": "yarn workspace @officesdk/examples start"
+    "start:e2e": "yarn workspace @officesdk/e2e start"
   },
   "repository": {
     "type": "git",

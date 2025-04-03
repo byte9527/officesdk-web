@@ -1458,9 +1458,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@officesdk/examples@workspace:examples":
+"@officesdk/e2e@workspace:e2e":
   version: 0.0.0-use.local
-  resolution: "@officesdk/examples@workspace:examples"
+  resolution: "@officesdk/e2e@workspace:e2e"
   dependencies:
     "@babel/core": ^7.24.0
     "@babel/plugin-transform-runtime": ^7.24.7
@@ -1478,9 +1478,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@officesdk/rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fexamples%40workspace%3Aexamples":
+"@officesdk/rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=7946b5&locator=%40officesdk%2Fexamples%40workspace%3Aexamples"
+  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=7946b5&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     penpal: ^7.0.4
   checksum: 506a3c7d30aee863657f0ade84c5fe67be80bbb46ff70b1f95155374c3e81877a9619116218b00ab7d51e88d9312ac23bc5292e6e777209fda7265c2d6d8a104
@@ -1495,9 +1495,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@officesdk/web@file:../packages/officesdk-web::locator=%40officesdk%2Fexamples%40workspace%3Aexamples":
+"@officesdk/web@file:../packages/officesdk-web::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=79f961&locator=%40officesdk%2Fexamples%40workspace%3Aexamples"
+  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=79f961&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   checksum: d58d132060e36234c623e61c5441b3f907603eeb25ed503aabb3bbe1561c8c5e01b64329d335b4d8fe8c9bc0355f3b22b3ef5f4c58fedbc55723764b88c9b0ba
   languageName: node
   linkType: hard

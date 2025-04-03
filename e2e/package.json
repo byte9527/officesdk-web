@@ -1,6 +1,6 @@
 {
-  "name": "@officesdk/examples",
-  "description": "examples for office-sdk",
+  "name": "@officesdk/e2e",
+  "description": "e2e tests for office-sdk",
   "private": true,
   "scripts": {
     "start": "webpack serve",
