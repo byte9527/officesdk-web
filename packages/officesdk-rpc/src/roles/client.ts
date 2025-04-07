@@ -1,7 +1,8 @@
 import { connect, WindowMessenger } from 'penpal';
 import type { Connection } from 'penpal';
 
-import { OfficeSdkRpcChannel, createServerProtocol, ServerProtocol } from './protocol';
+import { OfficeSdkRpcChannel, createServerProtocol } from './protocol';
+import type { ServerProtocol } from './protocol';
 import { generateUniqueId } from '../shared/random';
 
 export interface ClientOptions {
@@ -19,6 +20,11 @@ export interface ClientOptions {
    * doing so.
    */
   allowedOrigins?: string[];
+
+  /**
+   * 连接超时时间
+   */
+  timeout?: number;
 }
 
 /**
@@ -40,8 +46,10 @@ let serverMap = new WeakMap<Window, ServerRecord>();
 /**
  * 创建一个客户端
  */
-export async function createClient(options: ClientOptions) {
-  const serverRecordCache = serverMap.get(options.target);
+export async function create(options: ClientOptions) {
+  const { target, allowedOrigins, timeout } = options;
+
+  const serverRecordCache = serverMap.get(target);
 
   const clientId = generateUniqueId();
 
@@ -52,14 +60,15 @@ export async function createClient(options: ClientOptions) {
   }
 
   const messenger = new WindowMessenger({
-    remoteWindow: options.target,
-    allowedOrigins: options.allowedOrigins,
+    remoteWindow: target,
+    allowedOrigins: allowedOrigins,
   });
 
-  const connection = connect({
+  const connection = connect<ServerProtocol>({
     channel: OfficeSdkRpcChannel,
     messenger,
     methods: createServerProtocol(),
+    timeout,
   });
 
   const serverRecord = {
@@ -67,7 +76,7 @@ export async function createClient(options: ClientOptions) {
     clientIds: new Set<string>([]),
   };
 
-  serverMap.set(options.target, serverRecord);
+  serverMap.set(target, serverRecord);
 
   await connectServer(serverRecord, clientId);
 
@@ -82,9 +91,13 @@ async function connectServer(serverRecord: ServerRecord, clientId: string) {
 
   clientIds.add(clientId);
 
-  const server = await connection.promise;
-
-  await server.open(clientId);
+  try {
+    const server = await connection.promise;
+    await server.open(clientId);
+  } catch (error) {
+    // TODO: 超时处理，发生在同源策略限制时
+    debugger;
+  }
 
   // TODO:
 }

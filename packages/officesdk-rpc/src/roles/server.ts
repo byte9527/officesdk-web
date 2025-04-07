@@ -10,7 +10,8 @@
 
 import { connect, WindowMessenger } from 'penpal';
 import { getParentWindowOrThrow } from './window';
-import { OfficeSdkRpcChannel } from './protocol';
+import { OfficeSdkRpcChannel, createClientProtocol } from './protocol';
+import type { ClientProtocol } from './protocol';
 import { isClientNotAccessible } from '../errors';
 
 export interface ServerOptions {
@@ -28,7 +29,7 @@ export interface ServerOptions {
 
 export interface ServerConnection {}
 
-export async function serve(options: ServerOptions) {
+export async function serve(options: ServerOptions): Promise<string[]> {
   let messenger: WindowMessenger;
   try {
     messenger = new WindowMessenger({
@@ -44,9 +45,10 @@ export async function serve(options: ServerOptions) {
     throw error;
   }
 
-  const connection = connect({
+  const connection = connect<ClientProtocol>({
     messenger,
     channel: OfficeSdkRpcChannel,
+    methods: createClientProtocol(),
   });
 
   try {

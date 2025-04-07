@@ -1,15 +1,21 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   mode: 'development',
   entry: {
     index: './pages/index/index.ts',
+
+    // 连接测试
     connection: './pages/rpc/connection.ts',
+    'connection-client': './pages/rpc/client.ts',
+    'connection-server': './pages/rpc/server.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
+    chunkFilename: '[name].chunk.js',
     clean: true,
   },
   module: {
@@ -19,10 +25,12 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env'],
-          },
+          options: { cacheDirectory: true, cacheCompression: false },
         },
+      },
+      {
+        test: /\.tsx?$/,
+        use: { loader: 'babel-loader', options: { cacheDirectory: true, cacheCompression: false } },
       },
       {
         test: /\.css$/,
@@ -39,6 +47,11 @@ module.exports = {
       filename: 'connection.html',
       chunks: ['connection'],
       template: './pages/rpc/connection.html',
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'template.html',
+      chunks: [],
+      template: './pages/shared/template.html',
     }),
   ],
   devServer: {
@@ -58,6 +71,7 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.ts', '.json'],
+    plugins: [new TsconfigPathsPlugin()],
   },
   devtool: 'source-map',
 };

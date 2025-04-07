@@ -29,25 +29,66 @@ import type { Methods, Connection } from 'penpal';
  * 这里定义的接口是提供给客户端远程调用的接口，不是给服务端自身调用的
  */
 export type ServerProtocol = {
-  open: (clientId: string) => void;
+  /**
+   * 服务端记录客户端身份信息，由客户端发起将自身身份信息发送给服务端，
+   * 调用建立连接，后续调用都需要携带此 clientId 作为身份标识。
+   * @param clientId 客户端身份信息
+   * @returns 是否建立连接成功
+   */
+  open: (clientId: string) => boolean;
+  /**
+   * 服务端关闭客户端连接，由服务端发起关闭客户端连接。
+   * @param clientId 客户端身份信息
+   * @returns 是否关闭连接成功
+   */
+  close: (clientId: string) => boolean;
+
+  call: (clientId: string, method: string, args: unknown[]) => unknown;
 };
 
 export function createServerProtocol(): ServerProtocol {
+  const clientIds = new Set<string>();
+
   return {
-    open: (clientId: string): void => {
+    open: (clientId: string): boolean => {
+      debugger;
+      // TODO: 如果重复应该抛出错误
+      clientIds.add(clientId);
+
+      return true;
+    },
+
+    close: (clientId: string): boolean => {
+      // TODO: 如果 clientId 不存在，应该抛出错误
+      clientIds.delete(clientId);
+
+      return true;
+    },
+    call: (clientId: string, method: string, args: unknown[]): unknown => {},
+  };
+}
+
+/**
+ * 客户端协议接口，
+ * 这里定义的接口是提供给服务端远程调用的接口，不是给客户端自身调用的
+ */
+export type ClientProtocol = {
+  open: () => string[];
+  close: (clientId: string) => void;
+};
+
+export function createClientProtocol(): ClientProtocol {
+  return {
+    open: (): string[] => {
+      debugger;
+      // TODO: 记录传入的
+      return [];
+    },
+    close: (clientId: string): void => {
       // TODO: 记录传入的
     },
   };
 }
-
-export const clientProtocol: Methods = {
-  open: (clientId: string) => {
-    return {
-      type: 'client_open',
-      clientId,
-    };
-  },
-};
 
 export const callbackProtocol: Methods = {
   callback: (clientId: string) => {

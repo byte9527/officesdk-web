@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OFFICE SDK E2E TEMPLATE</title>
+
+    <link rel="stylesheet" href="/static/styles/shared.css" />
+    <link rel="icon" href="/static/images/favicon.CC3RZ8sD.ico">
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'loadScript') {
+                const script = document.createElement('script');
+                script.src = event.data.scriptUrl;
+                document.body.appendChild(script);
+            }
+        });
+    </script>
+</body>
+</html>
