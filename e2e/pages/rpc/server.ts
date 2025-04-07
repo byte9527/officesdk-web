@@ -15,9 +15,9 @@ async function main() {
 
   output('Start testing rpc server.');
 
-  await serve({});
+  const clientIds = await serve();
 
-  output('Server started.');
+  output(`Server started, found clients: ${clientIds.join(', ')}`);
 }
 
 main();

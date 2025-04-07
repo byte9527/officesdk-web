@@ -1472,6 +1472,7 @@ __metadata:
     css-loader: ^6.10.0
     html-webpack-plugin: ^5.6.0
     style-loader: ^3.3.4
+    tsconfig-paths-webpack-plugin: ^4.2.0
     webpack: ^5.90.3
     webpack-cli: ^5.1.4
     webpack-dev-server: ^5.0.2
@@ -1480,10 +1481,10 @@ __metadata:
 
 "@officesdk/rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=7946b5&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=a0842f&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     penpal: ^7.0.4
-  checksum: 506a3c7d30aee863657f0ade84c5fe67be80bbb46ff70b1f95155374c3e81877a9619116218b00ab7d51e88d9312ac23bc5292e6e777209fda7265c2d6d8a104
+  checksum: 1e6ce01ee48e91de4bdc41b00e1e8349f5287ef400a0208cc8c6c4b6c051f82de8dbda293bd873f041a45ec1554dbde9279b68037efd68900b24d075e387170a
   languageName: node
   linkType: hard
 
@@ -7720,7 +7721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfig-paths-webpack-plugin@npm:^4.1.0":
+"tsconfig-paths-webpack-plugin@npm:^4.1.0, tsconfig-paths-webpack-plugin@npm:^4.2.0":
   version: 4.2.0
   resolution: "tsconfig-paths-webpack-plugin@npm:4.2.0"
   dependencies:

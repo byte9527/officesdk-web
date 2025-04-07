@@ -1,7 +1,7 @@
 import { connect, WindowMessenger } from 'penpal';
 import type { Connection } from 'penpal';
 
-import { OfficeSdkRpcChannel, createServerProtocol } from './protocol';
+import { OfficeSdkRpcChannel, createClientProtocol } from './protocol';
 import type { ServerProtocol } from './protocol';
 import { generateUniqueId } from '../shared/random';
 
@@ -9,7 +9,7 @@ export interface ClientOptions {
   /**
    * 需要创建连接的 iframe.contentWindow
    */
-  target: Window;
+  remoteWindow: Window;
   /**
    * Subset of the allowedOrigins option in WindowMessenger.
    * ----
@@ -43,44 +43,61 @@ interface ServerRecord {
 
 let serverMap = new WeakMap<Window, ServerRecord>();
 
+interface RpcClient {
+  id: string;
+  connection: Connection<ServerProtocol>;
+}
+
 /**
  * 创建一个客户端
  */
-export async function create(options: ClientOptions) {
-  const { target, allowedOrigins, timeout } = options;
+export async function create(options: ClientOptions): Promise<RpcClient> {
+  const { remoteWindow, allowedOrigins, timeout } = options;
 
-  const serverRecordCache = serverMap.get(target);
+  const serverRecordCache = serverMap.get(remoteWindow);
 
   const clientId = generateUniqueId();
 
+  // 如果服务端已经存在，并且已经连接过了，则直接使用缓存的连接
+  // 否则需要重新创建连接
   if (serverRecordCache) {
     await connectServer(serverRecordCache, clientId);
 
-    return serverRecordCache.connection;
+    return {
+      id: clientId,
+      connection: serverRecordCache.connection,
+    };
   }
 
   const messenger = new WindowMessenger({
-    remoteWindow: target,
-    allowedOrigins: allowedOrigins,
+    remoteWindow,
+    allowedOrigins,
   });
+
+  const clientIds = new Set<string>([]);
 
   const connection = connect<ServerProtocol>({
     channel: OfficeSdkRpcChannel,
     messenger,
-    methods: createServerProtocol(),
+    methods: createClientProtocol({
+      getClients: () => clientIds,
+    }),
     timeout,
   });
 
   const serverRecord = {
     connection,
-    clientIds: new Set<string>([]),
+    clientIds,
   };
 
-  serverMap.set(target, serverRecord);
+  serverMap.set(remoteWindow, serverRecord);
 
   await connectServer(serverRecord, clientId);
 
-  return connection;
+  return {
+    id: clientId,
+    connection,
+  };
 }
 
 /**

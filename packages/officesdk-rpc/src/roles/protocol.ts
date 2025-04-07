@@ -1,4 +1,4 @@
-import type { Methods, Connection } from 'penpal';
+import type { Methods } from 'penpal';
 
 /**
  * 建连协议，用于将客户端唯一身份记录到服务端。
@@ -42,29 +42,31 @@ export type ServerProtocol = {
    * @returns 是否关闭连接成功
    */
   close: (clientId: string) => boolean;
-
-  call: (clientId: string, method: string, args: unknown[]) => unknown;
 };
 
-export function createServerProtocol(): ServerProtocol {
-  const clientIds = new Set<string>();
+/**
+ * 初始化服务端需要的上下文
+ */
+interface ServerContext {
+  addClient: (id: string) => void;
+  deleteClient: (id: string) => void;
+}
 
+export function createServerProtocol(context: ServerContext): ServerProtocol {
   return {
     open: (clientId: string): boolean => {
-      debugger;
       // TODO: 如果重复应该抛出错误
-      clientIds.add(clientId);
+      context.addClient(clientId);
 
       return true;
     },
 
     close: (clientId: string): boolean => {
       // TODO: 如果 clientId 不存在，应该抛出错误
-      clientIds.delete(clientId);
+      context.deleteClient(clientId);
 
       return true;
     },
-    call: (clientId: string, method: string, args: unknown[]): unknown => {},
   };
 }
 
@@ -77,12 +79,21 @@ export type ClientProtocol = {
   close: (clientId: string) => void;
 };
 
-export function createClientProtocol(): ClientProtocol {
+/**
+ * 初始化客户端需要的上下文
+ */
+interface ClientContext {
+  /**
+   * 用于获取已连接的客户端身份信息
+   * @returns
+   */
+  getClients: () => Set<string>;
+}
+
+export function createClientProtocol(context: ClientContext): ClientProtocol {
   return {
     open: (): string[] => {
-      debugger;
-      // TODO: 记录传入的
-      return [];
+      return Array.from(context.getClients());
     },
     close: (clientId: string): void => {
       // TODO: 记录传入的

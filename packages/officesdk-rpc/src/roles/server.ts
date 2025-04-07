@@ -10,7 +10,7 @@
 
 import { connect, WindowMessenger } from 'penpal';
 import { getParentWindowOrThrow } from './window';
-import { OfficeSdkRpcChannel, createClientProtocol } from './protocol';
+import { OfficeSdkRpcChannel, createServerProtocol } from './protocol';
 import type { ClientProtocol } from './protocol';
 import { isClientNotAccessible } from '../errors';
 
@@ -29,12 +29,12 @@ export interface ServerOptions {
 
 export interface ServerConnection {}
 
-export async function serve(options: ServerOptions): Promise<string[]> {
+export async function serve(options?: ServerOptions): Promise<string[]> {
   let messenger: WindowMessenger;
   try {
     messenger = new WindowMessenger({
       remoteWindow: getParentWindowOrThrow(),
-      allowedOrigins: options.allowedOrigins,
+      allowedOrigins: options?.allowedOrigins,
     });
   } catch (error) {
     if (isClientNotAccessible(error)) {
@@ -45,16 +45,34 @@ export async function serve(options: ServerOptions): Promise<string[]> {
     throw error;
   }
 
+  const clientIds = new Set<string>();
+
   const connection = connect<ClientProtocol>({
     messenger,
     channel: OfficeSdkRpcChannel,
-    methods: createClientProtocol(),
+    methods: createServerProtocol({
+      addClient: (id: string) => {
+        clientIds.add(id);
+      },
+      deleteClient: (id: string) => {
+        clientIds.delete(id);
+      },
+    }),
   });
 
   try {
     // Wait for connection to be established.
-    const server = await connection.promise;
+    const client = await connection.promise;
 
-    const clientIds = await server.open();
-  } catch (error) {}
+    // Create connection with client, and get current client ids.
+    const pulledIds = await client.open();
+
+    pulledIds.forEach((id) => {
+      clientIds.add(id);
+    });
+
+    return Array.from(clientIds);
+  } catch (error) {
+    throw error;
+  }
 }

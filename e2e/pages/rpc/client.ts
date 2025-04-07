@@ -14,18 +14,42 @@ export async function createClient(iframe: HTMLIFrameElement): Promise<void> {
 
   // TODO: 接入 debug
 
-  const target = iframe.contentWindow;
+  let remoteWindow: Window;
 
-  if (!target) {
-    output('Server not exists.');
-    throw new Error('Server not exists');
+  if (iframe.contentWindow) {
+    remoteWindow = iframe.contentWindow;
+  } else {
+    remoteWindow = await new Promise((resolve, reject) => {
+      iframe.addEventListener(
+        'load',
+        () => {
+          const contentWindow = iframe.contentWindow;
+          if (contentWindow) {
+            resolve(contentWindow);
+          } else {
+            // TODO: Error handling
+            reject(new Error('Failed to load iframe'));
+          }
+        },
+        { once: true },
+      );
+
+      iframe.addEventListener(
+        'error',
+        () => {
+          // TODO: Error handling
+          reject(new Error('Failed to load iframe'));
+        },
+        { once: true },
+      );
+    });
   }
 
   output('Creating client...');
 
-  await create({
-    target,
+  const { id } = await create({
+    remoteWindow: remoteWindow,
   });
 
-  output('Client created.');
+  output(`Client created, id: ${id}`);
 }

@@ -19,11 +19,10 @@ function getRoot(): HTMLElement {
 export function createServerFrame(iframe?: HTMLIFrameElement): HTMLIFrameElement {
   if (!iframe) {
     iframe = document.createElement('iframe');
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-    iframe.src = '/template.html';
-  } else {
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
   }
+
+  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+  iframe.src = '/template.html';
 
   iframe.classList.add('frame');
 

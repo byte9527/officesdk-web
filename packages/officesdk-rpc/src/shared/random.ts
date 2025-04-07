@@ -1,7 +1,7 @@
 /**
  * 随机种子
  */
-let randomSeed = Date.now();
+let randomSeed = Math.ceil(Date.now() * Math.random());
 
 /**
  * 计数器
