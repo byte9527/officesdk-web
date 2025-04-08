@@ -39,9 +39,17 @@ export function createOutput(options: CreateOutputOptions): (message: string) =>
 
       tooltip.textContent = target.textContent;
 
-      const { left, top } = target.getBoundingClientRect();
-      tooltip.style.left = `${left}px`;
-      tooltip.style.top = `${top}px`;
+      const content = target.closest('.content');
+
+      if (!content) {
+        return;
+      }
+
+      const targetRect = target.getBoundingClientRect();
+      const contentRect = content.getBoundingClientRect();
+
+      tooltip.style.left = `${targetRect.left - contentRect.left}px`;
+      tooltip.style.top = `${targetRect.top - contentRect.top}px`;
     },
     false,
   );

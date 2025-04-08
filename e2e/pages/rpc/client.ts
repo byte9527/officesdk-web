@@ -3,8 +3,8 @@ import { create } from '@officesdk/rpc';
 import { createOutput } from '../shared/output';
 import { createClientFrame } from './frames';
 
-export async function createClient(iframe: HTMLIFrameElement): Promise<void> {
-  const container = createClientFrame();
+export async function createClient(content: HTMLElement, iframe: HTMLIFrameElement): Promise<void> {
+  const container = createClientFrame(content);
 
   const output = createOutput({
     container,

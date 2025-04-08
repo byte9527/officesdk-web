@@ -6,7 +6,8 @@ body {
   background-color: #fff;
 }
 
-#root {
+.content,
+.frame {
   counter-reset: line-index;
 }
 
@@ -20,6 +21,10 @@ body {
   color: #000;
   font-size: 14px;
   line-height: 1.5;
+}
+
+.output-line:first-child {
+  border-top: 1px solid #000;
 }
 
 .output-line-content {

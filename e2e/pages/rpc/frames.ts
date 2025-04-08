@@ -1,22 +1,8 @@
 /**
- * 获取根元素
- * @returns 根元素
- */
-function getRoot(): HTMLElement {
-  const root = document.getElementById('root');
-
-  if (!root) {
-    throw new Error('root element not found');
-  }
-
-  return root;
-}
-
-/**
  * 创建一个 iframe 用于模拟服务端，
  * 并将对应的路径注入到 iframe 的 script 标签中
  */
-export function createServerFrame(iframe?: HTMLIFrameElement): HTMLIFrameElement {
+export function createServerFrame(content: HTMLElement, iframe?: HTMLIFrameElement): HTMLIFrameElement {
   if (!iframe) {
     iframe = document.createElement('iframe');
   }
@@ -26,9 +12,7 @@ export function createServerFrame(iframe?: HTMLIFrameElement): HTMLIFrameElement
 
   iframe.classList.add('frame');
 
-  const root = getRoot();
-
-  root.appendChild(iframe);
+  content.appendChild(iframe);
 
   iframe.onload = () => {
     // 将对应的路径注入到 iframe 的 script 标签中
@@ -40,12 +24,10 @@ export function createServerFrame(iframe?: HTMLIFrameElement): HTMLIFrameElement
   return iframe;
 }
 
-export function createClientFrame(): HTMLDivElement {
-  const root = getRoot();
-
+export function createClientFrame(content: HTMLElement): HTMLDivElement {
   const container = document.createElement('div');
   container.classList.add('frame');
-  root.appendChild(container);
+  content.appendChild(container);
 
   return container;
 }
