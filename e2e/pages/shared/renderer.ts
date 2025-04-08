@@ -33,7 +33,7 @@ interface RenderContentOptions {
  */
 export function createRenderContent(
   options: CreateRenderContentOptions,
-): (options: RenderContentOptions) => HTMLElement {
+): (options?: RenderContentOptions) => HTMLElement {
   const { container } = options;
 
   return ({ height }: RenderContentOptions = {}): HTMLElement => {

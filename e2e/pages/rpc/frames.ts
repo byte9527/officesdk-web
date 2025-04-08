@@ -17,7 +17,7 @@ export function createServerFrame(content: HTMLElement, iframe?: HTMLIFrameEleme
   iframe.onload = () => {
     // 将对应的路径注入到 iframe 的 script 标签中
     const script = document.createElement('script');
-    script.src = '/connection-server.bundle.js';
+    script.src = '/server.bundle.js';
     iframe.contentWindow?.document.body.appendChild(script);
   };
 

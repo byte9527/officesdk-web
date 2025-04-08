@@ -7,10 +7,12 @@ module.exports = {
   entry: {
     index: './pages/index/index.ts',
 
-    // 连接测试
+    // Test connection cases.
     connection: './pages/rpc/connection.ts',
-    'connection-client': './pages/rpc/client.ts',
-    'connection-server': './pages/rpc/server.ts',
+    server: './pages/rpc/server.ts',
+
+    // Test methods calling cases.
+    methods: './pages/rpc/methods.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

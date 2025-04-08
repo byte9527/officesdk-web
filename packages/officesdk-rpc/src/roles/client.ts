@@ -1,5 +1,5 @@
 import { connect, WindowMessenger } from 'penpal';
-import type { Connection } from 'penpal';
+import type { Connection, RemoteProxy } from 'penpal';
 
 import { OfficeSdkRpcChannel, createClientProtocol } from './protocol';
 import type { ServerProtocol } from './protocol';
@@ -92,7 +92,7 @@ export async function create(options: ClientOptions): Promise<RpcClient> {
 
   serverMap.set(remoteWindow, serverRecord);
 
-  await connectServer(serverRecord, clientId);
+  const server = await connectServer(serverRecord, clientId);
 
   return {
     id: clientId,
@@ -103,7 +103,7 @@ export async function create(options: ClientOptions): Promise<RpcClient> {
 /**
  * 连接服务端
  */
-async function connectServer(serverRecord: ServerRecord, clientId: string) {
+async function connectServer(serverRecord: ServerRecord, clientId: string): Promise<RemoteProxy<ServerProtocol>> {
   const { connection, clientIds } = serverRecord;
 
   clientIds.add(clientId);
@@ -111,9 +111,13 @@ async function connectServer(serverRecord: ServerRecord, clientId: string) {
   try {
     const server = await connection.promise;
     await server.open(clientId);
+
+    return server;
   } catch (error) {
     // TODO: 超时处理，发生在同源策略限制时
     debugger;
+
+    throw error;
   }
 
   // TODO:

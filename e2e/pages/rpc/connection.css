@@ -12,6 +12,7 @@ body,
   border: none;
   overflow: hidden;
   position: relative;
+  min-width: 0;
 }
 
 .frame:nth-last-child(n+1) {
