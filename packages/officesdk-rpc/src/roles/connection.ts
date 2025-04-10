@@ -27,6 +27,16 @@
  * This scenario requires no special handling as the server automatically deduplicates.
  */
 
+import type { ConnectionReferences } from './reference';
+
+/**
+ * 远程调用时传入的调用选项，
+ * 包含引用类型参数声明
+ */
+export interface ConnectionInvokeOptions {
+  references?: ConnectionReferences;
+}
+
 /**
  * Server protocol interface
  * These interfaces are for remote invocation by clients, not for server's own use
@@ -53,7 +63,7 @@ export type ConnectionServerProtocol = {
    * @param args
    * @returns
    */
-  invoke: (clientId: string, method: string, args: any[]) => Promise<any>;
+  invoke: (clientId: string, method: string, args: any[], options?: ConnectionInvokeOptions) => any;
 };
 
 /**
@@ -62,7 +72,7 @@ export type ConnectionServerProtocol = {
 interface ConnectionServerContext {
   clients: Set<string>;
   // TODO: 使用范型约束外部调用类型
-  onInvoke: (clientId: string, method: string, args: any[]) => Promise<any>;
+  onInvoke: (clientId: string, method: string, args: any[], options?: ConnectionInvokeOptions) => any;
 }
 
 export function createConnectionServerProtocol(context: ConnectionServerContext): ConnectionServerProtocol {
@@ -81,12 +91,12 @@ export function createConnectionServerProtocol(context: ConnectionServerContext)
       return true;
     },
 
-    invoke: (clientId: string, method: string, args: any[]) => {
+    invoke: (clientId: string, method: string, args: any[], options?: ConnectionInvokeOptions) => {
       if (!context.clients.has(clientId)) {
         throw new Error('Client not found');
       }
 
-      return context.onInvoke(clientId, method, args);
+      return context.onInvoke(clientId, method, args, options);
     },
   };
 }

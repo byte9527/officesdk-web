@@ -9,11 +9,11 @@
 // spawn
 
 import { connect, WindowMessenger } from 'penpal';
-import type { Connection, RemoteProxy } from 'penpal';
+import type { RemoteProxy } from 'penpal';
 
 import { getParentWindowOrThrow } from './window';
 import { OfficeSdkRpcChannel, createConnectionServerProtocol } from './connection';
-import type { ConnectionClientProtocol } from './connection';
+import type { ConnectionClientProtocol, ConnectionInvokeOptions } from './connection';
 import { isClientNotAccessible } from '../errors';
 import type { RPCServerProxy, RPCMethods } from './rpc';
 
@@ -63,7 +63,7 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
     channel: OfficeSdkRpcChannel,
     methods: createConnectionServerProtocol({
       clients: clientIds,
-      onInvoke: (clientId, method, args) => {
+      onInvoke: (clientId, method, args, options?: ConnectionInvokeOptions) => {
         if (!client) {
           // TODO
           throw new Error('Unexpected invoke before client connected');
@@ -72,6 +72,9 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
         if (!clientIds.has(clientId)) {
           return;
         }
+
+        debugger;
+        // TODO:
 
         const methods = proxy({
           callback: client.callback,

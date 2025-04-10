@@ -1,10 +1,10 @@
 import type { RemoteProxy } from 'penpal';
-import type { RPCMethods } from '@officesdk/rpc';
 
 import { createClient } from './client';
 import { createClientFrame, createServerFrame } from './frames';
 import { createRenderTitle, createRenderContent } from '../shared/renderer';
 import { createOutput } from '../shared/output';
+import type { TestMethods } from './rpc';
 
 /**
  * Tests the basic methods calling scenario.
@@ -28,7 +28,7 @@ export function testMethods(root: HTMLElement): void {
 async function getServerMethods(
   content: HTMLElement,
   output: (message: string) => void,
-): Promise<RemoteProxy<RPCMethods>> {
+): Promise<RemoteProxy<TestMethods>> {
   const iframe = createServerFrame(content);
 
   output('Start creating client...');
@@ -52,7 +52,7 @@ async function testBasicMethods(content: HTMLElement): Promise<void> {
 
   const methods = await getServerMethods(content, output);
 
-  let callPromise = methods.ping();
+  let callPromise = methods.testInvoke();
 
   output?.('Calling remote method: .ping');
 
@@ -68,12 +68,12 @@ async function testCallback(content: HTMLElement): Promise<void> {
 
   const methods = await getServerMethods(content, output);
 
-  // output('Register callback...');
+  output('Calling remote method: .testCallback');
 
-  // await new Promise<void>((resolve) => {
-  //   methods.testCallback('test', (event) => {
-  //     output(`Received event: ${event.type}, data: ${event.data}`);
-  //     resolve();
-  //   });
-  // });
+  await new Promise<void>((resolve) => {
+    methods.testCallbackArg('test', (event) => {
+      output(`Received event: ${event.type}, data: ${event.data}`);
+      resolve();
+    });
+  });
 }

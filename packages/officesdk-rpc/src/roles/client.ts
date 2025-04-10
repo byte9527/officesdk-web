@@ -4,7 +4,8 @@ import type { Connection, RemoteProxy } from 'penpal';
 import { OfficeSdkRpcChannel, createConnectionClientProtocol } from './connection';
 import type { ConnectionServerProtocol } from './connection';
 import { generateUniqueId } from '../shared/random';
-import type { RPCClientProxy, RPCMethods } from './rpc';
+import type { RPCClientProxy, RPCMethods, RPCClientInvokeOptions } from './rpc';
+import { ClientReferenceContext } from './reference';
 
 export interface ClientOptions<TMethods extends RPCMethods> {
   /**
@@ -109,9 +110,28 @@ export async function create<TMethods extends RPCMethods>(
 
   const { proxy } = options;
 
+  const referenceContext = new ClientReferenceContext();
+
   const methods = proxy({
-    invoke: async <TName extends keyof TMethods>(method: TName, args: Parameters<TMethods[TName]>) => {
+    invoke: async <TName extends keyof TMethods>(
+      method: TName,
+      args: Parameters<TMethods[TName]>,
+      options?: RPCClientInvokeOptions<Parameters<TMethods[TName]>>,
+    ) => {
       const server = await serverPromise;
+
+      // 如果需要对参数进行转换，则使用 mapArgs 将参数中的引用数据提取出来，
+      // 并生成对应的引用路径，用于服务端调用时使用
+      const mapArgs = options?.mapArgs;
+      if (mapArgs) {
+        const result = mapArgs(args, referenceContext);
+
+        return server.invoke(clientId, method as string, result.args, {
+          references: result.references,
+        });
+      }
+
+      // TODO: 这个 method 类型不严谨
       return server.invoke(clientId, method as string, args);
     },
   });

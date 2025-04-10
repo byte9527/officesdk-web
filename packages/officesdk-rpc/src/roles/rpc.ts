@@ -1,5 +1,7 @@
 import type { RemoteProxy } from 'penpal';
 
+import type { ClientReferenceContext, ClientReferenceToken } from './reference';
+
 export enum RPCArgType {
   String = 'string',
   Number = 'number',
@@ -20,7 +22,6 @@ export type RPCParameter =
   | string
   | number
   | boolean
-  | RPCMethod
   | null
   | undefined
   | RPCParameter[]
@@ -32,7 +33,7 @@ export type RPCParameter =
 export type RPCMethod = (...args: any[]) => any;
 
 export type RPCMethods = {
-  [index in string]: RPCMethod;
+  [key: string]: RPCMethod;
 };
 
 export interface RPCClientInvokeOptions<TArgs extends any[]> {
@@ -40,13 +41,14 @@ export interface RPCClientInvokeOptions<TArgs extends any[]> {
    * 遍历参数列表，将参数里无法传输的类型提取出来，
    * 生成引用类型对照表，给服务端调用时使用。
    */
-  mapArgs?: (args: TArgs) => {
+  mapArgs?: (
+    args: TArgs,
+    context: ClientReferenceContext,
+  ) => {
     args: {
-      [index in keyof TArgs]?: TArgs[index] extends RPCParameter ? TArgs[index] : never;
+      [index in keyof TArgs]: TArgs[index] extends RPCParameter ? TArgs[index] : ClientReferenceToken;
     };
-    references?: {
-      paths: [index: number, path?: string][];
-    };
+    references?: [index: number, type: 'callback' | 'value', path?: string][];
   };
 }
 
@@ -94,5 +96,5 @@ export interface RPCServerCallOptions {
 export type RPCServerProxy<TMethods extends RPCMethods> = (context: RPCServerProxyContext) => {
   [K in keyof TMethods]: TMethods[K] extends (...args: infer A) => infer R
     ? (...args: [...A, RPCServerCallOptions]) => R
-    : never; //(...args: Parameters<TMethods[K]>) => ReturnType<TMethods[K]>;
+    : never;
 };
