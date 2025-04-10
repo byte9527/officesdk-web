@@ -1,15 +1,20 @@
 import { createClient } from './client';
-import { createServerFrame } from './frames';
+import { createClientFrame, createServerFrame } from './frames';
 import { createRenderTitle, createRenderContent } from '../shared/renderer';
+import { createOutput } from '../shared/output';
 
 /**
  * Tests the basic connection scenario where client is created first
  * @param content - Container element for the test UI
  */
 function testBasicConnection(content: HTMLElement): void {
-  const iframe = document.createElement('iframe');
-  createClient(content, iframe);
-  createServerFrame(content, iframe);
+  const iframe = createServerFrame(content);
+  createClient({
+    output: createOutput({
+      container: createClientFrame(content),
+    }),
+    iframe,
+  });
 }
 
 /**
@@ -18,7 +23,12 @@ function testBasicConnection(content: HTMLElement): void {
  */
 function testIframePreloading(content: HTMLElement): void {
   const iframe = createServerFrame(content);
-  createClient(content, iframe);
+  createClient({
+    output: createOutput({
+      container: createClientFrame(content),
+    }),
+    iframe,
+  });
 }
 
 /**
@@ -27,8 +37,19 @@ function testIframePreloading(content: HTMLElement): void {
  */
 function testMultipleClients(content: HTMLElement): void {
   const iframe = createServerFrame(content);
-  createClient(content, iframe);
-  createClient(content, iframe);
+  createClient({
+    output: createOutput({
+      container: createClientFrame(content),
+    }),
+    iframe,
+  });
+
+  createClient({
+    output: createOutput({
+      container: createClientFrame(content),
+    }),
+    iframe,
+  });
 }
 
 /**

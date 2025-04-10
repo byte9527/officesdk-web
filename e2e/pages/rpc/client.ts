@@ -1,16 +1,18 @@
 import { create } from '@officesdk/rpc';
+import type { RemoteProxy } from 'penpal';
 
-import { createOutput } from '../shared/output';
-import { createClientFrame } from './frames';
+import { proxyClient } from './rpc';
+import type { RpcMethods } from './rpc';
 
-export async function createClient(content: HTMLElement, iframe: HTMLIFrameElement): Promise<void> {
-  const container = createClientFrame(content);
+interface ClientOptions {
+  output?: (message: string) => void;
+  iframe: HTMLIFrameElement;
+}
 
-  const output = createOutput({
-    container,
-  });
+export async function createClient(options: ClientOptions): Promise<RemoteProxy<RpcMethods>> {
+  const { output, iframe } = options;
 
-  output('Start testing rpc client.');
+  output?.('Start testing rpc client.');
 
   // TODO: 接入 debug
 
@@ -45,11 +47,14 @@ export async function createClient(content: HTMLElement, iframe: HTMLIFrameEleme
     });
   }
 
-  output('Creating client...');
+  output?.('Creating client...');
 
-  const { id } = await create({
-    remoteWindow: remoteWindow,
+  const { id, methods } = await create<RpcMethods>({
+    remoteWindow,
+    proxy: proxyClient,
   });
 
-  output(`Client created, id: ${id}`);
+  output?.(`Client created, id: ${id}`);
+
+  return methods;
 }

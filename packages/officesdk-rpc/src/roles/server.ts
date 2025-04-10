@@ -9,12 +9,15 @@
 // spawn
 
 import { connect, WindowMessenger } from 'penpal';
-import { getParentWindowOrThrow } from './window';
-import { OfficeSdkRpcChannel, createServerProtocol } from './protocol';
-import type { ClientProtocol } from './protocol';
-import { isClientNotAccessible } from '../errors';
+import type { Connection, RemoteProxy } from 'penpal';
 
-export interface ServerOptions {
+import { getParentWindowOrThrow } from './window';
+import { OfficeSdkRpcChannel, createConnectionServerProtocol } from './connection';
+import type { ConnectionClientProtocol } from './connection';
+import { isClientNotAccessible } from '../errors';
+import type { RPCServerProxy, RPCMethods } from './rpc';
+
+export interface ServerOptions<TMethods extends RPCMethods> {
   /**
    * Subset of the allowedOrigins option in WindowMessenger.
    * ----
@@ -25,16 +28,22 @@ export interface ServerOptions {
    * doing so.
    */
   allowedOrigins?: string[];
+
+  /**
+   * 远程调用协议代理，用于生成客户端远程调用服务端的方法，
+   * 需要保证服务端按照同样的 RPCMethods 协议提供方法实现
+   */
+  proxy: RPCServerProxy<TMethods>;
 }
 
-export interface ServerConnection {}
+export async function serve<TMethods extends RPCMethods>(options: ServerOptions<TMethods>): Promise<string[]> {
+  const { allowedOrigins, proxy } = options;
 
-export async function serve(options?: ServerOptions): Promise<string[]> {
   let messenger: WindowMessenger;
   try {
     messenger = new WindowMessenger({
       remoteWindow: getParentWindowOrThrow(),
-      allowedOrigins: options?.allowedOrigins,
+      allowedOrigins: allowedOrigins,
     });
   } catch (error) {
     if (isClientNotAccessible(error)) {
@@ -47,32 +56,42 @@ export async function serve(options?: ServerOptions): Promise<string[]> {
 
   const clientIds = new Set<string>();
 
-  const connection = connect<ClientProtocol>({
+  let client: RemoteProxy<ConnectionClientProtocol> | undefined;
+
+  const connection = connect<ConnectionClientProtocol>({
     messenger,
     channel: OfficeSdkRpcChannel,
-    methods: createServerProtocol({
-      addClient: (id: string) => {
-        clientIds.add(id);
-      },
-      deleteClient: (id: string) => {
-        clientIds.delete(id);
+    methods: createConnectionServerProtocol({
+      clients: clientIds,
+      onInvoke: (clientId, method, args) => {
+        if (!client) {
+          // TODO
+          throw new Error('Unexpected invoke before client connected');
+        }
+
+        if (!clientIds.has(clientId)) {
+          return;
+        }
+
+        const methods = proxy({
+          callback: client.callback,
+        });
+
+        // TODO: 引用类型
+        return methods[method](...args, {
+          clientId,
+        });
       },
     }),
   });
 
-  try {
-    // Wait for connection to be established.
-    const client = await connection.promise;
+  client = await connection.promise;
 
-    // Create connection with client, and get current client ids.
-    const pulledIds = await client.open();
+  const pulledIds = await client.open();
 
-    pulledIds.forEach((id) => {
-      clientIds.add(id);
-    });
+  pulledIds.forEach((id) => {
+    clientIds.add(id);
+  });
 
-    return Array.from(clientIds);
-  } catch (error) {
-    throw error;
-  }
+  return Array.from(clientIds);
 }

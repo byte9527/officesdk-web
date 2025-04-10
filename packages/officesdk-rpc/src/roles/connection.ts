@@ -31,7 +31,7 @@
  * Server protocol interface
  * These interfaces are for remote invocation by clients, not for server's own use
  */
-export type ServerProtocol = {
+export type ConnectionServerProtocol = {
   /**
    * Client registers its identity with the server
    * All subsequent calls must include this clientId as identity token
@@ -45,30 +45,48 @@ export type ServerProtocol = {
    * @returns Whether the connection was closed successfully
    */
   close: (clientId: string) => boolean;
+
+  /**
+   *
+   * @param clientId
+   * @param method
+   * @param args
+   * @returns
+   */
+  invoke: (clientId: string, method: string, args: any[]) => void;
 };
 
 /**
  * Context required for server initialization
  */
-interface ServerContext {
-  addClient: (id: string) => void;
-  deleteClient: (id: string) => void;
+interface ConnectionServerContext {
+  clients: Set<string>;
+  // TODO: 使用范型约束外部调用类型
+  onInvoke: (clientId: string, method: string, args: any[]) => void;
 }
 
-export function createServerProtocol(context: ServerContext): ServerProtocol {
+export function createConnectionServerProtocol(context: ConnectionServerContext): ConnectionServerProtocol {
   return {
     open: (clientId: string): boolean => {
       // TODO: Should throw error on duplicate registration
-      context.addClient(clientId);
+      context.clients.add(clientId);
 
       return true;
     },
 
     close: (clientId: string): boolean => {
       // TODO: Should throw error if clientId doesn't exist
-      context.deleteClient(clientId);
+      context.clients.delete(clientId);
 
       return true;
+    },
+
+    invoke: (clientId: string, method: string, args: any[]) => {
+      if (!context.clients.has(clientId)) {
+        throw new Error('Client not found');
+      }
+
+      return context.onInvoke(clientId, method, args);
     },
   };
 }
@@ -77,22 +95,23 @@ export function createServerProtocol(context: ServerContext): ServerProtocol {
  * Client protocol interface
  * These interfaces are for remote invocation by server, not for client's own use
  */
-export type ClientProtocol = {
+export type ConnectionClientProtocol = {
   open: () => string[];
   close: (clientId: string) => void;
+  callback: (clientId: string, method: string, args?: any[]) => void;
 };
 
 /**
  * Context required for client initialization
  */
-interface ClientContext {
+interface ConnectionClientContext {
   /**
    * Get identity information of connected clients
    */
   getClients: () => Set<string>;
 }
 
-export function createClientProtocol(context: ClientContext): ClientProtocol {
+export function createConnectionClientProtocol(context: ConnectionClientContext): ConnectionClientProtocol {
   return {
     open: (): string[] => {
       return Array.from(context.getClients());
@@ -100,55 +119,11 @@ export function createClientProtocol(context: ClientContext): ClientProtocol {
     close: (clientId: string): void => {
       // TODO: Record the incoming clientId
     },
+
+    callback: (clientId: string, method: string, args?: any[]) => {
+      // TODO: Record the incoming clientId
+    },
   };
 }
 
 export const OfficeSdkRpcChannel = '#office-sdk-rpc';
-
-export enum RPCArgType {
-  String = 'string',
-  Number = 'number',
-  Boolean = 'boolean',
-  Object = 'object',
-  Callback = 'callback',
-  Null = 'null',
-  Undefined = 'undefined',
-  Array = 'array',
-}
-
-/**
- * 可通过 penpal 调用的参数形式我们约束为合法的 JSON 类型
- */
-export type RPCParameter =
-  | string
-  | number
-  | boolean
-  | RPCMethod
-  | null
-  | undefined
-  | RPCParameter[]
-  | { [key: string]: RPCParameter };
-
-/**
- * 可通过 penpal 调用的方法，返回值约束为合法的 JSON 类型
- */
-export type RPCMethod = (...args: any[]) => any;
-
-/**
- *
- */
-export type RPCMethods = {
-  [index: string]: RPCMethod;
-};
-
-/**
- * 远程调用协议，用于定义服务端提供的远程调用方法。
- * 服务端需要基于这个协议提供 penpal 的 Methods 实现，
- * 客户端基于这个协议可以创建 penpal 的 RemoteProxy 实现
- */
-export type RPCProtocol<TMethods extends RPCMethods> = {
-  client: {
-    [K in keyof TMethods]: TMethods[K];
-  };
-  server: TMethods;
-};

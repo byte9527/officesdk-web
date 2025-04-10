@@ -1,6 +1,10 @@
+import type { RemoteProxy } from 'penpal';
+import type { RPCMethods } from '@officesdk/rpc';
+
 import { createClient } from './client';
-import { createServerFrame } from './frames';
+import { createClientFrame, createServerFrame } from './frames';
 import { createRenderTitle, createRenderContent } from '../shared/renderer';
+import { createOutput } from '../shared/output';
 
 /**
  * Tests the basic methods calling scenario.
@@ -10,19 +14,66 @@ export function testMethods(root: HTMLElement): void {
   const renderTitle = createRenderTitle({ container: root });
   const renderContent = createRenderContent({ container: root });
 
-  renderTitle('Test methods');
+  renderTitle('Test basic methods');
   testBasicMethods(
     renderContent({
-      height: 64,
+      height: 85,
     }),
   );
+
+  renderTitle('Test callback');
+  testCallback(renderContent());
 }
 
+async function getServerMethods(
+  content: HTMLElement,
+  output: (message: string) => void,
+): Promise<RemoteProxy<RPCMethods>> {
+  const iframe = createServerFrame(content);
+
+  output('Start creating client...');
+
+  const methods = await createClient({
+    iframe,
+  });
+
+  output('Client created.');
+
+  return methods;
+}
 /**
  * Tests the basic methods calling scenario.
  * @param content - Container element for the test UI
  */
-function testBasicMethods(content: HTMLElement): void {
-  const iframe = createServerFrame(content);
-  createClient(content, iframe);
+async function testBasicMethods(content: HTMLElement): Promise<void> {
+  const output = createOutput({
+    container: createClientFrame(content),
+  });
+
+  const methods = await getServerMethods(content, output);
+
+  let callPromise = methods.ping();
+
+  output?.('Calling remote method: .ping');
+
+  const result = await callPromise;
+
+  output?.(`Server response: ${result}`);
+}
+
+async function testCallback(content: HTMLElement): Promise<void> {
+  const output = createOutput({
+    container: createClientFrame(content),
+  });
+
+  const methods = await getServerMethods(content, output);
+
+  // output('Register callback...');
+
+  // await new Promise<void>((resolve) => {
+  //   methods.testCallback('test', (event) => {
+  //     output(`Received event: ${event.type}, data: ${event.data}`);
+  //     resolve();
+  //   });
+  // });
 }
