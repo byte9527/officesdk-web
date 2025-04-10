@@ -1,7 +1,7 @@
 import { serve } from '@officesdk/rpc';
 
 import { serverProxy } from '../rpc/rpc';
-import type { RpcMethods } from '../rpc/rpc';
+import type { TestMethods } from '../rpc/rpc';
 import { createOutput } from '../shared/output';
 import { createRenderContent } from '../shared/renderer';
 
@@ -20,7 +20,7 @@ async function main() {
 
   output('Start testing rpc server.');
 
-  const clientIds = await serve<RpcMethods>({
+  const clientIds = await serve<TestMethods>({
     proxy: serverProxy,
   });
 

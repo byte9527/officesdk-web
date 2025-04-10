@@ -2,14 +2,14 @@ import { create } from '@officesdk/rpc';
 import type { RemoteProxy } from 'penpal';
 
 import { proxyClient } from './rpc';
-import type { RpcMethods } from './rpc';
+import type { TestMethods } from './rpc';
 
 interface ClientOptions {
   output?: (message: string) => void;
   iframe: HTMLIFrameElement;
 }
 
-export async function createClient(options: ClientOptions): Promise<RemoteProxy<RpcMethods>> {
+export async function createClient(options: ClientOptions): Promise<RemoteProxy<TestMethods>> {
   const { output, iframe } = options;
 
   output?.('Start testing rpc client.');
@@ -49,7 +49,7 @@ export async function createClient(options: ClientOptions): Promise<RemoteProxy<
 
   output?.('Creating client...');
 
-  const { id, methods } = await create<RpcMethods>({
+  const { id, methods } = await create({
     remoteWindow,
     proxy: proxyClient,
   });

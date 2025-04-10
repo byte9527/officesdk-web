@@ -32,13 +32,22 @@ export type RPCParameter =
 export type RPCMethod = (...args: any[]) => any;
 
 export type RPCMethods = {
-  [index: string]: RPCMethod;
+  [index in string]: RPCMethod;
 };
 
-export type RPCClientInvoke<TMethods extends RPCMethods> = <TMethod extends keyof TMethods>(
-  method: TMethod,
-  args?: Parameters<TMethods[TMethod]>,
-) => Promise<ReturnType<TMethods[TMethod]>>;
+export interface RPCClientInvokeOptions {
+  /**
+   * 遍历参数列表，将参数里无法传输的类型提取出来，
+   * 生成引用类型对照表，给服务端调用时使用。
+   */
+  mapArgs?: boolean;
+}
+
+export type RPCClientInvoke<TMethods extends RPCMethods> = <TName extends keyof TMethods>(
+  method: TName,
+  args: Parameters<TMethods[TName]>,
+  options?: RPCClientInvokeOptions,
+) => Promise<ReturnType<TMethods[TName]>>;
 
 export type RPCServerCallback = (clientId: string, method: string, args: any[]) => void;
 

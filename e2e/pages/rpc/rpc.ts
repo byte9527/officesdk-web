@@ -1,24 +1,26 @@
-import type { RPCMethods, RPCClientProxy, RPCServerProxy } from '@officesdk/rpc';
+import type { RPCClientProxy, RPCServerProxy } from '@officesdk/rpc';
 
-export interface RpcMethods extends RPCMethods {
-  ping: () => string;
-  // testCallback: (type: string, callback: (event: { type: string; data: unknown }) => void) => void;
-}
+export type TestMethods = {
+  testInvoke: () => string;
+  testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => void;
+};
 
-export const proxyClient: RPCClientProxy<RpcMethods> = (context) => {
+export const proxyClient: RPCClientProxy<TestMethods> = (context) => {
   const { invoke } = context;
 
   return {
-    ping: () => invoke('ping'),
-    // testCallback: (type: string, callback: (event: { type: string; data: unknown }) => void) => {
-    //   invoke('testCallback', [type, callback]);
-    // },
+    testInvoke: () => {
+      return invoke('testInvoke', []);
+    },
+    testCallbackArg: (type, callback) => {
+      return invoke('testCallbackArg', [type, callback]);
+    },
   };
 };
 
-export const serverProxy: RPCServerProxy<RpcMethods> = (context) => {
+export const serverProxy: RPCServerProxy<TestMethods> = (context) => {
   return {
-    ping: () => {
+    testInvoke: () => {
       return 'pong';
     },
     // testCallback: (type: string, callback: (event: { type: string; data: unknown }) => void) => {

@@ -53,7 +53,7 @@ export type ConnectionServerProtocol = {
    * @param args
    * @returns
    */
-  invoke: (clientId: string, method: string, args: any[]) => void;
+  invoke: (clientId: string, method: string, args: any[]) => Promise<any>;
 };
 
 /**
@@ -62,7 +62,7 @@ export type ConnectionServerProtocol = {
 interface ConnectionServerContext {
   clients: Set<string>;
   // TODO: 使用范型约束外部调用类型
-  onInvoke: (clientId: string, method: string, args: any[]) => void;
+  onInvoke: (clientId: string, method: string, args: any[]) => Promise<any>;
 }
 
 export function createConnectionServerProtocol(context: ConnectionServerContext): ConnectionServerProtocol {

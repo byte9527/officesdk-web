@@ -110,9 +110,9 @@ export async function create<TMethods extends RPCMethods>(
   const { proxy } = options;
 
   const methods = proxy({
-    invoke: async (method: string, args: any[] = []) => {
+    invoke: async <TName extends keyof TMethods>(method: TName, args: Parameters<TMethods[TName]>) => {
       const server = await serverPromise;
-      return server.invoke(clientId, method, args);
+      return server.invoke(clientId, method as string, args);
     },
   });
 

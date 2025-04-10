@@ -1,2 +1,2 @@
 export { create, serve } from './roles';
-export type { RPCMethods, RPCClientProxy, RPCServerProxy } from './roles/rpc';
+export type { RPCMethods, RPCClientProxy, RPCServerProxy, RPCClientInvoke } from './roles/rpc';
