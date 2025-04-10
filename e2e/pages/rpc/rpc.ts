@@ -1,42 +1,63 @@
 import type { RPCClientProxy, RPCServerProxy } from '@officesdk/rpc';
+import { ReferenceType } from '@officesdk/rpc';
 
 export type TestMethods = {
   testInvoke: () => string;
   testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => void;
 };
 
-export const proxyClient: RPCClientProxy<TestMethods> = (context) => {
-  const { invoke } = context;
+/**
+ * 这部分代码会在客户端环境中执行
+ * @param context
+ * @returns
+ */
+export const createClientProxy: (output?: (message: string) => void) => RPCClientProxy<TestMethods> =
+  () => (context) => {
+    const { invoke } = context;
 
-  return {
-    testInvoke: () => {
-      return invoke('testInvoke', []);
-    },
-    testCallbackArg: (type, callback) => {
-      return invoke('testCallbackArg', [type, callback], {
-        mapArgs: (args, context) => {
-          return {
-            args: [args[0], context.createReference('callback', args[1])],
-            references: [[1, 'callback']],
-          };
-        },
-      });
-    },
-  };
-};
-
-export const serverProxy: RPCServerProxy<TestMethods> = (context) => {
-  return {
-    testInvoke: () => {
-      return 'pong';
-    },
-    testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => {
-      setTimeout(() => {
-        callback({
-          type,
-          data: 'test',
+    return {
+      testInvoke: () => {
+        return invoke('testInvoke', []);
+      },
+      testCallbackArg: (type, callback) => {
+        return invoke('testCallbackArg', [type, callback], {
+          mapArgs: (args, context) => {
+            return {
+              args: [
+                args[0],
+                context.createReference({
+                  type: 'callback',
+                  value: args[1],
+                }),
+              ],
+              references: [[1, ReferenceType.Callback]],
+            };
+          },
         });
-      });
-    },
+      },
+    };
   };
-};
+
+/**
+ * 这部分代码会在服务端环境中执行
+ * @returns
+ */
+export const createServerProxy: (output?: (message: string) => void) => RPCServerProxy<TestMethods> =
+  (output) => () => {
+    return {
+      testInvoke: () => {
+        return 'pong';
+      },
+      testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => {
+        output?.('Server .testCallbackArg has been invoked.');
+
+        setTimeout(() => {
+          output?.('Server invoked callback.');
+          callback({
+            type,
+            data: 'bar',
+          });
+        });
+      },
+    };
+  };

@@ -1,19 +1,6 @@
 import type { RemoteProxy } from 'penpal';
 
-import type { ClientReferenceContext, ClientReferenceToken } from './reference';
-
-export enum RPCArgType {
-  String = 'string',
-  Number = 'number',
-  Boolean = 'boolean',
-  Object = 'object',
-  Null = 'null',
-  Undefined = 'undefined',
-  Array = 'array',
-  // 当前上下文中的非 Transferable 或可通过 structuredClone 克隆的变量，
-  // 跨上下文只能间接引用，无法直接调用和访问
-  Reference = 'reference',
-}
+import type { ClientReferenceManager, ReferenceToken, ReferencesDeclares } from './reference';
 
 /**
  * 可通过 penpal 调用的参数形式我们约束为合法的 JSON 类型
@@ -43,12 +30,12 @@ export interface RPCClientInvokeOptions<TArgs extends any[]> {
    */
   mapArgs?: (
     args: TArgs,
-    context: ClientReferenceContext,
+    referenceManager: ClientReferenceManager,
   ) => {
     args: {
-      [index in keyof TArgs]: TArgs[index] extends RPCParameter ? TArgs[index] : ClientReferenceToken;
+      [index in keyof TArgs]: TArgs[index] extends RPCParameter ? TArgs[index] : ReferenceToken;
     };
-    references?: [index: number, type: 'callback' | 'value', path?: string][];
+    references?: ReferencesDeclares;
   };
 }
 
@@ -58,7 +45,7 @@ export type RPCClientInvoke<TMethods extends RPCMethods> = <TName extends keyof 
   options?: RPCClientInvokeOptions<Parameters<TMethods[TName]>>,
 ) => Promise<ReturnType<TMethods[TName]>>;
 
-export type RPCServerCallback = (clientId: string, method: string, args: any[]) => void;
+export type RPCServerCallback = (token: string, args: any[]) => void;
 
 export interface RPCClientProxyContext<TMethods extends RPCMethods> {
   /**
@@ -75,13 +62,6 @@ export type RPCClientProxy<TMethods extends RPCMethods> = (
   context: RPCClientProxyContext<TMethods>,
 ) => RemoteProxy<TMethods>;
 
-export interface RPCServerProxyContext {
-  /**
-   * 远程调用方法
-   */
-  callback: RPCServerCallback;
-}
-
 export interface RPCServerCallOptions {
   /**
    * 客户端 ID
@@ -93,8 +73,16 @@ export interface RPCServerCallOptions {
  * 服务端协议，用于定义可供服务端远程调用的方法。
  * 服务端需要基于这个协议提供 penpal 的 Methods 实现，
  */
-export type RPCServerProxy<TMethods extends RPCMethods> = (context: RPCServerProxyContext) => {
+export type RPCServerProxy<TMethods extends RPCMethods> = () => {
   [K in keyof TMethods]: TMethods[K] extends (...args: infer A) => infer R
     ? (...args: [...A, RPCServerCallOptions]) => R
     : never;
 };
+
+/**
+ * 远程调用时传入的调用选项，
+ * 包含引用类型参数声明
+ */
+export interface RPCInvokeOptions {
+  references?: ReferencesDeclares;
+}

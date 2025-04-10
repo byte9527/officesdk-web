@@ -5,7 +5,7 @@ import { OfficeSdkRpcChannel, createConnectionClientProtocol } from './connectio
 import type { ConnectionServerProtocol } from './connection';
 import { generateUniqueId } from '../shared/random';
 import type { RPCClientProxy, RPCMethods, RPCClientInvokeOptions } from './rpc';
-import { ClientReferenceContext } from './reference';
+import { ClientReferenceManager } from './reference';
 
 export interface ClientOptions<TMethods extends RPCMethods> {
   /**
@@ -95,11 +95,20 @@ export async function create<TMethods extends RPCMethods>(
 
   const clientIds = new Set<string>([]);
 
+  const referenceManager = new ClientReferenceManager();
+
   const connection = connect<ConnectionServerProtocol>({
     channel: OfficeSdkRpcChannel,
     messenger,
     methods: createConnectionClientProtocol({
       getClients: () => clientIds,
+      resolveCallback: (token) => {
+        const reference = referenceManager.getReference(token);
+
+        if (reference?.type === 'callback') {
+          return reference.value;
+        }
+      },
     }),
     timeout,
   });
@@ -109,8 +118,6 @@ export async function create<TMethods extends RPCMethods>(
   const serverPromise = connectServer(connection, clientId);
 
   const { proxy } = options;
-
-  const referenceContext = new ClientReferenceContext();
 
   const methods = proxy({
     invoke: async <TName extends keyof TMethods>(
@@ -124,7 +131,7 @@ export async function create<TMethods extends RPCMethods>(
       // 并生成对应的引用路径，用于服务端调用时使用
       const mapArgs = options?.mapArgs;
       if (mapArgs) {
-        const result = mapArgs(args, referenceContext);
+        const result = mapArgs(args, referenceManager);
 
         return server.invoke(clientId, method as string, result.args, {
           references: result.references,

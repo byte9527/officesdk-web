@@ -13,9 +13,11 @@ import type { RemoteProxy } from 'penpal';
 
 import { getParentWindowOrThrow } from './window';
 import { OfficeSdkRpcChannel, createConnectionServerProtocol } from './connection';
-import type { ConnectionClientProtocol, ConnectionInvokeOptions } from './connection';
+import type { ConnectionClientCallback, ConnectionClientProtocol } from './connection';
 import { isClientNotAccessible } from '../errors';
-import type { RPCServerProxy, RPCMethods } from './rpc';
+import { ReferenceType, type ReferencesDeclares } from './reference';
+import type { RPCServerProxy, RPCMethods, RPCInvokeOptions, RPCServerCallback } from './rpc';
+import { override } from '../shared/object';
 
 export interface ServerOptions<TMethods extends RPCMethods> {
   /**
@@ -63,7 +65,7 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
     channel: OfficeSdkRpcChannel,
     methods: createConnectionServerProtocol({
       clients: clientIds,
-      onInvoke: (clientId, method, args, options?: ConnectionInvokeOptions) => {
+      onInvoke: (clientId, method, args, options?: RPCInvokeOptions) => {
         if (!client) {
           // TODO
           throw new Error('Unexpected invoke before client connected');
@@ -73,14 +75,17 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
           return;
         }
 
-        debugger;
-        // TODO:
+        const methods = proxy();
+        const references = options?.references;
 
-        const methods = proxy({
-          callback: client.callback,
-        });
+        // 如果有引用参数，则需要根据 references 规则将参数替换为对应的值
+        if (references) {
+          overrideArgs(args, {
+            references,
+            clientCallback: client.callback,
+          });
+        }
 
-        // TODO: 引用类型
         return methods[method](...args, {
           clientId,
         });
@@ -97,4 +102,47 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
   });
 
   return Array.from(clientIds);
+}
+
+/**
+ * 根据 references 规则，替换 args 中的引用类型
+ * @param rawArgs
+ * @param references
+ * @param callback
+ * @returns
+ */
+function overrideArgs(
+  rawArgs: any[],
+  options: {
+    references: ReferencesDeclares;
+    clientCallback: ConnectionClientCallback;
+  },
+) {
+  const { references, clientCallback } = options;
+
+  for (const reference of references) {
+    const [index, type, path] = reference;
+
+    if (type === ReferenceType.Callback) {
+      let token: {
+        value: string;
+      };
+
+      const serverCallback: RPCServerCallback = (...args: any[]) => {
+        clientCallback(token.value, args);
+      };
+
+      // callback
+      if (path) {
+        token = override(rawArgs[index], path, serverCallback);
+      } else {
+        token = rawArgs[index];
+        rawArgs[index] = serverCallback;
+      }
+    } else if (type === 1) {
+      // token
+      // TODO:
+    }
+    // TODO:
+  }
 }

@@ -27,15 +27,7 @@
  * This scenario requires no special handling as the server automatically deduplicates.
  */
 
-import type { ConnectionReferences } from './reference';
-
-/**
- * 远程调用时传入的调用选项，
- * 包含引用类型参数声明
- */
-export interface ConnectionInvokeOptions {
-  references?: ConnectionReferences;
-}
+import type { RPCInvokeOptions } from './rpc';
 
 /**
  * Server protocol interface
@@ -63,7 +55,7 @@ export type ConnectionServerProtocol = {
    * @param args
    * @returns
    */
-  invoke: (clientId: string, method: string, args: any[], options?: ConnectionInvokeOptions) => any;
+  invoke: (clientId: string, method: string, args: any[], options?: RPCInvokeOptions) => any;
 };
 
 /**
@@ -72,7 +64,7 @@ export type ConnectionServerProtocol = {
 interface ConnectionServerContext {
   clients: Set<string>;
   // TODO: 使用范型约束外部调用类型
-  onInvoke: (clientId: string, method: string, args: any[], options?: ConnectionInvokeOptions) => any;
+  onInvoke: (clientId: string, method: string, args: any[], options?: RPCInvokeOptions) => any;
 }
 
 export function createConnectionServerProtocol(context: ConnectionServerContext): ConnectionServerProtocol {
@@ -91,7 +83,7 @@ export function createConnectionServerProtocol(context: ConnectionServerContext)
       return true;
     },
 
-    invoke: (clientId: string, method: string, args: any[], options?: ConnectionInvokeOptions) => {
+    invoke: (clientId: string, method: string, args: any[], options?: RPCInvokeOptions) => {
       if (!context.clients.has(clientId)) {
         throw new Error('Client not found');
       }
@@ -101,6 +93,8 @@ export function createConnectionServerProtocol(context: ConnectionServerContext)
   };
 }
 
+export type ConnectionClientCallback = (token: string, args: any[]) => void;
+
 /**
  * Client protocol interface
  * These interfaces are for remote invocation by server, not for client's own use
@@ -108,7 +102,7 @@ export function createConnectionServerProtocol(context: ConnectionServerContext)
 export type ConnectionClientProtocol = {
   open: () => string[];
   close: (clientId: string) => void;
-  callback: (clientId: string, method: string, args?: any[]) => void;
+  callback: ConnectionClientCallback;
 };
 
 /**
@@ -119,6 +113,12 @@ interface ConnectionClientContext {
    * Get identity information of connected clients
    */
   getClients: () => Set<string>;
+
+  /**
+   * Resolve callback from references
+   * @returns
+   */
+  resolveCallback: (token: string) => ((...args: any[]) => void) | undefined;
 }
 
 export function createConnectionClientProtocol(context: ConnectionClientContext): ConnectionClientProtocol {
@@ -130,8 +130,15 @@ export function createConnectionClientProtocol(context: ConnectionClientContext)
       // TODO: Record the incoming clientId
     },
 
-    callback: (clientId: string, method: string, args?: any[]) => {
-      // TODO: Record the incoming clientId
+    callback: (token: string, args: any[]) => {
+      const callback = context.resolveCallback(token);
+
+      if (!callback) {
+        // TODO:
+        throw new Error(`Callback not found for token: ${token}`);
+      }
+
+      callback(...args);
     },
   };
 }

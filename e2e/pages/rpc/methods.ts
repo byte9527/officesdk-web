@@ -71,7 +71,7 @@ async function testCallback(content: HTMLElement): Promise<void> {
   output('Calling remote method: .testCallback');
 
   await new Promise<void>((resolve) => {
-    methods.testCallbackArg('test', (event) => {
+    methods.testCallbackArg('foo', (event) => {
       output(`Received event: ${event.type}, data: ${event.data}`);
       resolve();
     });

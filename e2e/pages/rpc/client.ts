@@ -1,7 +1,7 @@
 import { create } from '@officesdk/rpc';
 import type { RemoteProxy } from 'penpal';
 
-import { proxyClient } from './rpc';
+import { createClientProxy } from './rpc';
 import type { TestMethods } from './rpc';
 
 interface ClientOptions {
@@ -51,7 +51,7 @@ export async function createClient(options: ClientOptions): Promise<RemoteProxy<
 
   const { id, methods } = await create({
     remoteWindow,
-    proxy: proxyClient,
+    proxy: createClientProxy(output),
   });
 
   output?.(`Client created, id: ${id}`);
