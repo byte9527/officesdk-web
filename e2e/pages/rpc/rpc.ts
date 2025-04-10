@@ -13,7 +13,16 @@ export const proxyClient: RPCClientProxy<TestMethods> = (context) => {
       return invoke('testInvoke', []);
     },
     testCallbackArg: (type, callback) => {
-      return invoke('testCallbackArg', [type, callback]);
+      return invoke('testCallbackArg', [type, callback], {
+        mapArgs: (args) => {
+          return {
+            args: [args[0]],
+            references: {
+              paths: [[1]],
+            },
+          };
+        },
+      });
     },
   };
 };
