@@ -49,7 +49,7 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
         return 'pong';
       },
       testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => {
-        output?.('Server .testCallbackArg has been invoked.');
+        output?.('Server .testCallbackArg has been invoked with type: ' + type);
 
         setTimeout(() => {
           output?.('Server invoked callback.');

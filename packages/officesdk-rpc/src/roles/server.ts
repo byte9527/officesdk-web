@@ -16,6 +16,7 @@ import { OfficeSdkRpcChannel, createConnectionServerProtocol } from './connectio
 import type { ConnectionClientCallback, ConnectionClientProtocol } from './connection';
 import { isClientNotAccessible } from '../errors';
 import { ReferenceType, type ReferencesDeclares } from './reference';
+import { ServerConnectionPool } from './pool';
 import type { RPCServerProxy, RPCMethods, RPCInvokeOptions, RPCServerCallback } from './rpc';
 import { override } from '../shared/object';
 
@@ -36,10 +37,16 @@ export interface ServerOptions<TMethods extends RPCMethods> {
    * 需要保证服务端按照同样的 RPCMethods 协议提供方法实现
    */
   proxy: RPCServerProxy<TMethods>;
+
+  /**
+   * 添加连接回调
+   */
+  onOpen?: (clientId: string) => void;
+  onClose?: (clientId: string) => void;
 }
 
 export async function serve<TMethods extends RPCMethods>(options: ServerOptions<TMethods>): Promise<string[]> {
-  const { allowedOrigins, proxy } = options;
+  const { allowedOrigins, proxy, onOpen, onClose } = options;
 
   let messenger: WindowMessenger;
   try {
@@ -56,7 +63,15 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
     throw error;
   }
 
-  const clientIds = new Set<string>();
+  const clientIdPool = new ServerConnectionPool();
+
+  clientIdPool.addListener((event, payload) => {
+    if (event === 'add') {
+      onOpen?.(payload.clientId);
+    } else if (event === 'delete') {
+      onClose?.(payload.clientId);
+    }
+  });
 
   let client: RemoteProxy<ConnectionClientProtocol> | undefined;
 
@@ -64,14 +79,14 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
     messenger,
     channel: OfficeSdkRpcChannel,
     methods: createConnectionServerProtocol({
-      clients: clientIds,
+      clients: clientIdPool,
       onInvoke: (clientId, method, args, options?: RPCInvokeOptions) => {
         if (!client) {
           // TODO
           throw new Error('Unexpected invoke before client connected');
         }
 
-        if (!clientIds.has(clientId)) {
+        if (!clientIdPool.has(clientId)) {
           return;
         }
 
@@ -98,10 +113,14 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
   const pulledIds = await client.open();
 
   pulledIds.forEach((id) => {
-    clientIds.add(id);
+    if (clientIdPool.has(id)) {
+      return;
+    }
+
+    clientIdPool.add(id);
   });
 
-  return Array.from(clientIds);
+  return clientIdPool.toArray();
 }
 
 /**

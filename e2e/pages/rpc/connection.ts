@@ -1,6 +1,6 @@
 import './connection.css';
 
-import { testOpenConnections } from './open';
+import { testOpen } from './open';
 import { testMethods } from './methods';
 
 function main(): void {
@@ -10,7 +10,7 @@ function main(): void {
     throw new Error('root element not found');
   }
 
-  testOpenConnections(root);
+  testOpen(root);
   testMethods(root);
 }
 

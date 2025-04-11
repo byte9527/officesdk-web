@@ -62,7 +62,11 @@ export type ConnectionServerProtocol = {
  * Context required for server initialization
  */
 interface ConnectionServerContext {
-  clients: Set<string>;
+  clients: {
+    add: (clientId: string) => void;
+    delete: (clientId: string) => void;
+    has: (clientId: string) => boolean;
+  };
   // TODO: 使用范型约束外部调用类型
   onInvoke: (clientId: string, method: string, args: any[], options?: RPCInvokeOptions) => any;
 }

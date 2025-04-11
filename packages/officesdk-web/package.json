@@ -4,5 +4,6 @@
   "version": "1.0.0",
   "description": "Web JS SDK for the Office SDK",
   "main": "dist/index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "sideEffects": false
 }

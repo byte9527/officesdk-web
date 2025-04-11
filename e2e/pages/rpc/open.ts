@@ -56,7 +56,7 @@ function testMultipleClients(content: HTMLElement): void {
  * Test connections open cases.
  * @param root - Root container element for the test UI
  */
-export function testOpenConnections(root: HTMLElement): void {
+export function testOpen(root: HTMLElement): void {
   const renderTitle = createRenderTitle({ container: root });
   const renderContent = createRenderContent({ container: root });
 

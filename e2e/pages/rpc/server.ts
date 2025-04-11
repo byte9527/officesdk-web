@@ -20,11 +20,37 @@ async function main() {
 
   output('Start testing rpc server.');
 
-  const clientIds = await serve<TestMethods>({
+  const clientIds: Set<string> = new Set();
+
+  let started = false;
+
+  const foundClientIds = await serve<TestMethods>({
     proxy: createServerProxy(output),
+    onOpen: (clientId) => {
+      if (!started) {
+        return;
+      }
+
+      clientIds.add(clientId);
+      output(`Client ${clientId} connected.`);
+    },
+    onClose: (clientId) => {
+      if (!started) {
+        return;
+      }
+
+      clientIds.delete(clientId);
+      output(`Client ${clientId} disconnected.`);
+    },
   });
 
-  output(`Server started, found clients: ${clientIds.join(', ')}`);
+  started = true;
+
+  output(
+    foundClientIds.length > 0
+      ? `Server started, found clients: ${foundClientIds.join(', ')}`
+      : 'Server started, no clients found',
+  );
 }
 
 main();

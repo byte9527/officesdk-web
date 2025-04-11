@@ -22,15 +22,24 @@ export function testMethods(root: HTMLElement): void {
   );
 
   renderTitle('Test callback');
-  testCallback(renderContent());
+  testCallback(
+    renderContent({
+      height: 85,
+    }),
+  );
+
+  renderTitle('Test race condition');
+  testRaceCondition(
+    renderContent({
+      height: 85,
+    }),
+  );
 }
 
 async function getServerMethods(
-  content: HTMLElement,
+  iframe: HTMLIFrameElement,
   output: (message: string) => void,
 ): Promise<RemoteProxy<TestMethods>> {
-  const iframe = createServerFrame(content);
-
   output('Start creating client...');
 
   const methods = await createClient({
@@ -50,7 +59,7 @@ async function testBasicMethods(content: HTMLElement): Promise<void> {
     container: createClientFrame(content),
   });
 
-  const methods = await getServerMethods(content, output);
+  const methods = await getServerMethods(createServerFrame(content), output);
 
   let callPromise = methods.testInvoke();
 
@@ -61,12 +70,12 @@ async function testBasicMethods(content: HTMLElement): Promise<void> {
   output?.(`Server response: ${result}`);
 }
 
-async function testCallback(content: HTMLElement): Promise<void> {
+async function testCallback(content: HTMLElement, type?: string): Promise<void> {
   const output = createOutput({
     container: createClientFrame(content),
   });
 
-  const methods = await getServerMethods(content, output);
+  const methods = await getServerMethods(createServerFrame(content), output);
 
   output('Calling remote method: .testCallback');
 
@@ -75,5 +84,30 @@ async function testCallback(content: HTMLElement): Promise<void> {
       output(`Received event: ${event.type}, data: ${event.data}`);
       resolve();
     });
+  });
+}
+
+async function testRaceCondition(content: HTMLElement): Promise<void> {
+  const iframe = createServerFrame(content);
+
+  const output1 = createOutput({
+    container: createClientFrame(content),
+  });
+  const output2 = createOutput({
+    container: createClientFrame(content),
+  });
+
+  const methods1 = await getServerMethods(iframe, output1);
+  const methods2 = await getServerMethods(iframe, output2);
+
+  output1('Calling remote method: .testCallback by client 1');
+  output2('Calling remote method: .testCallback by client 2');
+
+  methods1.testCallbackArg('client 1', (event) => {
+    output1(`Received event: ${event.type}, data: ${event.data}`);
+  });
+
+  methods2.testCallbackArg('client 2', (event) => {
+    output2(`Received event: ${event.type}, data: ${event.data}`);
   });
 }
