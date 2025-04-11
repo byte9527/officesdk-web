@@ -24,7 +24,7 @@ export function createServerFrame(content: HTMLElement, iframe?: HTMLIFrameEleme
   return iframe;
 }
 
-export function createClientFrame(content: HTMLElement): HTMLDivElement {
+export function createContainerFrame(content: HTMLElement): HTMLDivElement {
   const container = document.createElement('div');
   container.classList.add('frame');
   content.appendChild(container);

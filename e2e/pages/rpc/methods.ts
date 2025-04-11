@@ -1,7 +1,7 @@
 import type { RemoteProxy } from 'penpal';
 
 import { createClient } from './client';
-import { createClientFrame, createServerFrame } from './frames';
+import { createContainerFrame, createServerFrame } from './frames';
 import { createRenderTitle, createRenderContent } from '../shared/renderer';
 import { createOutput } from '../shared/output';
 import type { TestMethods } from './rpc';
@@ -56,7 +56,7 @@ async function getServerMethods(
  */
 async function testBasicMethods(content: HTMLElement): Promise<void> {
   const output = createOutput({
-    container: createClientFrame(content),
+    container: createContainerFrame(content),
   });
 
   const methods = await getServerMethods(createServerFrame(content), output);
@@ -72,7 +72,7 @@ async function testBasicMethods(content: HTMLElement): Promise<void> {
 
 async function testCallback(content: HTMLElement, type?: string): Promise<void> {
   const output = createOutput({
-    container: createClientFrame(content),
+    container: createContainerFrame(content),
   });
 
   const methods = await getServerMethods(createServerFrame(content), output);
@@ -91,10 +91,10 @@ async function testRaceCondition(content: HTMLElement): Promise<void> {
   const iframe = createServerFrame(content);
 
   const output1 = createOutput({
-    container: createClientFrame(content),
+    container: createContainerFrame(content),
   });
   const output2 = createOutput({
-    container: createClientFrame(content),
+    container: createContainerFrame(content),
   });
 
   const methods1 = await getServerMethods(iframe, output1);

@@ -4,6 +4,7 @@ import { createServerProxy } from '../rpc/rpc';
 import type { TestMethods } from '../rpc/rpc';
 import { createOutput } from '../shared/output';
 import { createRenderContent } from '../shared/renderer';
+import { createContainerFrame } from './frames';
 
 async function main() {
   const root = document.getElementById('root');
@@ -14,8 +15,10 @@ async function main() {
 
   const renderContent = createRenderContent({ container: root });
 
+  const content = renderContent();
+
   const output = createOutput({
-    container: renderContent(),
+    container: createContainerFrame(content),
   });
 
   output('Start testing rpc server.');
