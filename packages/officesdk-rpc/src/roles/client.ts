@@ -53,7 +53,7 @@ interface ServerRecord<TMethods extends RPCMethods> {
 
 let serverMap = new WeakMap<Window, ServerRecord<any>>();
 
-interface RpcClient<TMethods extends RPCMethods> {
+export interface Client<TMethods extends RPCMethods> {
   /**
    * 客户端 id
    */
@@ -68,9 +68,7 @@ interface RpcClient<TMethods extends RPCMethods> {
 /**
  * 传入通信协议，创建一个客户端
  */
-export async function create<TMethods extends RPCMethods>(
-  options: ClientOptions<TMethods>,
-): Promise<RpcClient<TMethods>> {
+export async function create<TMethods extends RPCMethods>(options: ClientOptions<TMethods>): Promise<Client<TMethods>> {
   const { remoteWindow, allowedOrigins, timeout } = options;
 
   const serverRecordCache = serverMap.get(remoteWindow);

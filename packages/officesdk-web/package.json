@@ -5,5 +5,8 @@
   "description": "Web JS SDK for the Office SDK",
   "main": "dist/index.js",
   "license": "MIT",
-  "sideEffects": false
+  "sideEffects": false,
+  "dependencies": {
+    "@officesdk/rpc": "workspace:*"
+  }
 }

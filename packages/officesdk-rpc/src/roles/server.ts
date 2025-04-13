@@ -37,16 +37,16 @@ export interface ServerOptions<TMethods extends RPCMethods> {
    * 需要保证服务端按照同样的 RPCMethods 协议提供方法实现
    */
   proxy: RPCServerProxy<TMethods>;
-
-  /**
-   * 添加连接回调
-   */
-  onOpen?: (clientId: string) => void;
-  onClose?: (clientId: string) => void;
 }
 
-export async function serve<TMethods extends RPCMethods>(options: ServerOptions<TMethods>): Promise<string[]> {
-  const { allowedOrigins, proxy, onOpen, onClose } = options;
+export interface Server {
+  getClientIds: () => string[];
+  addClientListener: (listener: (event: 'add' | 'delete', payload: { clientId: string }) => void) => () => void;
+}
+
+// TODO: 需要返回 Server 实例， onOpen 和 onClose 需要迁移到 Server 实例的方法上去
+export async function serve<TMethods extends RPCMethods>(options: ServerOptions<TMethods>): Promise<Server> {
+  const { allowedOrigins, proxy } = options;
 
   let messenger: WindowMessenger;
   try {
@@ -64,14 +64,6 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
   }
 
   const clientIdPool = new ServerConnectionPool();
-
-  clientIdPool.addListener((event, payload) => {
-    if (event === 'add') {
-      onOpen?.(payload.clientId);
-    } else if (event === 'delete') {
-      onClose?.(payload.clientId);
-    }
-  });
 
   let client: RemoteProxy<ConnectionClientProtocol> | undefined;
 
@@ -120,7 +112,10 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
     clientIdPool.add(id);
   });
 
-  return clientIdPool.toArray();
+  return {
+    getClientIds: () => clientIdPool.toArray(),
+    addClientListener: (listener) => clientIdPool.addListener(listener),
+  };
 }
 
 /**

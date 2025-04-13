@@ -23,37 +23,23 @@ async function main() {
 
   output('Start testing rpc server.');
 
-  const clientIds: Set<string> = new Set();
-
-  let started = false;
-
-  const foundClientIds = await serve<TestMethods>({
+  const server = await serve<TestMethods>({
     proxy: createServerProxy(output),
-    onOpen: (clientId) => {
-      if (!started) {
-        return;
-      }
-
-      clientIds.add(clientId);
-      output(`Client ${clientId} connected.`);
-    },
-    onClose: (clientId) => {
-      if (!started) {
-        return;
-      }
-
-      clientIds.delete(clientId);
-      output(`Client ${clientId} disconnected.`);
-    },
   });
 
-  started = true;
-
   output(
-    foundClientIds.length > 0
-      ? `Server started, found clients: ${foundClientIds.join(', ')}`
+    server.getClientIds().length > 0
+      ? `Server started, found clients: ${server.getClientIds().join(', ')}`
       : 'Server started, no clients found',
   );
+
+  server.addClientListener((event, payload) => {
+    if (event === 'add') {
+      output(`Client ${payload.clientId} connected.`);
+    } else if (event === 'delete') {
+      output(`Client ${payload.clientId} disconnected.`);
+    }
+  });
 }
 
 main();

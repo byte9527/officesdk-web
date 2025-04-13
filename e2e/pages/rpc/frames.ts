@@ -7,7 +7,6 @@ export function createServerFrame(content: HTMLElement, iframe?: HTMLIFrameEleme
     iframe = document.createElement('iframe');
   }
 
-  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
   iframe.src = '/template.html';
 
   iframe.classList.add('frame');
