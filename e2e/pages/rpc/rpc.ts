@@ -5,6 +5,7 @@ export type TestMethods = {
   testInvoke: () => string;
   testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => void;
   testNestedCallback: (options: { type: string; callback: (event: { type: string; data: unknown }) => void }) => void;
+  testCallbackReturn: (type: string) => (event: { type: string; data: unknown }) => void;
 };
 
 /**
@@ -55,6 +56,18 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
           },
         });
       },
+      testCallbackReturn(type) {
+        return invoke('testCallbackReturn', [type], {
+          proxyReturn: (ret, context) => {
+            return {
+              ret: context.createReference({
+                type: 'callback',
+                value: ret,
+              }),
+            };
+          },
+        });
+      },
     };
   };
 
@@ -89,6 +102,14 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
             data: 'bar',
           });
         });
+      },
+      testCallbackReturn: (type) => {
+        output?.('Server .testCallbackReturn has been invoked with type: ' + type);
+        debugger;
+
+        return (event: { type: string; data: unknown }) => {
+          output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
+        };
       },
     };
   };

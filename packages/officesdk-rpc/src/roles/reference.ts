@@ -13,7 +13,12 @@ export enum ReferenceType {
 /**
  * 远程调用时的引用类型参数声明
  */
-export type ReferencesDeclares = [index: number, type: ReferenceType, path?: string][];
+export type ReferencesArgDeclares = [index: number, type: ReferenceType, path?: string][];
+
+/**
+ * 远程调用时的引用类型返回值声明
+ */
+export type ReferencesRetDeclare = [type: ReferenceType, path?: string];
 
 /**
  * 客户端引用参数

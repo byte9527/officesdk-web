@@ -1,6 +1,6 @@
 import type { RemoteProxy } from 'penpal';
 
-import type { ClientReferenceManager, ReferenceToken, ReferencesDeclares } from './reference';
+import type { ClientReferenceManager, ReferenceToken, ReferencesArgDeclares, ReferencesRetDeclare } from './reference';
 
 /**
  * 可通过 penpal 调用的参数形式我们约束为合法的 JSON 类型
@@ -29,29 +29,36 @@ export type RPCMethods = {
   [key: string]: RPCMethod;
 };
 
-export interface RPCClientInvokeOptions<TArgs extends any[]> {
+export interface RPCClientInvokeOptions<T extends (...args: any[]) => any> {
   /**
    * 遍历参数列表，将参数里无法传输的类型提取出来，
    * 生成引用类型对照表，给服务端调用时使用。
    */
   mapArgs?: (
-    args: TArgs,
+    args: Parameters<T>,
     referenceManager: ClientReferenceManager,
   ) => {
-    args: {
-      [index in keyof TArgs]: TArgs[index] extends RPCPrimitiveParameter ? TArgs[index] : RPCReferenceParameter;
-    };
-    references?: ReferencesDeclares;
+    args: RPCReferenceParameter[];
+    references?: ReferencesArgDeclares;
+  };
+
+  /**
+   * 代理返回值
+   */
+  proxyReturn?: (
+    ret: ReturnType<T>,
+    referenceManager: ClientReferenceManager,
+  ) => {
+    ret: RPCReferenceParameter;
+    reference?: ReferencesRetDeclare;
   };
 }
 
 export type RPCClientInvoke<TMethods extends RPCMethods> = <TName extends keyof TMethods>(
   method: TName,
   args: Parameters<TMethods[TName]>,
-  options?: RPCClientInvokeOptions<Parameters<TMethods[TName]>>,
+  options?: RPCClientInvokeOptions<TMethods[TName]>,
 ) => Promise<ReturnType<TMethods[TName]>>;
-
-export type RPCServerCallback = (token: string, args: any[]) => void;
 
 export interface RPCClientProxyContext<TMethods extends RPCMethods> {
   /**
@@ -90,5 +97,5 @@ export type RPCServerProxy<TMethods extends RPCMethods> = () => {
  * 包含引用类型参数声明
  */
 export interface RPCInvokeOptions {
-  references?: ReferencesDeclares;
+  references?: ReferencesArgDeclares;
 }

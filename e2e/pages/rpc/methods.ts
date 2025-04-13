@@ -41,6 +41,13 @@ export function testMethods(root: HTMLElement): void {
       height: 85,
     }),
   );
+
+  renderTitle('Test callback return');
+  testCallbackReturn(
+    renderContent({
+      height: 85,
+    }),
+  );
 }
 
 async function getServerMethods(
@@ -134,4 +141,18 @@ async function testNestedCallback(content: HTMLElement): Promise<void> {
       output(`Received event: ${event.type}, data: ${event.data}`);
     },
   });
+}
+
+async function testCallbackReturn(content: HTMLElement): Promise<void> {
+  const output = createOutput({
+    container: createContainerFrame(content),
+  });
+
+  const methods = await getServerMethods(createServerFrame(content), output);
+
+  output('Calling remote method: .testCallbackReturn');
+
+  const callback = await methods.testCallbackReturn('foo');
+
+  debugger;
 }

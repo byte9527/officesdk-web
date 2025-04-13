@@ -16,10 +16,10 @@ import { OfficeSdkRpcChannel, createConnectionServerProtocol } from './connectio
 import type { ConnectionClientCallback, ConnectionClientProtocol } from './connection';
 import { isClientNotAccessible } from '../errors';
 import { ReferenceType } from './reference';
-import type { ReferencesDeclares, ReferenceToken } from './reference';
+import type { ReferencesArgDeclares, ReferenceToken } from './reference';
 import { ServerConnectionPool } from './pool';
-import type { RPCServerProxy, RPCMethods, RPCInvokeOptions, RPCServerCallback } from './rpc';
-import { override } from '../shared/object';
+import type { RPCServerProxy, RPCMethods, RPCInvokeOptions } from './rpc';
+import { swap } from '../shared/object';
 
 export interface ServerOptions<TMethods extends RPCMethods> {
   /**
@@ -129,25 +129,29 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
 function overrideArgs(
   rawArgs: any[],
   options: {
-    references: ReferencesDeclares;
+    references: ReferencesArgDeclares;
     clientCallback: ConnectionClientCallback;
   },
 ) {
   const { references, clientCallback } = options;
 
+  // 遍历 references 数组，根据 type 类型进行不同的替换处理
   for (const reference of references) {
     const [index, type, path] = reference;
 
+    // 如果 type 为 Callback，则需要将参数替换为对应的回调函数，
+    // 在调用回调函数时需要将 token 作为第一个参数插入到最前面
     if (type === ReferenceType.Callback) {
       let token: ReferenceToken;
 
-      const serverCallback: RPCServerCallback = (...args: any[]) => {
+      const serverCallback = (...args: any[]) => {
         clientCallback(token.value, args);
       };
 
       // callback
       if (path) {
-        token = override(rawArgs[index], path, serverCallback);
+        // 将
+        token = swap(rawArgs[index], path, serverCallback);
       } else {
         token = rawArgs[index];
         rawArgs[index] = serverCallback;
