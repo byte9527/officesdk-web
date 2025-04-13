@@ -15,7 +15,8 @@ import { getParentWindowOrThrow } from './window';
 import { OfficeSdkRpcChannel, createConnectionServerProtocol } from './connection';
 import type { ConnectionClientCallback, ConnectionClientProtocol } from './connection';
 import { isClientNotAccessible } from '../errors';
-import { ReferenceType, type ReferencesDeclares } from './reference';
+import { ReferenceType } from './reference';
+import type { ReferencesDeclares, ReferenceToken } from './reference';
 import { ServerConnectionPool } from './pool';
 import type { RPCServerProxy, RPCMethods, RPCInvokeOptions, RPCServerCallback } from './rpc';
 import { override } from '../shared/object';
@@ -138,9 +139,7 @@ function overrideArgs(
     const [index, type, path] = reference;
 
     if (type === ReferenceType.Callback) {
-      let token: {
-        value: string;
-      };
+      let token: ReferenceToken;
 
       const serverCallback: RPCServerCallback = (...args: any[]) => {
         clientCallback(token.value, args);

@@ -34,6 +34,13 @@ export function testMethods(root: HTMLElement): void {
       height: 85,
     }),
   );
+
+  renderTitle('Test nested callback');
+  testNestedCallback(
+    renderContent({
+      height: 85,
+    }),
+  );
 }
 
 async function getServerMethods(
@@ -109,5 +116,22 @@ async function testRaceCondition(content: HTMLElement): Promise<void> {
 
   methods2.testCallbackArg('client 2', (event) => {
     output2(`Received event: ${event.type}, data: ${event.data}`);
+  });
+}
+
+async function testNestedCallback(content: HTMLElement): Promise<void> {
+  const output = createOutput({
+    container: createContainerFrame(content),
+  });
+
+  const methods = await getServerMethods(createServerFrame(content), output);
+
+  output('Calling remote method: .testNestedCallback');
+
+  await methods.testNestedCallback({
+    type: 'foo',
+    callback: (event) => {
+      output(`Received event: ${event.type}, data: ${event.data}`);
+    },
   });
 }

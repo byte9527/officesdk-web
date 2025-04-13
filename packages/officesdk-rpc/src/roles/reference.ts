@@ -1,21 +1,13 @@
 /**
  * 客户端引用参数的唯一标识
  */
-export class ReferenceToken {
-  public value: string;
-
-  constructor(value: string) {
-    this.value = value;
-  }
-
-  public toString() {
-    return this.value;
-  }
-}
+export type ReferenceToken = {
+  value: string;
+};
 
 export enum ReferenceType {
   Callback = 0,
-  Value = 1,
+  Object = 1,
 }
 
 /**
@@ -28,7 +20,7 @@ export type ReferencesDeclares = [index: number, type: ReferenceType, path?: str
  */
 export type ClientReference =
   | {
-      type: 'value';
+      type: 'object';
       value: any;
     }
   | {
@@ -47,29 +39,32 @@ export class ClientReferenceManager {
    * 生成引用参数
    */
   public createReference(reference: ClientReference): ReferenceToken {
-    const token = new ReferenceToken(`#office-sdk-rpc@${this.index++}`);
-    this.references.set(token.toString(), reference);
-    return token;
+    const name = `#office-sdk-rpc@${this.index++}`;
+
+    this.references.set(name, reference);
+    return {
+      value: name,
+    };
   }
 
   /**
    * 获取引用参数
    */
-  public getReference(token: string): ClientReference | undefined {
-    return this.references.get(token);
+  public getReference(name: string): ClientReference | undefined {
+    return this.references.get(name);
   }
 
   /**
    * 撤销引用参数
    */
-  public revokeReference(token: string) {
-    this.references.delete(token);
+  public revokeReference(name: string) {
+    this.references.delete(name);
   }
 
   /**
    * 检查引用参数是否存在
    */
-  public hasReference(token: string) {
-    return this.references.has(token);
+  public hasReference(name: string) {
+    return this.references.has(name);
   }
 }

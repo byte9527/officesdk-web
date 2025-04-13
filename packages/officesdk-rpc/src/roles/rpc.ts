@@ -5,14 +5,20 @@ import type { ClientReferenceManager, ReferenceToken, ReferencesDeclares } from 
 /**
  * 可通过 penpal 调用的参数形式我们约束为合法的 JSON 类型
  */
-export type RPCParameter =
+export type RPCPrimitiveParameter =
   | string
   | number
   | boolean
   | null
   | undefined
-  | RPCParameter[]
-  | { [key: string]: RPCParameter };
+  | RPCPrimitiveParameter[]
+  | { [key: string]: RPCPrimitiveParameter };
+
+export type RPCReferenceParameter =
+  | RPCPrimitiveParameter
+  | ReferenceToken
+  | RPCReferenceParameter[]
+  | { [key: string]: RPCReferenceParameter };
 
 /**
  * 可通过 penpal 调用的方法，返回值约束为合法的 JSON 类型
@@ -33,7 +39,7 @@ export interface RPCClientInvokeOptions<TArgs extends any[]> {
     referenceManager: ClientReferenceManager,
   ) => {
     args: {
-      [index in keyof TArgs]: TArgs[index] extends RPCParameter ? TArgs[index] : ReferenceToken;
+      [index in keyof TArgs]: TArgs[index] extends RPCPrimitiveParameter ? TArgs[index] : RPCReferenceParameter;
     };
     references?: ReferencesDeclares;
   };

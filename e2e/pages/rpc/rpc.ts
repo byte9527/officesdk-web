@@ -4,6 +4,7 @@ import { ReferenceType } from '@officesdk/rpc';
 export type TestMethods = {
   testInvoke: () => string;
   testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => void;
+  testNestedCallback: (options: { type: string; callback: (event: { type: string; data: unknown }) => void }) => void;
 };
 
 /**
@@ -35,6 +36,25 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
           },
         });
       },
+      testNestedCallback(options) {
+        return invoke('testNestedCallback', [options], {
+          mapArgs: (args, context) => {
+            const [options] = args;
+            return {
+              args: [
+                {
+                  type: options.type,
+                  callback: context.createReference({
+                    type: 'callback',
+                    value: options.callback,
+                  }),
+                },
+              ],
+              references: [[0, ReferenceType.Callback, 'callback']],
+            };
+          },
+        });
+      },
     };
   };
 
@@ -55,6 +75,17 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
           output?.('Server invoked callback.');
           callback({
             type,
+            data: 'bar',
+          });
+        });
+      },
+      testNestedCallback: (options) => {
+        output?.('Server .testNestedCallback has been invoked with type: ' + options.type);
+
+        setTimeout(() => {
+          output?.('Server invoked callback.');
+          options.callback({
+            type: options.type,
             data: 'bar',
           });
         });
