@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 module.exports = {
-  extends: ['plugin:import/typescript', 'alloy', 'alloy/typescript'],
+  extends: ['plugin:import/typescript', 'alloy/base'],
   plugins: ['import', '@typescript-eslint'],
   parserOptions: {
     ecmaVersion: 6,
