@@ -1,6 +1,6 @@
 import type { RemoteProxy } from 'penpal';
 
-import type { ClientReferenceManager, ReferenceToken, ReferencesArgDeclares, ReferencesRetDeclare } from './reference';
+import type { TransportableRules } from './transportable';
 
 /**
  * 可通过 penpal 调用的参数形式我们约束为合法的 JSON 类型
@@ -13,13 +13,6 @@ export type RPCPrimitiveParameter =
   | undefined
   | RPCPrimitiveParameter[]
   | { [key: string]: RPCPrimitiveParameter };
-
-export type RPCReferenceParameter =
-  | RPCPrimitiveParameter
-  | ReferenceToken
-  | RPCReferenceParameter[]
-  | { [key: string]: RPCReferenceParameter };
-
 /**
  * 可通过 penpal 调用的方法，返回值约束为合法的 JSON 类型
  */
@@ -34,23 +27,15 @@ export interface RPCClientInvokeOptions<T extends (...args: any[]) => any> {
    * 遍历参数列表，将参数里无法传输的类型提取出来，
    * 生成引用类型对照表，给服务端调用时使用。
    */
-  mapArgs?: (
-    args: Parameters<T>,
-    referenceManager: ClientReferenceManager,
-  ) => {
-    args: RPCReferenceParameter[];
-    references?: ReferencesArgDeclares;
+  transformArgs?: (args: Parameters<T>) => {
+    rules: TransportableRules[];
   };
 
   /**
    * 代理返回值
    */
-  proxyReturn?: (
-    ret: ReturnType<T>,
-    referenceManager: ClientReferenceManager,
-  ) => {
-    ret: RPCReferenceParameter;
-    reference?: ReferencesRetDeclare;
+  transformReturn?: (ret: ReturnType<T>) => {
+    rules: TransportableRules;
   };
 }
 
@@ -75,27 +60,24 @@ export type RPCClientProxy<TMethods extends RPCMethods> = (
   context: RPCClientProxyContext<TMethods>,
 ) => RemoteProxy<TMethods>;
 
-export interface RPCServerCallOptions {
+export interface RPCServerProxyReturn<T> {
   /**
-   * 客户端 ID
+   * 返回值
    */
-  clientId: string;
+  value: T;
+  /**
+   *
+   */
+  rules?: TransportableRules;
 }
 
 /**
  * 服务端协议，用于定义可供服务端远程调用的方法。
  * 服务端需要基于这个协议提供 penpal 的 Methods 实现，
+ * 并返回一个对象，该对象需要经过 Transportable 转换为 TransportableSchema 后返回客户端。
  */
 export type RPCServerProxy<TMethods extends RPCMethods> = () => {
   [K in keyof TMethods]: TMethods[K] extends (...args: infer A) => infer R
-    ? (...args: [...A, RPCServerCallOptions]) => R
+    ? (...args: [...A]) => RPCServerProxyReturn<R> | void
     : never;
 };
-
-/**
- * 远程调用时传入的调用选项，
- * 包含引用类型参数声明
- */
-export interface RPCInvokeOptions {
-  references?: ReferencesArgDeclares;
-}

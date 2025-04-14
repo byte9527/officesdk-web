@@ -5,7 +5,8 @@ import { OfficeSdkRpcChannel, createConnectionClientProtocol } from './connectio
 import type { ConnectionServerProtocol } from './connection';
 import { generateUniqueId } from '../shared/random';
 import type { RPCClientProxy, RPCMethods, RPCClientInvokeOptions } from './rpc';
-import { ClientReferenceManager } from './reference';
+import { Transportable } from './transportable';
+import type { TransportableData } from './transportable';
 
 export interface ClientOptions<TMethods extends RPCMethods> {
   /**
@@ -93,19 +94,35 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
 
   const clientIds = new Set<string>([]);
 
-  const referenceManager = new ClientReferenceManager();
+  const ensureServerProxy = (): RemoteProxy<ConnectionServerProtocol> => {
+    if (!server) {
+      throw new Error('Unexpected invoke before server connected');
+    }
+
+    return server;
+  };
+
+  const transportable = new Transportable({
+    name: clientId,
+    callback: async (schema, args): Promise<TransportableData | void> => {
+      const serverProxy = ensureServerProxy();
+
+      return serverProxy.callback(schema, args);
+    },
+  });
 
   const connection = connect<ConnectionServerProtocol>({
     channel: OfficeSdkRpcChannel,
     messenger,
     methods: createConnectionClientProtocol({
       getClients: () => clientIds,
-      resolveCallback: (token) => {
-        const reference = referenceManager.getReference(token);
-
-        if (reference?.type === 'callback') {
-          return reference.value;
+      resolveCallback: (schema) => {
+        // 过滤掉非本客户端的回调
+        if (schema.source !== clientId) {
+          return;
         }
+
+        return transportable.parseSchema(schema);
       },
     }),
     timeout,
@@ -121,25 +138,32 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
     invoke: async <TName extends keyof TMethods>(
       method: TName,
       args: Parameters<TMethods[TName]>,
-      options?: RPCClientInvokeOptions<Parameters<TMethods[TName]>>,
+      options?: RPCClientInvokeOptions<TMethods[TName]>,
     ) => {
-      const server = await serverPromise;
+      const serverProxy = ensureServerProxy();
 
       // 如果需要对参数进行转换，则使用 mapArgs 将参数中的引用数据提取出来，
       // 并生成对应的引用路径，用于服务端调用时使用
-      const mapArgs = options?.mapArgs;
-      if (mapArgs) {
-        const result = mapArgs(args, referenceManager);
+      const transformArgs = options?.transformArgs;
+      if (transformArgs) {
+        const { rules } = transformArgs(args);
+        const schemas = rules.map((rule, index) => transportable.createSchema(args[index], rule));
 
-        return server.invoke(clientId, method as string, result.args, {
-          references: result.references,
-        });
+        return serverProxy.invoke(clientId, method as string, schemas);
       }
 
+      const schemas = args.map((arg) => transportable.createSchema(arg));
+
       // TODO: 这个 method 类型不严谨
-      return server.invoke(clientId, method as string, args);
+      const response = serverProxy.invoke(clientId, method as string, schemas);
+
+      return response.then((data) => {
+        return transportable.parseSchema(data);
+      });
     },
   });
+
+  let server = await serverPromise;
 
   const serverRecord = {
     connection,

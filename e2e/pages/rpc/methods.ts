@@ -45,7 +45,7 @@ export function testMethods(root: HTMLElement): void {
   renderTitle('Test callback return');
   testCallbackReturn(
     renderContent({
-      height: 85,
+      height: 106,
     }),
   );
 }
@@ -154,5 +154,11 @@ async function testCallbackReturn(content: HTMLElement): Promise<void> {
 
   const callback = await methods.testCallbackReturn('foo');
 
-  debugger;
+  output('Calling server callback.');
+
+  const result = await callback({
+    data: 'bar',
+  });
+
+  output(`Received callback result: ${result}`);
 }

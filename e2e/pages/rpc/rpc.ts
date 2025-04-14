@@ -1,11 +1,11 @@
 import type { RPCClientProxy, RPCServerProxy } from '@officesdk/rpc';
-import { ReferenceType } from '@officesdk/rpc';
+import type { TransportableRules } from '@officesdk/rpc';
 
 export type TestMethods = {
   testInvoke: () => string;
   testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => void;
   testNestedCallback: (options: { type: string; callback: (event: { type: string; data: unknown }) => void }) => void;
-  testCallbackReturn: (type: string) => (event: { type: string; data: unknown }) => void;
+  testCallbackReturn: (type: string) => (event: { data: unknown }) => string;
 };
 
 /**
@@ -23,47 +23,60 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
       },
       testCallbackArg: (type, callback) => {
         return invoke('testCallbackArg', [type, callback], {
-          mapArgs: (args, context) => {
-            return {
-              args: [
-                args[0],
-                context.createReference({
-                  type: 'callback',
-                  value: args[1],
-                }),
+          transformArgs: () => {
+            const rules: TransportableRules[] = [
+              // args[0]
+              [
+                {
+                  type: 'data',
+                },
               ],
-              references: [[1, ReferenceType.Callback]],
+              // args[1]
+              [
+                {
+                  type: 'callback',
+                  path: 'callback',
+                },
+              ],
+            ];
+
+            return {
+              rules,
             };
           },
         });
       },
       testNestedCallback(options) {
         return invoke('testNestedCallback', [options], {
-          mapArgs: (args, context) => {
-            const [options] = args;
-            return {
-              args: [
+          transformArgs: () => {
+            const rules: TransportableRules[] = [
+              // args[0]
+              [
                 {
-                  type: options.type,
-                  callback: context.createReference({
-                    type: 'callback',
-                    value: options.callback,
-                  }),
+                  type: 'callback',
+                  path: 'callback',
                 },
               ],
-              references: [[0, ReferenceType.Callback, 'callback']],
+            ];
+
+            return {
+              rules,
             };
           },
         });
       },
       testCallbackReturn(type) {
         return invoke('testCallbackReturn', [type], {
-          proxyReturn: (ret, context) => {
-            return {
-              ret: context.createReference({
+          transformReturn: () => {
+            const rules: TransportableRules = [
+              {
                 type: 'callback',
-                value: ret,
-              }),
+                path: 'callback',
+              },
+            ];
+
+            return {
+              rules,
             };
           },
         });
@@ -79,7 +92,10 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
   (output) => () => {
     return {
       testInvoke: () => {
-        return 'pong';
+        output?.('Server .testInvoke has been invoked.');
+        return {
+          value: 'pong',
+        };
       },
       testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => {
         output?.('Server .testCallbackArg has been invoked with type: ' + type);
@@ -105,10 +121,17 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
       },
       testCallbackReturn: (type) => {
         output?.('Server .testCallbackReturn has been invoked with type: ' + type);
-        debugger;
 
-        return (event: { type: string; data: unknown }) => {
-          output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
+        return {
+          value: (event: { data: unknown }) => {
+            output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
+            return 'qux';
+          },
+          rules: [
+            {
+              type: 'callback',
+            },
+          ],
         };
       },
     };

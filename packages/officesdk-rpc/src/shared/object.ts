@@ -22,3 +22,56 @@ export function swap(obj: any, path: string, value: any): any {
 
   return originalValue;
 }
+
+/**
+ * 遍历对象的 path 路径，
+ * 并对路径上的每个节点调用 callback 函数。
+ * @param obj - 要遍历的对象
+ * @param path - 属性路径，使用点分隔符表示
+ * @param callback - 回调函数，会对路径上的每个节点调用
+ */
+export function iteratePath(
+  obj: any,
+  path: string,
+  callback: (value: any, object: any, key: string, isLast: boolean) => void,
+): void {
+  let current = obj;
+
+  if (!path) {
+    return;
+  }
+
+  const keys = path.split('.');
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const value = current[key];
+    callback(value, current, key, i === keys.length - 1);
+    current = value;
+  }
+}
+
+/**
+ * chrome 69以下不支持object.fromEntries
+ * @param entries
+ * @returns
+ */
+export const fromEntries =
+  Object.fromEntries ??
+  (<T>(entries: IterableIterator<[string, T]>): Record<string, T> => {
+    const object: Record<string, T> = {};
+    for (const [key, val] of Array.from(entries)) {
+      object[key] = val;
+    }
+    return object;
+  });
+
+export const entries =
+  Object.entries ??
+  ((obj: {}): [string, any][] => {
+    const result: [string, any][] = [];
+    for (const [key, val] of Object.entries(obj)) {
+      result.push([key, val]);
+    }
+    return result;
+  });

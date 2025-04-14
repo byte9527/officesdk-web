@@ -27,7 +27,12 @@
  * This scenario requires no special handling as the server automatically deduplicates.
  */
 
-import type { RPCInvokeOptions } from './rpc';
+import type { TransportableSchema, TransportableData, TransportableCallbackSchema } from './transportable';
+
+export type ConnectionCallback = (
+  scheme: TransportableCallbackSchema,
+  args: TransportableData[],
+) => TransportableData | void;
 
 /**
  * Server protocol interface
@@ -48,14 +53,9 @@ export type ConnectionServerProtocol = {
    */
   close: (clientId: string) => boolean;
 
-  /**
-   *
-   * @param clientId
-   * @param method
-   * @param args
-   * @returns
-   */
-  invoke: (clientId: string, method: string, args: any[], options?: RPCInvokeOptions) => any;
+  invoke: (clientId: string, method: string, args: TransportableSchema[]) => TransportableSchema;
+
+  callback: ConnectionCallback;
 };
 
 /**
@@ -68,7 +68,13 @@ interface ConnectionServerContext {
     has: (clientId: string) => boolean;
   };
   // TODO: 使用范型约束外部调用类型
-  onInvoke: (clientId: string, method: string, args: any[], options?: RPCInvokeOptions) => any;
+  onInvoke: (clientId: string, method: string, schemas: TransportableSchema[]) => any;
+
+  /**
+   * Resolve callback from transportable schema
+   * @returns
+   */
+  resolveCallback: (schema: TransportableCallbackSchema) => ((...args: any[]) => void) | undefined;
 }
 
 export function createConnectionServerProtocol(context: ConnectionServerContext): ConnectionServerProtocol {
@@ -87,17 +93,19 @@ export function createConnectionServerProtocol(context: ConnectionServerContext)
       return true;
     },
 
-    invoke: (clientId: string, method: string, args: any[], options?: RPCInvokeOptions) => {
+    invoke: (clientId: string, method: string, args: TransportableSchema[]): TransportableSchema => {
       if (!context.clients.has(clientId)) {
         throw new Error('Client not found');
       }
 
-      return context.onInvoke(clientId, method, args, options);
+      return context.onInvoke(clientId, method, args);
+    },
+
+    callback: (schema: TransportableCallbackSchema, args: TransportableData[]): TransportableData | void => {
+      return context.resolveCallback(schema)?.(...args);
     },
   };
 }
-
-export type ConnectionClientCallback = (token: string, args: any[]) => void;
 
 /**
  * Client protocol interface
@@ -106,7 +114,7 @@ export type ConnectionClientCallback = (token: string, args: any[]) => void;
 export type ConnectionClientProtocol = {
   open: () => string[];
   close: (clientId: string) => void;
-  callback: ConnectionClientCallback;
+  callback: ConnectionCallback;
 };
 
 /**
@@ -119,10 +127,10 @@ interface ConnectionClientContext {
   getClients: () => Set<string>;
 
   /**
-   * Resolve callback from references
+   * Resolve callback from transportable schema
    * @returns
    */
-  resolveCallback: (token: string) => ((...args: any[]) => void) | undefined;
+  resolveCallback: (schema: TransportableCallbackSchema) => ((...args: any[]) => void) | undefined;
 }
 
 export function createConnectionClientProtocol(context: ConnectionClientContext): ConnectionClientProtocol {
@@ -134,15 +142,8 @@ export function createConnectionClientProtocol(context: ConnectionClientContext)
       // TODO: Record the incoming clientId
     },
 
-    callback: (token: string, args: any[]) => {
-      const callback = context.resolveCallback(token);
-
-      if (!callback) {
-        // TODO:
-        throw new Error(`Callback not found for token: ${token}`);
-      }
-
-      callback(...args);
+    callback: (schema, args) => {
+      return context.resolveCallback(schema)?.(...args);
     },
   };
 }

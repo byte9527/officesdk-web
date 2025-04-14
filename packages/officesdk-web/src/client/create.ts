@@ -40,7 +40,7 @@ export interface CreateOptions<T extends FileType> {
 
   /**
    * 加载 SDK iframe 的根节点，这个是个可选配置，
-   * 也可以在创建实例后将 sdk.iframe 加载到页面任意位置。
+   * 也可以在创建实例后再将 sdk.iframe 加载到页面任意位置。
    */
   root?: HTMLElement;
 

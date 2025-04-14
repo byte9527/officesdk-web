@@ -13,13 +13,12 @@ import type { RemoteProxy } from 'penpal';
 
 import { getParentWindowOrThrow } from './window';
 import { OfficeSdkRpcChannel, createConnectionServerProtocol } from './connection';
-import type { ConnectionClientCallback, ConnectionClientProtocol } from './connection';
+import type { ConnectionClientProtocol } from './connection';
 import { isClientNotAccessible } from '../errors';
-import { ReferenceType } from './reference';
-import type { ReferencesArgDeclares, ReferenceToken } from './reference';
 import { ServerConnectionPool } from './pool';
-import type { RPCServerProxy, RPCMethods, RPCInvokeOptions } from './rpc';
-import { swap } from '../shared/object';
+import type { RPCServerProxy, RPCMethods } from './rpc';
+import { Transportable } from './transportable';
+import type { TransportableData } from './transportable';
 
 export interface ServerOptions<TMethods extends RPCMethods> {
   /**
@@ -67,36 +66,47 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
   const clientIdPool = new ServerConnectionPool();
 
   let client: RemoteProxy<ConnectionClientProtocol> | undefined;
+  const ensureClientProxy = (): RemoteProxy<ConnectionClientProtocol> => {
+    if (!client) {
+      // TODO
+      throw new Error('Unexpected invoke before client connected');
+    }
+
+    return client;
+  };
+
+  const transportable = new Transportable({
+    name: 'server',
+    callback: async (schema, args): Promise<TransportableData | void> => {
+      const clientProxy = ensureClientProxy();
+
+      return clientProxy.callback(schema, args);
+    },
+  });
 
   const connection = connect<ConnectionClientProtocol>({
     messenger,
     channel: OfficeSdkRpcChannel,
     methods: createConnectionServerProtocol({
       clients: clientIdPool,
-      onInvoke: (clientId, method, args, options?: RPCInvokeOptions) => {
-        if (!client) {
-          // TODO
-          throw new Error('Unexpected invoke before client connected');
-        }
+      onInvoke: (clientId, method, schemas) => {
+        ensureClientProxy();
 
         if (!clientIdPool.has(clientId)) {
           return;
         }
 
         const methods = proxy();
-        const references = options?.references;
 
-        // 如果有引用参数，则需要根据 references 规则将参数替换为对应的值
-        if (references) {
-          overrideArgs(args, {
-            references,
-            clientCallback: client.callback,
-          });
+        const args = schemas.map((schema) => transportable.parseSchema(schema));
+        const result = methods[method](...args);
+
+        if (result) {
+          return transportable.createSchema(result.value, result.rules);
         }
-
-        return methods[method](...args, {
-          clientId,
-        });
+      },
+      resolveCallback: (schema) => {
+        return transportable.parseSchema(schema);
       },
     }),
   });
@@ -117,49 +127,4 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
     getClientIds: () => clientIdPool.toArray(),
     addClientListener: (listener) => clientIdPool.addListener(listener),
   };
-}
-
-/**
- * 根据 references 规则，替换 args 中的引用类型
- * @param rawArgs
- * @param references
- * @param callback
- * @returns
- */
-function overrideArgs(
-  rawArgs: any[],
-  options: {
-    references: ReferencesArgDeclares;
-    clientCallback: ConnectionClientCallback;
-  },
-) {
-  const { references, clientCallback } = options;
-
-  // 遍历 references 数组，根据 type 类型进行不同的替换处理
-  for (const reference of references) {
-    const [index, type, path] = reference;
-
-    // 如果 type 为 Callback，则需要将参数替换为对应的回调函数，
-    // 在调用回调函数时需要将 token 作为第一个参数插入到最前面
-    if (type === ReferenceType.Callback) {
-      let token: ReferenceToken;
-
-      const serverCallback = (...args: any[]) => {
-        clientCallback(token.value, args);
-      };
-
-      // callback
-      if (path) {
-        // 将
-        token = swap(rawArgs[index], path, serverCallback);
-      } else {
-        token = rawArgs[index];
-        rawArgs[index] = serverCallback;
-      }
-    } else if (type === 1) {
-      // token
-      // TODO:
-    }
-    // TODO:
-  }
 }
