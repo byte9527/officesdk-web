@@ -1,7 +1,7 @@
 import type { RPCClientProxy } from '@officesdk/rpc';
-import type { PresentationSDK } from '../../shared';
+import type { PresentationMethods } from '../../shared';
 
-export function createPresentationProxy(): RPCClientProxy<PresentationSDK> {
+export function createPresentationProxy(): RPCClientProxy<PresentationMethods> {
   return (context) => {
     // const { invoke } = context;
 

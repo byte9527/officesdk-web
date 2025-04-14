@@ -1,13 +1,15 @@
 export { FileType, assertFileType } from './file';
 export type {
-  DocumentSDK,
+  DocumentMethods,
   DocumentContent,
   DocumentContentRecord,
   DocumentRange,
   DocumentRangeValue,
   DocumentSelection,
 } from './document';
-export type { DatabaseTableSDK } from './dbtable';
-export type { LiteDocSDK } from './ltdoc';
-export type { PresentationSDK } from './presentation';
-export type { SpreadsheetSDK } from './spreadsheet';
+export type { DatabaseTableMethods } from './dbtable';
+export type { LiteDocMethods } from './ltdoc';
+export type { PresentationMethods } from './presentation';
+export type { SpreadsheetMethods } from './spreadsheet';
+export type { PdfMethods } from './pdf';
+export type { RpcReturnProperties, RpcReturnProxy } from './facade';

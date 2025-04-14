@@ -1,3 +1,3 @@
-export type PresentationSDK = {
+export type PresentationMethods = {
   // TODO:
 };

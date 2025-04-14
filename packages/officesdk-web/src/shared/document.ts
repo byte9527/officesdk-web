@@ -1,10 +1,10 @@
 /**
- * Document SDK 的类型定义，
+ * Document 远程调用的方法定义，
  * 作为契约，用于统一约束客户端和服务端的接口。
  * 这里只有类型定义，不包含任何实现。
  */
 
-export type DocumentSDK = {
+export type DocumentMethods = {
   /**
    * 选区实例
    */
@@ -18,16 +18,19 @@ export type DocumentSDK = {
   // TODO: 初始化流程控制，初始化各类异常
 };
 
-export interface DocumentContent {
+export type DocumentContent = {
   /**
    * 主动保存内容
    */
   save: () => void;
 
-  // TODO: 发生变化
-
+  /**
+   * 文件内容发生变化时触发回调
+   * @param listener
+   * @returns
+   */
   addContentListener: (listener: (record: DocumentContentRecord) => void) => void;
-}
+};
 
 /**
  * 每次内容发生变化时，会生成一个当前页面唯一的记录。
@@ -44,7 +47,7 @@ export interface DocumentContentRecord {
   id: string;
 }
 
-export interface DocumentSelection {
+export type DocumentSelection = {
   /**
    * 获取选区的区域范围，
    * 如果选区不存在，则返回 null。
@@ -66,7 +69,7 @@ export interface DocumentSelection {
    * @returns
    */
   addRangeListener: (listener: (range: DocumentRange) => void) => void;
-}
+};
 
 /**
  * 文档区域接口

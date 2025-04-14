@@ -30,13 +30,6 @@ export interface RPCClientInvokeOptions<T extends (...args: any[]) => any> {
   transformArgs?: (args: Parameters<T>) => {
     rules: TransportableRules[];
   };
-
-  /**
-   * 代理返回值
-   */
-  transformReturn?: (ret: ReturnType<T>) => {
-    rules: TransportableRules;
-  };
 }
 
 export type RPCClientInvoke<TMethods extends RPCMethods> = <TName extends keyof TMethods>(
@@ -58,7 +51,7 @@ export interface RPCClientProxyContext<TMethods extends RPCMethods> {
  */
 export type RPCClientProxy<TMethods extends RPCMethods> = (
   context: RPCClientProxyContext<TMethods>,
-) => RemoteProxy<TMethods>;
+) => RemoteProxy<TMethods>; // TODO: 这里的返回类型 RemoteProxy 需要优化： 1. 不允许嵌套 2. 需要支持将所有 callback 转为异步，并约束 callback 的参数类型为 TransportableData
 
 export interface RPCServerProxyReturn<T> {
   /**

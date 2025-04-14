@@ -1,13 +1,21 @@
 import type { RPCClientProxy } from '@officesdk/rpc';
-import type { DocumentSDK } from '../../shared';
+import type { DocumentMethods } from '../../shared';
 
-export function createDocumentProxy(): RPCClientProxy<DocumentSDK> {
+/**
+ * 定义 Document 的 RPC 代理的客户端调用接口
+ * @returns
+ */
+export function createDocumentProxy(): RPCClientProxy<DocumentMethods> {
   return (context) => {
     const { invoke } = context;
 
     return {
       getSelection: async () => {
-        throw new Error('Not implemented');
+        return invoke('getSelection', []);
+      },
+
+      getContent: async () => {
+        return invoke('getContent', []);
       },
     };
   };

@@ -48,6 +48,13 @@ export function testMethods(root: HTMLElement): void {
       height: 106,
     }),
   );
+
+  renderTitle('Test nested return');
+  testNestedReturn(
+    renderContent({
+      height: 127,
+    }),
+  );
 }
 
 async function getServerMethods(
@@ -161,4 +168,31 @@ async function testCallbackReturn(content: HTMLElement): Promise<void> {
   });
 
   output(`Received callback result: ${result}`);
+}
+
+async function testNestedReturn(content: HTMLElement): Promise<void> {
+  const output = createOutput({
+    container: createContainerFrame(content),
+  });
+
+  const methods = await getServerMethods(createServerFrame(content), output);
+
+  const result = await methods.testNestedReturn('foo');
+
+  output(`Received nested return result: ${result.baz}`);
+
+  output('Calling server callback.');
+
+  const callbackResult = await result.callback({
+    data: 'bar',
+  });
+
+  output(`Received callback result: ${callbackResult}`);
+
+  try {
+    // TODO: 这里的 result.element 应该是 never 类型
+    result.element.style;
+  } catch (error) {
+    output('Access any property on a never type will throw an error.');
+  }
 }

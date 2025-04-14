@@ -1,14 +1,18 @@
 import { create } from '@officesdk/rpc';
-import type { RemoteProxy } from '@officesdk/rpc';
 
 import { FileType, assertFileType } from '../shared';
-import type { DocumentSDK } from '../shared';
 import { createDocumentProxy, createDocumentFacade } from './document';
+import type { DocumentFacade } from './document';
 import { createDatabaseTableProxy, createDatabaseTableFacade } from './dbtable';
+import type { DatabaseTableFacade } from './dbtable';
 import { createLiteDocProxy, createLTDocFacade } from './ltdoc';
+import type { LTDocFacade } from './ltdoc';
 import { createPresentationProxy, createPresentationFacade } from './presentation';
+import type { PresentationFacade } from './presentation';
 import { createSpreadsheetProxy, createSpreadsheetFacade } from './spreadsheet';
-import type { PdfSDK } from './pdf';
+import type { SpreadsheetFacade } from './spreadsheet';
+import { createPdfProxy, createPdfFacade } from './pdf';
+import type { PdfFacade } from './pdf';
 import { generateUrl } from './url';
 import { createContainer, getContentWindow } from './container';
 
@@ -51,12 +55,12 @@ export interface CreateOptions<T extends FileType> {
 }
 
 type OfficeSDKMap = {
-  [FileType.Document]: RemoteProxy<DocumentSDK>;
-  [FileType.Spreadsheet]: RemoteProxy<SpreadsheetSDK>;
-  [FileType.Presentation]: RemoteProxy<PresentationSDK>;
-  [FileType.LiteDoc]: RemoteProxy<LiteDocSDK>;
-  [FileType.DBTable]: RemoteProxy<DatabaseTableSDK>;
-  [FileType.Pdf]: RemoteProxy<PdfSDK>;
+  [FileType.Document]: DocumentFacade;
+  [FileType.Spreadsheet]: SpreadsheetFacade;
+  [FileType.Presentation]: PresentationFacade;
+  [FileType.LiteDoc]: LTDocFacade;
+  [FileType.DBTable]: DatabaseTableFacade;
+  [FileType.Pdf]: PdfFacade;
 };
 
 /**
@@ -119,10 +123,55 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
           proxy: createDocumentProxy(),
         });
 
-        return createDocumentFacade(client);
+        // 因为 fileType 的判断在 connect 函数内进行的判断，所以类型无法进行准确的推断，这里直接 as 一下即可
+        return createDocumentFacade(client) as OfficeSDKMap[T];
       }
 
-      // TODO: 支持其他文件类型
+      if (fileType === FileType.Spreadsheet) {
+        const client = await create({
+          remoteWindow,
+          proxy: createSpreadsheetProxy(),
+        });
+
+        return createSpreadsheetFacade(client) as OfficeSDKMap[T];
+      }
+
+      if (fileType === FileType.Presentation) {
+        const client = await create({
+          remoteWindow,
+          proxy: createPresentationProxy(),
+        });
+
+        return createPresentationFacade(client) as OfficeSDKMap[T];
+      }
+
+      if (fileType === FileType.Pdf) {
+        const client = await create({
+          remoteWindow,
+          proxy: createPdfProxy(),
+        });
+
+        return createPdfFacade(client) as OfficeSDKMap[T];
+      }
+
+      if (fileType === FileType.LiteDoc) {
+        const client = await create({
+          remoteWindow,
+          proxy: createLiteDocProxy(),
+        });
+
+        return createLTDocFacade(client) as OfficeSDKMap[T];
+      }
+
+      if (fileType === FileType.DBTable) {
+        const client = await create({
+          remoteWindow,
+          proxy: createDatabaseTableProxy(),
+        });
+
+        return createDatabaseTableFacade(client) as OfficeSDKMap[T];
+      }
+
       throw new Error(`Unsupported file type: ${fileType}`);
     },
   };

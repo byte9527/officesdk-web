@@ -1,11 +1,11 @@
-import type { RPCClientProxy } from '@officesdk/rpc';
-import type { DatabaseTableSDK } from '../../shared';
+import type { Client } from '@officesdk/rpc';
+import type { DatabaseTableMethods } from '../../shared';
 
 export interface DatabaseTableFacade {
   // TODO:
 }
 
-export function createDatabaseTableFacade(proxy: RPCClientProxy<DatabaseTableSDK>): DatabaseTableFacade {
+export function createDatabaseTableFacade(client: Client<DatabaseTableMethods>): DatabaseTableFacade {
   return {
     // TODO:
   };

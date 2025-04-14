@@ -1,5 +1,4 @@
 import './output.css';
-import { containsSelection } from './selection';
 
 interface CreateOutputOptions {
   container: HTMLElement;
@@ -10,62 +9,6 @@ interface CreateOutputOptions {
  */
 export function createOutput(options: CreateOutputOptions): (message: string) => HTMLElement {
   const { container } = options;
-
-  let tooltip: HTMLElement | null = null;
-
-  // Listen for hover events on container through event bubbling
-  // When hovering over content, display the full message in a tooltip
-  // Hide the tooltip when mouse leaves
-  container.addEventListener(
-    'mouseover',
-    (e) => {
-      const { target } = e;
-
-      if (!target || !(target instanceof HTMLElement)) {
-        return;
-      }
-
-      if (!target.classList.contains('output-line-content')) {
-        return;
-      }
-
-      if (!tooltip) {
-        tooltip = document.createElement('div');
-        tooltip.classList.add('output-tooltip');
-        container.appendChild(tooltip);
-      } else if (containsSelection(tooltip)) {
-        return;
-      }
-
-      tooltip.textContent = target.textContent;
-
-      const content = target.closest('.content');
-
-      if (!content) {
-        return;
-      }
-
-      const targetRect = target.getBoundingClientRect();
-      const contentRect = content.getBoundingClientRect();
-
-      tooltip.style.left = `${targetRect.left - contentRect.left}px`;
-      tooltip.style.top = `${targetRect.top - contentRect.top}px`;
-    },
-    false,
-  );
-
-  container.addEventListener('mouseleave', () => {
-    // Remove the tooltip when mouse leaves,
-    // If the tooltip contains selection, do not remove it.
-    if (!tooltip) {
-      return;
-    }
-
-    if (!containsSelection(tooltip)) {
-      container.removeChild(tooltip);
-      tooltip = null;
-    }
-  });
 
   return (message: string) => {
     const p = document.createElement('p');

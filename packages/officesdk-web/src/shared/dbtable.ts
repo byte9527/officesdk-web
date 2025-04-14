@@ -1,3 +1,3 @@
-export type DatabaseTableSDK = {
+export type DatabaseTableMethods = {
   // TODO:
 };

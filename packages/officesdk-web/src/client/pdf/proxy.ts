@@ -1,7 +1,7 @@
 import type { RPCClientProxy } from '@officesdk/rpc';
-import type { SpreadsheetMethods } from '../../shared';
+import type { PdfMethods } from '../../shared';
 
-export function createSpreadsheetProxy(): RPCClientProxy<SpreadsheetMethods> {
+export function createPdfProxy(): RPCClientProxy<PdfMethods> {
   return (context) => {
     // const { invoke } = context;
 

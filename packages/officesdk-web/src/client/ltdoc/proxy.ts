@@ -1,7 +1,7 @@
 import type { RPCClientProxy } from '@officesdk/rpc';
-import type { LiteDocSDK } from '../../shared';
+import type { LiteDocMethods } from '../../shared';
 
-export function createLiteDocProxy(): RPCClientProxy<LiteDocSDK> {
+export function createLiteDocProxy(): RPCClientProxy<LiteDocMethods> {
   return (context) => {
     // const { invoke } = context;
 

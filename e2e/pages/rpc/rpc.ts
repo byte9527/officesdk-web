@@ -6,6 +6,11 @@ export type TestMethods = {
   testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => void;
   testNestedCallback: (options: { type: string; callback: (event: { type: string; data: unknown }) => void }) => void;
   testCallbackReturn: (type: string) => (event: { data: unknown }) => string;
+  testNestedReturn: (type: string) => {
+    baz: string;
+    callback: (event: { data: unknown }) => string;
+    element: HTMLElement;
+  };
 };
 
 /**
@@ -66,20 +71,10 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
         });
       },
       testCallbackReturn(type) {
-        return invoke('testCallbackReturn', [type], {
-          transformReturn: () => {
-            const rules: TransportableRules = [
-              {
-                type: 'callback',
-                path: 'callback',
-              },
-            ];
-
-            return {
-              rules,
-            };
-          },
-        });
+        return invoke('testCallbackReturn', [type], {});
+      },
+      testNestedReturn(type) {
+        return invoke('testNestedReturn', [type], {});
       },
     };
   };
@@ -130,6 +125,30 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
           rules: [
             {
               type: 'callback',
+            },
+          ],
+        };
+      },
+      testNestedReturn(type) {
+        output?.('Server .testNestedReturn has been invoked with type: ' + type);
+
+        return {
+          value: {
+            baz: 'qux',
+            callback: (event: { data: unknown }) => {
+              output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
+              return 'qux';
+            },
+            element: document.createElement('div'),
+          },
+          rules: [
+            {
+              type: 'callback',
+              path: 'callback',
+            },
+            {
+              type: 'any',
+              path: 'element',
             },
           ],
         };

@@ -226,13 +226,13 @@ export class Transportable {
       return this.parseRule(value, first);
     }
 
-    let schema: TransportableSchema = this.nestValue(value);
+    let schema = this.nestValue(value);
 
     let index = 0;
     let rule = others[index];
 
     while (rule) {
-      iteratePath(schema, rule.path, (value, current, key, isLast) => {
+      iteratePath(schema.type === 'array' ? schema.array : schema.map, rule.path, (value, current, key, isLast) => {
         if (isLast) {
           // 如果这是最后一个 key，则使用 rule 进行处理
           current[key] = this.parseRule(value, rule);
@@ -292,10 +292,10 @@ export class Transportable {
    * @param value
    * @returns
    */
-  private nestValue(value: any): TransportableSchema {
+  private nestValue(value: any): TransportableArraySchema | TransportableMapSchema {
     return this.parseRule(value, {
       type: Array.isArray(value) ? 'array' : 'map',
-    });
+    }) as TransportableArraySchema | TransportableMapSchema; // TODO: fix type
   }
 
   private proxyRemote(value: TransportableCallbackSchema | TransportableAnySchema): TransportableProxy<any> {

@@ -35,18 +35,8 @@ body {
   text-overflow: ellipsis;
 }
 
-.output-tooltip {
-  position: absolute;
-  right: 0;
-  background-color: #fff;
-  padding: 0 10px;
-  color: #000;
-  font-size: 14px;
-  line-height: 1.5;
-}
 
 /* Draw a bottom line */
-.output-tooltip::after,
 .output-line::after {
   content: '';
   display: block;
@@ -55,18 +45,6 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background-color: #000;
-}
-
-.output-tooltip::before {
-  content: '';
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -1px;
-  height: 100%;
-  width: 1px;
   background-color: #000;
 }
 

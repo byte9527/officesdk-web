@@ -1,3 +1,3 @@
-export type SpreadsheetSDK = {
+export type SpreadsheetMethods = {
   // TODO:
 };

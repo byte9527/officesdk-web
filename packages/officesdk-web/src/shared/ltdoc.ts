@@ -1,3 +1,3 @@
-export type LiteDocSDK = {
+export type LiteDocMethods = {
   // TODO:
 };
