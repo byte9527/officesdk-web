@@ -1,5 +1,10 @@
 {
   "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationDir": "dist/rpc/esm/", 
+  },
   "include": [
     "src/**/*.ts"
   ]

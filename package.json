@@ -11,7 +11,9 @@
     "start:rpc": "echo \"Error: no test specified\" && exit 1",
     "test:rpc": "echo \"Error: no test specified\" && exit 1",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:e2e": "yarn workspace @officesdk/e2e start"
+    "start:e2e": "yarn workspace @officesdk/e2e start",
+    "lint": "eslint ./packages --ext .ts",
+    "build": "bash ./scripts/build.sh"
   },
   "repository": {
     "type": "git",

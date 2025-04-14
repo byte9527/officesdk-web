@@ -1,8 +1,24 @@
 {
   "name": "@officesdk/web",
-  "version": "1.0.0",
+  "version": "1.0.0-1",
   "description": "Web JS SDK for the Office SDK",
   "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/src/index.js",
+      "require": "./dist/cjs/src/index.js",
+      "types": "./dist/esm/src/index.d.ts"
+    }
+  },
+  "files": [
+    "index.d.ts",
+    "cjs",
+    "esm"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "author": {
     "name": "magicismight",
     "email": "master@horcrux.cn",
@@ -25,7 +41,6 @@
     "ppt",
     "pdf"
   ],
-  "license": "MIT",
-  "files": [
-  ]
+  "license": "MIT"
+  
 }

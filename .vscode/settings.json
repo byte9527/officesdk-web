@@ -3,6 +3,7 @@
     "dbtable",
     "ltdoc",
     "officesdk",
-    "penpal"
+    "penpal",
+    "weboffice"
   ]
 }
