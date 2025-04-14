@@ -18,6 +18,12 @@ build__rpc_esm() {
   npx tsc -p packages/officesdk-rpc/tsconfig.json  --module esnext --outDir ./dist/rpc/esm
 }
 
+# 构建officesdk-rpc ESM
+build__rpc_esm() {
+  echo "Building officesdk-rpc module (ESM)..."
+  ./
+}
+
 # 生成officesdk-rpc的类型声明
 generate_dts_rpc() {
   echo "Generating DTS for officesdk-rpc..."
