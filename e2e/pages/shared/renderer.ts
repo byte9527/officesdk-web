@@ -1,3 +1,5 @@
+import './renderer.css';
+
 interface RenderTitleOptions {
   container: HTMLElement;
 }

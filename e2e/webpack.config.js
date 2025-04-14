@@ -8,11 +8,12 @@ module.exports = {
     index: './pages/index/index.ts',
 
     // Test connection cases.
-    connection: './pages/rpc/connection.ts',
-    server: './pages/rpc/server.ts',
+    rpc: './pages/rpc/rpc.ts',
+    rpcServer: './pages/rpc/server.ts',
 
-    // Test methods calling cases.
-    methods: './pages/rpc/methods.ts',
+    // Test document cases.
+    document: './pages/document/document.ts',
+    documentServer: './pages/document/server.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -46,14 +47,19 @@ module.exports = {
       template: './pages/index/index.html',
     }),
     new HtmlWebpackPlugin({
-      filename: 'connection.html',
-      chunks: ['connection'],
-      template: './pages/rpc/connection.html',
+      filename: 'rpc.html',
+      chunks: ['rpc'],
+      template: './pages/rpc/rpc.html',
     }),
     new HtmlWebpackPlugin({
       filename: 'template.html',
       chunks: [],
       template: './pages/shared/template.html',
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'document.html',
+      chunks: ['document'],
+      template: './pages/document/document.html',
     }),
   ],
   devServer: {

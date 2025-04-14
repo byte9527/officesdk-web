@@ -1,7 +1,6 @@
-import './connection.css';
-
-import { testOpen } from './open';
-import { testMethods } from './methods';
+import { testSDK } from './sdk';
+// import { testSelection } from './selection';
+// import { testContent } from './content';
 
 function main(): void {
   const root = document.getElementById('root');
@@ -10,8 +9,7 @@ function main(): void {
     throw new Error('root element not found');
   }
 
-  testOpen(root);
-  testMethods(root);
+  testSDK(root);
 }
 
 main();

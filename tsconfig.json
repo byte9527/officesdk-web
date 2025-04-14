@@ -16,6 +16,12 @@
     "paths": {
       "@officesdk/rpc": [
         "packages/officesdk-rpc/src"
+      ],
+      "@officesdk/web": [
+        "packages/officesdk-web/src"
+      ],
+      "@officesdk/web/server": [
+        "packages/officesdk-web/src/server"
       ]
     }
   }

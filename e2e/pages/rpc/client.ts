@@ -1,8 +1,8 @@
 import { create } from '@officesdk/rpc';
-import type { RemoteProxy } from 'penpal';
+import type { RemoteProxy } from '@officesdk/rpc';
 
-import { createClientProxy } from './rpc';
-import type { TestMethods } from './rpc';
+import { createClientProxy } from './proxies';
+import type { TestMethods } from './proxies';
 
 interface ClientOptions {
   output?: (message: string) => void;

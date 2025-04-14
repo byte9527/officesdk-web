@@ -1,7 +1,8 @@
-import { serve } from '@officesdk/rpc';
+import { FileType } from '@officesdk/web';
+import { serveSDK } from '@officesdk/web/server';
 
-import { createServerProxy } from './proxies';
-import type { TestMethods } from './proxies';
+// import { createServerProxy } from './proxies';
+// import type { TestMethods } from './proxies';
 import { createOutput } from '../shared/output';
 import { createRenderContent } from '../shared/renderer';
 import { createContainerFrame } from '../shared/frames';
@@ -21,10 +22,10 @@ async function main() {
     container: createContainerFrame(content),
   });
 
-  output('Start testing rpc server.');
+  output('Creating document server...');
 
-  const server = await serve<TestMethods>({
-    proxy: createServerProxy(output),
+  const server = await serveSDK({
+    fileType: FileType.Document,
   });
 
   output(

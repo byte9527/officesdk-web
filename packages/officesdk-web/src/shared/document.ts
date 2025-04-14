@@ -18,6 +18,14 @@ export type DocumentMethods = {
   // TODO: 初始化流程控制，初始化各类异常
 };
 
+/**
+ * 文档编辑器实例接口
+ */
+export interface DocumentEditor {
+  readonly selection: DocumentSelection;
+  readonly content: DocumentContent;
+}
+
 export type DocumentContent = {
   /**
    * 主动保存内容

@@ -3,16 +3,23 @@ export interface UrlOptions {
    * 服务器地址， OFFICE SDK 部署的地址
    */
   endpoint: string;
+
   /**
    * 用于鉴权的 token
    * TODO: 添加过期时间
    * TODO: 后端补充对应注释
    */
   token: string;
+
   /**
    * 文件 ID
    */
   fileId: string;
+
+  /**
+   * 自定义页面路径
+   */
+  path?: string;
 
   /**
    * 语言
@@ -47,14 +54,14 @@ function getLang(lang?: string): string | null {
  * @returns
  */
 export function generateUrl(options: UrlOptions): URL {
-  const { endpoint, token, fileId } = options;
+  const defaultPath = '/v1/file/page';
+
+  const { endpoint, token, fileId, path = defaultPath } = options;
 
   let url: URL;
 
   try {
     // Office SDK 的 URL 格式
-
-    const path = '/v1/file/page';
 
     url = new URL(endpoint);
     // Check if the URL is valid

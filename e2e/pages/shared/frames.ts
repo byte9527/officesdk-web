@@ -1,8 +1,10 @@
+import './frames.css';
+
 /**
  * 创建一个 iframe 用于模拟服务端，
  * 并将对应的路径注入到 iframe 的 script 标签中
  */
-export function createServerFrame(content: HTMLElement, iframe?: HTMLIFrameElement): HTMLIFrameElement {
+export function createServerFrame(content: HTMLElement, chunk: string, iframe?: HTMLIFrameElement): HTMLIFrameElement {
   if (!iframe) {
     iframe = document.createElement('iframe');
   }
@@ -13,12 +15,12 @@ export function createServerFrame(content: HTMLElement, iframe?: HTMLIFrameEleme
 
   content.appendChild(iframe);
 
-  iframe.onload = () => {
+  iframe.addEventListener('load', () => {
     // 将对应的路径注入到 iframe 的 script 标签中
     const script = document.createElement('script');
-    script.src = '/server.bundle.js';
+    script.src = `/${chunk}.bundle.js`;
     iframe.contentWindow?.document.body.appendChild(script);
-  };
+  });
 
   return iframe;
 }

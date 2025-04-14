@@ -1,0 +1,16 @@
+
+.frame {
+  flex: 1;
+  border: none;
+  overflow: hidden;
+  position: relative;
+  min-width: 0;
+}
+
+.frame:nth-last-child(n+1) {
+  border-left: 1px solid #000;
+}
+
+.frame:last-child {
+  border-right: 1px solid #000;
+}

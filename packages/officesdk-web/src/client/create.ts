@@ -14,7 +14,7 @@ import type { SpreadsheetFacade } from './spreadsheet';
 import { createPdfProxy, createPdfFacade } from './pdf';
 import type { PdfFacade } from './pdf';
 import { generateUrl } from './url';
-import { createContainer, getContentWindow } from './container';
+import { createContainer, connectContainer, getContentWindow } from './container';
 
 /**
  * 初始化 Office SDK 的配置项，
@@ -38,6 +38,11 @@ export interface CreateOptions<T extends FileType> {
   fileId: string;
 
   /**
+   * 自定义页面路径
+   */
+  path?: string;
+
+  /**
    * SDK 的文件类型
    */
   fileType: T;
@@ -47,6 +52,11 @@ export interface CreateOptions<T extends FileType> {
    * 也可以在创建实例后再将 sdk.iframe 加载到页面任意位置。
    */
   root?: HTMLElement;
+
+  /**
+   * 已加载 SDK 环境的 iframe 实例
+   */
+  iframe?: HTMLIFrameElement;
 
   /**
    * 语言
@@ -96,26 +106,31 @@ export interface OfficeSDK<T extends FileType> {
  * 创建 Office SDK 实例
  */
 export function createSDK<T extends FileType>(options: CreateOptions<T>): OfficeSDK<T> {
-  const { fileType, endpoint, token, fileId, root } = options;
-
-  const url = generateUrl({ endpoint, token, fileId });
-
-  const container = createContainer({ source: url.toString(), root });
+  const { fileType, endpoint, token, fileId, path, root, iframe } = options;
 
   assertFileType(fileType);
 
+  let url: URL;
+  let container: HTMLIFrameElement;
+
+  if (iframe) {
+    url = new URL(iframe.src);
+    container = connectContainer({ iframe, root });
+  } else {
+    url = generateUrl({ endpoint, token, fileId, path });
+    container = createContainer({ source: url.toString(), root });
+  }
+
   return {
     url: url.toString(),
-    iframe: container.element,
+    iframe: container,
     destroy: () => {
-      container.element.remove();
+      container.remove();
     },
     connect: async (): Promise<OfficeSDKMap[T]> => {
-      await container.promise;
-
       // Get the content window of the iframe,
       // which can use @officesdk/rpc create method.
-      const remoteWindow = await getContentWindow(container.element);
+      const remoteWindow = await getContentWindow(container);
 
       if (fileType === FileType.Document) {
         const client = await create({

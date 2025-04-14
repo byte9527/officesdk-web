@@ -1,5 +1,3 @@
-import { FileType } from '../shared';
-
 export interface CreateContainerOptions {
   /**
    * 容器 iframe 的源地址
@@ -24,13 +22,31 @@ export interface Container {
  * 页面内需要提供可供 Office SDK 通信和远程调用的 rpc 接口，
  * @param options
  */
-export function createContainer(options: CreateContainerOptions): {
-  element: HTMLIFrameElement;
-  promise: Promise<void>;
-} {
+export function createContainer(options: CreateContainerOptions): HTMLIFrameElement {
   const { source, root } = options;
 
   const iframe = document.createElement('iframe');
+
+  iframe.src = source;
+
+  return connectContainer({ iframe, root });
+}
+
+export interface ConnectContainerOptions {
+  /**
+   * 容器 iframe 的实例
+   */
+  iframe: HTMLIFrameElement;
+
+  /**
+   * 挂载容器 iframe 的根节点
+   */
+  root?: HTMLElement;
+}
+
+export function connectContainer(options: ConnectContainerOptions): HTMLIFrameElement {
+  const { iframe, root } = options;
+
   iframe.style.border = 'none';
   iframe.style.overflow = 'hidden';
   iframe.style.width = '100%';
@@ -40,23 +56,9 @@ export function createContainer(options: CreateContainerOptions): {
   // TODO: 需要注意 fullscreen 相关能力在 safari 中不能使用，需要做降级处理
   iframe.allowFullscreen = true;
 
-  iframe.src = source;
   root?.appendChild(iframe);
 
-  const promise = new Promise<void>((resolve, reject) => {
-    iframe.onload = () => {
-      resolve();
-    };
-    iframe.onerror = (error: unknown) => {
-      // TODO: 抛出自定义错误
-      reject(error);
-    };
-  });
-
-  return {
-    element: iframe,
-    promise,
-  };
+  return iframe;
 }
 
 export async function getContentWindow(iframe: HTMLIFrameElement): Promise<Window> {

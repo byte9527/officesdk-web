@@ -1,10 +1,10 @@
-import type { RemoteProxy } from 'penpal';
+import type { RemoteProxy } from '@officesdk/rpc';
 
 import { createClient } from './client';
-import { createContainerFrame, createServerFrame } from './frames';
+import { createContainerFrame, createServerFrame } from '../shared/frames';
 import { createRenderTitle, createRenderContent } from '../shared/renderer';
 import { createOutput } from '../shared/output';
-import type { TestMethods } from './rpc';
+import type { TestMethods } from './proxies';
 
 /**
  * Tests the basic methods calling scenario.
@@ -80,7 +80,7 @@ async function testBasicMethods(content: HTMLElement): Promise<void> {
     container: createContainerFrame(content),
   });
 
-  const methods = await getServerMethods(createServerFrame(content), output);
+  const methods = await getServerMethods(createServerFrame(content, 'rpcServer'), output);
 
   let callPromise = methods.testInvoke();
 
@@ -96,7 +96,7 @@ async function testCallback(content: HTMLElement, type?: string): Promise<void> 
     container: createContainerFrame(content),
   });
 
-  const methods = await getServerMethods(createServerFrame(content), output);
+  const methods = await getServerMethods(createServerFrame(content, 'rpcServer'), output);
 
   output('Calling remote method: .testCallback');
 
@@ -109,7 +109,7 @@ async function testCallback(content: HTMLElement, type?: string): Promise<void> 
 }
 
 async function testRaceCondition(content: HTMLElement): Promise<void> {
-  const iframe = createServerFrame(content);
+  const iframe = createServerFrame(content, 'rpcServer');
 
   const output1 = createOutput({
     container: createContainerFrame(content),
@@ -138,7 +138,7 @@ async function testNestedCallback(content: HTMLElement): Promise<void> {
     container: createContainerFrame(content),
   });
 
-  const methods = await getServerMethods(createServerFrame(content), output);
+  const methods = await getServerMethods(createServerFrame(content, 'rpcServer'), output);
 
   output('Calling remote method: .testNestedCallback');
 
@@ -155,7 +155,7 @@ async function testCallbackReturn(content: HTMLElement): Promise<void> {
     container: createContainerFrame(content),
   });
 
-  const methods = await getServerMethods(createServerFrame(content), output);
+  const methods = await getServerMethods(createServerFrame(content, 'rpcServer'), output);
 
   output('Calling remote method: .testCallbackReturn');
 
@@ -175,7 +175,7 @@ async function testNestedReturn(content: HTMLElement): Promise<void> {
     container: createContainerFrame(content),
   });
 
-  const methods = await getServerMethods(createServerFrame(content), output);
+  const methods = await getServerMethods(createServerFrame(content, 'rpcServer'), output);
 
   const result = await methods.testNestedReturn('foo');
 

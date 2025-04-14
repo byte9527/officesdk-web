@@ -1,5 +1,5 @@
 import { createClient } from './client';
-import { createContainerFrame, createServerFrame } from './frames';
+import { createContainerFrame, createServerFrame } from '../shared/frames';
 import { createRenderTitle, createRenderContent } from '../shared/renderer';
 import { createOutput } from '../shared/output';
 
@@ -8,7 +8,7 @@ import { createOutput } from '../shared/output';
  * @param content - Container element for the test UI
  */
 function testBasicConnection(content: HTMLElement): void {
-  const iframe = createServerFrame(content);
+  const iframe = createServerFrame(content, 'rpcServer');
   createClient({
     output: createOutput({
       container: createContainerFrame(content),
@@ -22,7 +22,7 @@ function testBasicConnection(content: HTMLElement): void {
  * @param content - Container element for the test UI
  */
 function testIframePreloading(content: HTMLElement): void {
-  const iframe = createServerFrame(content);
+  const iframe = createServerFrame(content, 'rpcServer');
   createClient({
     output: createOutput({
       container: createContainerFrame(content),
@@ -36,7 +36,7 @@ function testIframePreloading(content: HTMLElement): void {
  * @param content - Container element for the test UI
  */
 function testMultipleClients(content: HTMLElement): void {
-  const iframe = createServerFrame(content);
+  const iframe = createServerFrame(content, 'rpcServer');
   createClient({
     output: createOutput({
       container: createContainerFrame(content),

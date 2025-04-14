@@ -1,0 +1,1 @@
+export { createDocumentProxy } from './proxy';

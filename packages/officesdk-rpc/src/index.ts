@@ -5,6 +5,7 @@ export type {
   RPCServerProxy,
   RPCClientInvoke,
   Client,
+  Server,
   Transportable,
   TransportableRules,
   TransportableData,
