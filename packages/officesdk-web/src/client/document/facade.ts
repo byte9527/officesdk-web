@@ -1,13 +1,7 @@
-import type { Client, RemoteProxy } from '@officesdk/rpc';
-import type {
-  DocumentMethods,
-  DocumentSelection,
-  EditorContent,
-  DocumentRange,
-  DocumentRangeValue,
-  EditorContentRecord,
-  RpcReturnProxy,
-} from '../../shared';
+import type { Client } from '@officesdk/rpc';
+import type { DocumentMethods, DocumentSelection, EditorContent, RpcReturnProxy } from '../../shared';
+import { createSelectionFacade } from './selection';
+import { createContentFacade } from './content';
 
 export interface DocumentFacade {
   /**
@@ -34,59 +28,6 @@ export function createDocumentFacade(client: Client<DocumentMethods>): DocumentF
     },
     get content() {
       return content;
-    },
-  };
-}
-
-function createSelectionFacade(methods: RemoteProxy<DocumentMethods>): RpcReturnProxy<DocumentSelection> {
-  let selectionCache: Promise<DocumentSelection> | null = null;
-
-  const getSelection = async (): Promise<DocumentSelection> => {
-    if (selectionCache) {
-      return selectionCache;
-    }
-
-    selectionCache = methods.getSelection();
-    return selectionCache;
-  };
-
-  return {
-    getRange: async (): Promise<DocumentRange | null> => {
-      const selection = await getSelection();
-      return selection.getRange();
-    },
-    setRange: async (range: DocumentRangeValue | null): Promise<void> => {
-      const selection = await getSelection();
-      return selection.setRange(range);
-    },
-    addRangeListener: async (listener: (range: DocumentRangeValue) => void): Promise<void> => {
-      const selection = await getSelection();
-      return selection.addRangeListener(listener);
-    },
-  };
-}
-
-function createContentFacade(methods: RemoteProxy<DocumentMethods>): RpcReturnProxy<EditorContent> {
-  let contentCache: Promise<EditorContent> | null = null;
-
-  const getContent = async (): Promise<EditorContent> => {
-    if (contentCache) {
-      return contentCache;
-    }
-
-    contentCache = methods.getContent();
-    return contentCache;
-  };
-
-  return {
-    save: async (): Promise<void> => {
-      const content = await getContent();
-      await content.save();
-    },
-
-    addContentListener: async (listener: (record: EditorContentRecord) => void): Promise<void> => {
-      const content = await getContent();
-      await content.addContentListener(listener);
     },
   };
 }
