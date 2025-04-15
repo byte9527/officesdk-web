@@ -1,1 +1,1 @@
-export { createDatabaseTableProxy as createDBTableProxy } from './proxy';
+export { createDatabaseTableProxy } from './proxy';

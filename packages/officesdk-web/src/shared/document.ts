@@ -1,3 +1,4 @@
+import type { EditorContent } from './editor';
 /**
  * Document 远程调用的方法定义，
  * 作为契约，用于统一约束客户端和服务端的接口。
@@ -13,7 +14,7 @@ export type DocumentMethods = {
   /**
    * 主动保存内容
    */
-  getContent: () => DocumentContent;
+  getContent: () => EditorContent;
 
   // TODO: 初始化流程控制，初始化各类异常
 };
@@ -23,36 +24,7 @@ export type DocumentMethods = {
  */
 export interface DocumentEditor {
   readonly selection: DocumentSelection;
-  readonly content: DocumentContent;
-}
-
-export type DocumentContent = {
-  /**
-   * 主动保存内容
-   */
-  save: () => void;
-
-  /**
-   * 文件内容发生变化时触发回调
-   * @param listener
-   * @returns
-   */
-  addContentListener: (listener: (record: DocumentContentRecord) => void) => void;
-};
-
-/**
- * 每次内容发生变化时，会生成一个当前页面唯一的记录。
- */
-export interface DocumentContentRecord {
-  /**
-   * 生成内容的时间戳
-   */
-  timestamp: number;
-
-  /**
-   * 内容标识
-   */
-  id: string;
+  readonly content: EditorContent;
 }
 
 export type DocumentSelection = {

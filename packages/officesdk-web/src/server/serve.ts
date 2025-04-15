@@ -1,13 +1,13 @@
 import { serve } from '@officesdk/rpc';
 import type { Server } from '@officesdk/rpc';
 
-import { createDocumentProxy } from './document/proxy';
-import { createSpreadsheetProxy } from './spreadsheet/proxy';
-import { createPresentationProxy } from './presentation/proxy';
-import { createLiteDocProxy } from './ltdoc/proxy';
-import { createDatabaseTableProxy } from './dbtable/proxy';
-import { createPdfProxy } from './pdf/proxy';
-
+import { createDocumentProxy } from './document';
+import { createSpreadsheetProxy } from './spreadsheet';
+import { createPresentationProxy } from './presentation';
+import { createLiteDocProxy } from './ltdoc';
+import { createDatabaseTableProxy } from './dbtable';
+import { createPdfProxy } from './pdf';
+import type { EditorContext } from './editor';
 import { FileType, assertFileType } from '../shared';
 import type {
   DocumentEditor,
@@ -28,6 +28,12 @@ export interface ServeOptions<T extends FileType> {
    * 编辑器实例
    */
   editor: EditorMap[T];
+
+  /**
+   * 编辑器上下文
+   * TODO: 编辑器上下文可能需要按套件类型区分
+   */
+  context: EditorContext;
 }
 
 type EditorMap = {
@@ -64,13 +70,13 @@ function isPdfEditor(editor: EditorMap[FileType], fileType: FileType): editor is
 }
 
 export function serveSDK<T extends FileType>(options: ServeOptions<T>): Promise<Server> {
-  const { fileType, editor } = options;
+  const { fileType, editor, context } = options;
 
   assertFileType(fileType);
 
   if (isDocumentEditor(editor, fileType)) {
     return serve({
-      proxy: createDocumentProxy(editor),
+      proxy: createDocumentProxy(editor, context),
     });
   }
 

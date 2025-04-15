@@ -1,5 +1,5 @@
 import { testSDK } from './sdk';
-// import { testSelection } from './selection';
+import { testSelection } from './selection';
 // import { testContent } from './content';
 
 function main(): void {
@@ -10,6 +10,7 @@ function main(): void {
   }
 
   testSDK(root);
+  testSelection(root);
 }
 
 main();

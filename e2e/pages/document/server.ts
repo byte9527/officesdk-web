@@ -1,11 +1,11 @@
 import { FileType } from '@officesdk/web';
 import { serveSDK } from '@officesdk/web/server';
 
-// import { createServerProxy } from './proxies';
-// import type { TestMethods } from './proxies';
 import { createOutput } from '../shared/output';
 import { createRenderContent } from '../shared/renderer';
 import { createContainerFrame } from '../shared/frames';
+import { mockDocumentEditor } from './editor';
+import { mockEditorContent } from './content';
 
 async function main() {
   const root = document.getElementById('root');
@@ -26,6 +26,10 @@ async function main() {
 
   const server = await serveSDK({
     fileType: FileType.Document,
+    editor: mockDocumentEditor(output),
+    context: {
+      content: mockEditorContent(output),
+    },
   });
 
   output(

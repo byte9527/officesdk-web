@@ -1,13 +1,6 @@
 export { FileType, assertFileType } from './file';
-export type {
-  DocumentMethods,
-  DocumentEditor,
-  DocumentContent,
-  DocumentContentRecord,
-  DocumentRange,
-  DocumentRangeValue,
-  DocumentSelection,
-} from './document';
+export type { EditorContent, EditorContentRecord } from './editor';
+export type { DocumentMethods, DocumentEditor, DocumentRange, DocumentRangeValue, DocumentSelection } from './document';
 export type { DatabaseTableMethods, DatabaseTableEditor } from './dbtable';
 export type { LiteDocMethods, LiteDocEditor } from './ltdoc';
 export type { PresentationMethods, PresentationEditor } from './presentation';

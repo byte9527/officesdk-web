@@ -2,10 +2,10 @@ import type { Client, RemoteProxy } from '@officesdk/rpc';
 import type {
   DocumentMethods,
   DocumentSelection,
-  DocumentContent,
+  EditorContent,
   DocumentRange,
   DocumentRangeValue,
-  DocumentContentRecord,
+  EditorContentRecord,
   RpcReturnProxy,
 } from '../../shared';
 
@@ -18,7 +18,7 @@ export interface DocumentFacade {
   /**
    * 主动保存内容
    */
-  readonly content: RpcReturnProxy<DocumentContent>;
+  readonly content: RpcReturnProxy<EditorContent>;
 
   // TODO: 初始化流程控制，初始化各类异常
 }
@@ -66,10 +66,10 @@ function createSelectionFacade(methods: RemoteProxy<DocumentMethods>): RpcReturn
   };
 }
 
-function createContentFacade(methods: RemoteProxy<DocumentMethods>): RpcReturnProxy<DocumentContent> {
-  let contentCache: Promise<DocumentContent> | null = null;
+function createContentFacade(methods: RemoteProxy<DocumentMethods>): RpcReturnProxy<EditorContent> {
+  let contentCache: Promise<EditorContent> | null = null;
 
-  const getContent = async (): Promise<DocumentContent> => {
+  const getContent = async (): Promise<EditorContent> => {
     if (contentCache) {
       return contentCache;
     }
@@ -84,7 +84,7 @@ function createContentFacade(methods: RemoteProxy<DocumentMethods>): RpcReturnPr
       await content.save();
     },
 
-    addContentListener: async (listener: (record: DocumentContentRecord) => void): Promise<void> => {
+    addContentListener: async (listener: (record: EditorContentRecord) => void): Promise<void> => {
       const content = await getContent();
       await content.addContentListener(listener);
     },

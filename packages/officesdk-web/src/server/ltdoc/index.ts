@@ -1,1 +1,1 @@
-export { createLiteDocProxy as createLTDocProxy } from './proxy';
+export { createLiteDocProxy } from './proxy';

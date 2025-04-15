@@ -11,7 +11,7 @@ export function testSDK(root: HTMLElement): void {
   const renderTitle = createRenderTitle({ container: root });
   const renderContent = createRenderContent({ container: root });
 
-  renderTitle('Test basic connection');
+  renderTitle('Test sdk connection');
   testConnect(
     renderContent({
       height: 85,
