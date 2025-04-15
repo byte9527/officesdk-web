@@ -11,6 +11,20 @@ export type TestMethods = {
     callback: (event: { data: unknown }) => string;
     element: HTMLElement;
   };
+  testDeepNestedConditions: (that: {
+    is: {
+      a: Window;
+      not: Document;
+    };
+    can: {
+      be: 'anything';
+    };
+    maybe: {
+      a: {
+        callback: () => string;
+      };
+    };
+  }) => void;
 };
 
 /**
@@ -47,6 +61,26 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
       },
       testNestedReturn(type) {
         return invoke('testNestedReturn', [type]);
+      },
+      testDeepNestedConditions(that) {
+        return invoke('testDeepNestedConditions', [
+          new Token(that, {
+            rules: [
+              {
+                type: 'ref',
+                path: '&is.a',
+              },
+              {
+                type: 'ref',
+                path: '&is.not',
+              },
+              {
+                type: 'callback',
+                path: '&maybe.a.callback',
+              },
+            ],
+          }),
+        ]);
       },
     };
   };
@@ -117,6 +151,13 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
             ],
           },
         );
+      },
+      testDeepNestedConditions(that) {
+        output?.('Server .testDeepNestedConditions has been invoked ');
+        output?.(`Server said: that can be ${that.can.be}`);
+
+        output?.('Server invoked callback.');
+        that.maybe.a.callback();
       },
     };
   };

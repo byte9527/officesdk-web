@@ -1,4 +1,4 @@
-import { iteratePath, fromEntries, entries } from '../shared/object';
+import { fromEntries, entries } from '../shared/object';
 import type { Cloneable } from '../shared/cloneable';
 import type { SchemaEntity, SchemaStructured, SchemaValueCallback, SchemaValueRef, SchemaValueData } from './schema';
 
@@ -44,6 +44,40 @@ export type SmartData = Cloneable | Function | Promise<SmartData>;
 export interface TokenContext {
   createRefId(value: { type: 'callback' | 'ref'; value: any }): string;
   name: string;
+}
+
+const TokenStructuredSymbol = Symbol('TokenStructured');
+
+type TokenStructured = {
+  [TokenStructuredSymbol]: true;
+} & SchemaStructured;
+
+function createTokenStructured(value: SchemaStructured): TokenStructured {
+  return {
+    [TokenStructuredSymbol]: true,
+    ...value,
+  };
+}
+
+function isTokenStructured(value: unknown): value is TokenStructured {
+  return typeof value === 'object' && Object.getOwnPropertyDescriptor(value, TokenStructuredSymbol)?.value == true;
+}
+
+const TokenValueSymbol = Symbol('TokenData');
+
+type TokenValue = {
+  [TokenValueSymbol]: true;
+} & SchemaValueData;
+
+function createTokenValue(value: SchemaValueData): TokenValue {
+  return {
+    [TokenValueSymbol]: true,
+    ...value,
+  };
+}
+
+function isTokenValue(value: unknown): value is TokenValue {
+  return typeof value === 'object' && Object.getOwnPropertyDescriptor(value, TokenValueSymbol)?.value == true;
 }
 
 /**
@@ -100,19 +134,34 @@ export class Token<T = unknown> {
 
     while (rule) {
       const path = getDescendantPath(rule.path);
-      iteratePath(schema.value, path, (value, current, key, isLast) => {
+      iteratePath(schema, path, (object, key, isLast) => {
         if (isLast) {
-          // 如果这是最后一个 key，则使用 rule 进行处理
-          current[key] = this.parseRule(value, rule, context);
+          const current = object.value;
+          const value = current[key];
+
+          // 如果这是最后一个 key，则使用 rule 进行处理，
+          // 这里拿到的 value 是一个 SchemaValueData，因为这个 value 之前应该在上层被 toStructured 了
+          const data = isTokenValue(value) ? value.value : value;
+          current[key] = this.parseRule(data, rule, context);
         } else {
-          // 这是中间的 key，需要使用 rule 进行处理
-          current[key] = this.toStructured(value);
+          // 这是中间的 key，需要转为结构化数据，
+          if (isTokenStructured(object)) {
+            // @ts-expect-error
+            const structured = this.toStructured(object.value[key]);
+            // @ts-expect-error
+            object.value[key] = structured;
+            return structured;
+          } else {
+            const structured = this.toStructured(object[key]);
+            object[key] = structured;
+
+            return structured;
+          }
         }
       });
 
       rule = rules[++index];
     }
-
     return schema;
   }
 
@@ -127,25 +176,11 @@ export class Token<T = unknown> {
       }
 
       /**
-       * 如果 rule.type 为 'array'，则将 value 当作 array 进行处理，
-       * 将数组下所有元素转换为 SchemaValueData 类型，因为所有未知类型都需要当作 SchemaValueData 来处理。
+       * 如果 rule.type 为 'array' 或 'map，则将 value 转换为结构化数据。
        */
+      case 'map':
       case 'array': {
-        return {
-          type: 'array',
-          value: value.map((item: any) => this.toSchemaData(item)),
-        };
-      }
-
-      /**
-       * 如果 rule.type 为 'map'，则将 value 当作 object 进行处理，
-       * 将对象下所有元素转换为 SchemaValueData 类型，因为所有未知类型都需要当作 SchemaValueData 来处理。
-       */
-      case 'map': {
-        return {
-          type: 'map',
-          value: fromEntries(entries(value).map(([k, v]) => [k, this.toSchemaData(v)])),
-        };
+        return this.toStructured(value);
       }
     }
 
@@ -153,18 +188,26 @@ export class Token<T = unknown> {
     return this.toSchemaData(value);
   }
 
-  private toStructured(value: any): SchemaStructured {
-    if (Array.isArray(value)) {
-      return {
-        type: 'array',
-        value,
-      };
+  private toStructured(value: any): TokenStructured {
+    if (isTokenStructured(value)) {
+      return value;
     }
 
-    return {
+    if (isTokenValue(value)) {
+      return this.toStructured(value.value);
+    }
+
+    if (Array.isArray(value)) {
+      return createTokenStructured({
+        type: 'array',
+        value: value.map((item: any) => this.toSchemaData(item)),
+      });
+    }
+
+    return createTokenStructured({
       type: 'map',
-      value,
-    };
+      value: fromEntries(entries(value).map(([k, v]) => [k, this.toSchemaData(v)])),
+    });
   }
 
   private toSchemaCallback(value: Function, context: TokenContext): SchemaValueCallback {
@@ -190,13 +233,32 @@ export class Token<T = unknown> {
   }
 
   private toSchemaData(value: any): SchemaValueData {
-    return {
+    if (isTokenValue(value)) {
+      return value;
+    }
+
+    return createTokenValue({
       type: 'data',
       value,
-    };
+    });
   }
 }
 
 export function isToken(value: unknown): value is Token {
   return value instanceof Token;
+}
+
+function iteratePath(obj: any, path: string, callback: (object: any, key: string, isLast: boolean) => any): void {
+  let current = obj;
+
+  if (!path) {
+    return;
+  }
+
+  const keys = path.split('.');
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    current = callback(current, key, i === keys.length - 1);
+  }
 }

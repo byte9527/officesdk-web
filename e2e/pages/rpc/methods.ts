@@ -28,33 +28,40 @@ export function testMethods(root: HTMLElement): void {
     }),
   );
 
-  // renderTitle('Test race condition');
-  // testRaceCondition(
-  //   renderContent({
-  //     height: 85,
-  //   }),
-  // );
+  renderTitle('Test race condition');
+  testRaceCondition(
+    renderContent({
+      height: 85,
+    }),
+  );
 
-  // renderTitle('Test nested callback');
-  // testNestedCallback(
-  //   renderContent({
-  //     height: 85,
-  //   }),
-  // );
+  renderTitle('Test nested callback');
+  testNestedCallback(
+    renderContent({
+      height: 85,
+    }),
+  );
 
-  // renderTitle('Test callback return');
-  // testCallbackReturn(
-  //   renderContent({
-  //     height: 106,
-  //   }),
-  // );
+  renderTitle('Test callback return');
+  testCallbackReturn(
+    renderContent({
+      height: 106,
+    }),
+  );
 
-  // renderTitle('Test nested return');
-  // testNestedReturn(
-  //   renderContent({
-  //     height: 127,
-  //   }),
-  // );
+  renderTitle('Test nested return');
+  testNestedReturn(
+    renderContent({
+      height: 127,
+    }),
+  );
+
+  renderTitle('Test deep nested conditions');
+  testDeepNestedConditions(
+    renderContent({
+      height: 127,
+    }),
+  );
 }
 
 async function getServerMethods(
@@ -195,4 +202,30 @@ async function testNestedReturn(content: HTMLElement): Promise<void> {
   } catch (error) {
     output('Access any property on a never type will throw an error.');
   }
+}
+
+async function testDeepNestedConditions(content: HTMLElement): Promise<void> {
+  const output = createOutput({
+    container: createContainerFrame(content),
+  });
+
+  const methods = await getServerMethods(createServerFrame(content, 'rpcServer'), output);
+
+  await methods.testDeepNestedConditions({
+    is: {
+      a: window,
+      not: document,
+    },
+    can: {
+      be: 'anything',
+    },
+    maybe: {
+      a: {
+        callback: () => {
+          output('Server callback has been invoked.');
+          return 'qux';
+        },
+      },
+    },
+  });
 }

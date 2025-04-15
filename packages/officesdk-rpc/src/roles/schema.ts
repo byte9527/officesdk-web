@@ -19,13 +19,13 @@ export type SchemaValue = SchemaValueCallback | SchemaValueRef | SchemaValueData
 
 export type SchemaStructuredArray = {
   type: 'array';
-  value: Array<any>;
+  value: Array<SchemaEntity>;
 };
 
 export type SchemaStructuredMap = {
   type: 'map';
   value: {
-    [key: string]: any;
+    [key: string]: SchemaEntity;
   };
 };
 

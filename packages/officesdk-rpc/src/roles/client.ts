@@ -7,6 +7,7 @@ import { generateUniqueId } from '../shared/random';
 import type { RPCClientProxy, RPCMethods, RPCSchema } from './rpc';
 import { Transportable } from './transportable';
 import type { TransportableRemoteCallback } from './transportable';
+import type { SchemaEntity } from './schema';
 
 export interface ClientOptions<TMethods extends RPCMethods> {
   /**
@@ -126,7 +127,14 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
           return;
         }
 
-        return transportable.parseSchemaEntity(schema);
+        // TODO: 这里的类型不严谨，缺少对 callback 的约束
+        const callback: (...args: any[]) => any = transportable.parseSchemaEntity(schema);
+        return (...schemas: SchemaEntity[]) => {
+          const args = schemas.map((schema) => transportable.parseSchemaEntity(schema));
+          const result = callback(...args);
+
+          return transportable.createSchemaEntity(result);
+        };
       },
     }),
     timeout,
@@ -151,7 +159,6 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
 
       const schemas = await Promise.all(args.map((arg) => transportable.createSchemaEntity(arg)));
 
-      console.log(schemas, args);
       // TODO: 这个 method 类型不严谨
       const response = serverProxy.invoke(clientId, method as string, schemas);
 

@@ -14,7 +14,7 @@ export function testSelection(root: HTMLElement): void {
   renderTitle('Test selection');
   testGetRange(
     renderContent({
-      height: 85,
+      height: 1 + 21 * 8,
     }),
   );
 }
@@ -39,7 +39,21 @@ async function testGetRange(content: HTMLElement): Promise<void> {
 
   output('Getting selection...');
 
-  const selection = await editor.selection.getRange();
+  const selection = editor.selection;
 
-  output(`Received selection: ${selection?.start} - ${selection?.end}`);
+  const range = await selection.getRange();
+
+  if (!range) {
+    throw new Error('Failed to get selection range');
+  }
+
+  output(`Received selection: ${range.start} - ${range.end}`);
+
+  output('Getting text from range...');
+  const text = await range.getText();
+  output(`Received text: ${text}`);
+
+  output('Getting html from range...');
+  const html = await range.getHtml();
+  output(`Received html: ${html}`);
 }

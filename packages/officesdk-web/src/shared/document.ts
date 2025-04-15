@@ -48,7 +48,7 @@ export type DocumentSelection = {
    * @param listener
    * @returns
    */
-  addRangeListener: (listener: (range: DocumentRange) => void) => void;
+  addRangeListener: (listener: (range: DocumentRangeValue) => void) => void;
 };
 
 /**

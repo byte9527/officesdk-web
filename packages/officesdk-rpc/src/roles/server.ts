@@ -19,6 +19,7 @@ import { ServerConnectionPool } from './pool';
 import type { RPCServerProxy, RPCMethods } from './rpc';
 import { Transportable } from './transportable';
 import type { TransportableRemoteCallback } from './transportable';
+import type { SchemaEntity } from './schema';
 
 export interface ServerOptions<TMethods extends RPCMethods> {
   /**
@@ -109,7 +110,14 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
         }
       },
       resolveCallback: (schema) => {
-        return transportable.parseSchemaEntity(schema);
+        // TODO: 这里的类型不严谨，缺少对 callback 的约束
+        const callback: (...args: any[]) => any = transportable.parseSchemaEntity(schema);
+        return (...schemas: SchemaEntity[]) => {
+          const args = schemas.map((schema) => transportable.parseSchemaEntity(schema));
+          const result = callback(...args);
+
+          return transportable.createSchemaEntity(result);
+        };
       },
     }),
   });

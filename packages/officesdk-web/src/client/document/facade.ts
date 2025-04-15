@@ -57,11 +57,11 @@ function createSelectionFacade(methods: RemoteProxy<DocumentMethods>): RpcReturn
     },
     setRange: async (range: DocumentRangeValue | null): Promise<void> => {
       const selection = await getSelection();
-      await selection.setRange(range);
+      return selection.setRange(range);
     },
-    addRangeListener: async (listener: (range: DocumentRange) => void): Promise<void> => {
+    addRangeListener: async (listener: (range: DocumentRangeValue) => void): Promise<void> => {
       const selection = await getSelection();
-      await selection.addRangeListener(listener);
+      return selection.addRangeListener(listener);
     },
   };
 }

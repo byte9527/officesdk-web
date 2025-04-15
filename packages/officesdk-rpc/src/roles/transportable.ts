@@ -98,9 +98,14 @@ export class Transportable {
 
   private proxyRemote(value: SchemaValueCallback | SchemaValueRef): TransportableProxy<any> {
     if (value.type === 'callback') {
-      const callback = (...args: RPCSchema[]) => {
-        // TODO: callback 间调用仅支持交换数据
-        return this.callback(value, args);
+      const callback = async (...args: RPCSchema[]) => {
+        const result = await this.callback(value, args);
+
+        if (result) {
+          return this.parseSchemaEntity(result);
+        }
+
+        return result;
       };
       callback[TransportableProxyValue] = value;
       return callback;

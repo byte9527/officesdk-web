@@ -28,10 +28,7 @@
  */
 import type { SchemaEntity, SchemaValueCallback } from './schema';
 
-export type ConnectionCallback = (
-  callback: SchemaValueCallback,
-  args: SchemaEntity[],
-) => Promise<SchemaEntity | void> | void;
+export type ConnectionCallback = (callback: SchemaValueCallback, args: SchemaEntity[]) => any; // TODO: 返回值的类型现在未知
 
 /**
  * Server protocol interface
@@ -73,7 +70,8 @@ interface ConnectionServerContext {
    * Resolve callback from transportable schema
    * @returns
    */
-  resolveCallback: (callback: SchemaValueCallback) => ((...args: any[]) => void) | undefined;
+  // TODO: 类型不严谨
+  resolveCallback: (callback: SchemaValueCallback) => (...args: any[]) => any;
 }
 
 export function createConnectionServerProtocol(context: ConnectionServerContext): ConnectionServerProtocol {
@@ -100,7 +98,7 @@ export function createConnectionServerProtocol(context: ConnectionServerContext)
       return context.onInvoke(clientId, method, args);
     },
 
-    callback: (callback: SchemaValueCallback, args: SchemaEntity[]): Promise<SchemaEntity | void> | void => {
+    callback: (callback: SchemaValueCallback, args: SchemaEntity[]) => {
       return context.resolveCallback(callback)?.(...args);
     },
   };
@@ -129,7 +127,8 @@ interface ConnectionClientContext {
    * Resolve callback from transportable schema
    * @returns
    */
-  resolveCallback: (callback: SchemaValueCallback) => ((...args: any[]) => void) | undefined;
+  // TODO: 类型不严谨
+  resolveCallback: (callback: SchemaValueCallback) => ((...args: any[]) => any | void) | undefined;
 }
 
 export function createConnectionClientProtocol(context: ConnectionClientContext): ConnectionClientProtocol {
@@ -141,8 +140,8 @@ export function createConnectionClientProtocol(context: ConnectionClientContext)
       // TODO: Record the incoming clientId
     },
 
-    callback: (schema, args) => {
-      return context.resolveCallback(schema)?.(...args);
+    callback: (callback: SchemaValueCallback, args: SchemaEntity[]) => {
+      return context.resolveCallback(callback)?.(...args);
     },
   };
 }
