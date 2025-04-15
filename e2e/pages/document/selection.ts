@@ -14,7 +14,7 @@ export function testSelection(root: HTMLElement): void {
   renderTitle('Test selection');
   testGetRange(
     renderContent({
-      height: 1 + 21 * 8,
+      height: 1 + 21 * 10,
     }),
   );
 }
@@ -56,4 +56,9 @@ async function testGetRange(content: HTMLElement): Promise<void> {
   output('Getting html from range...');
   const html = await range.getHtml();
   output(`Received html: ${html}`);
+
+  output('Adding range listener...');
+  selection.addRangeListener((range) => {
+    output(`Range changed: ${range.start} - ${range.end}`);
+  });
 }

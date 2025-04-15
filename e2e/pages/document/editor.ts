@@ -27,8 +27,14 @@ export function mockDocumentEditor(output: (message: string) => void): DocumentE
       setRange: () => {
         output('document.selection.setRange has been called');
       },
-      addRangeListener: () => {
+      addRangeListener: (listener) => {
         output('document.selection.addRangeListener has been called');
+        setTimeout(() => {
+          listener({
+            start: 'changed-start',
+            end: 'changed-end',
+          });
+        });
       },
     },
     content: {

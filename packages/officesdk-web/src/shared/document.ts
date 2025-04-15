@@ -104,6 +104,6 @@ export interface DocumentRange {
  * 可用于描述一个文档区域的信息。
  */
 export interface DocumentRangeValue {
-  start: number;
-  end: number;
+  start: string;
+  end: string;
 }
