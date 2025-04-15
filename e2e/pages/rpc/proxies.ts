@@ -46,13 +46,7 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
       testNestedCallback(options) {
         return invoke('testNestedCallback', [
           new Token(options, {
-            rules: [
-              // Mark options.callback as callback
-              {
-                type: 'callback',
-                path: '&callback',
-              },
-            ],
+            callbacks: ['&callback'],
           }),
         ]);
       },
@@ -65,20 +59,8 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
       testDeepNestedConditions(that) {
         return invoke('testDeepNestedConditions', [
           new Token(that, {
-            rules: [
-              {
-                type: 'ref',
-                path: '&is.a',
-              },
-              {
-                type: 'ref',
-                path: '&is.not',
-              },
-              {
-                type: 'callback',
-                path: '&maybe.a.callback',
-              },
-            ],
+            refs: ['&is.a', '&is.not'],
+            callbacks: ['&maybe.a.callback'],
           }),
         ]);
       },
@@ -139,16 +121,8 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
             element: document.createElement('div'),
           },
           {
-            rules: [
-              {
-                type: 'callback',
-                path: '&callback',
-              },
-              {
-                type: 'ref',
-                path: '&element',
-              },
-            ],
+            callbacks: ['&callback'],
+            refs: ['&element'],
           },
         );
       },

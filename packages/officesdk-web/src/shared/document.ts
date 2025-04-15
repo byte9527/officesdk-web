@@ -24,7 +24,6 @@ export type DocumentMethods = {
  */
 export interface DocumentEditor {
   readonly selection: DocumentSelection;
-  readonly content: EditorContent;
 }
 
 export type DocumentSelection = {

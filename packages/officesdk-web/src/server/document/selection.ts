@@ -4,43 +4,31 @@ import type { DocumentSelection, DocumentRangeValue, DocumentRange } from '../..
 
 export function proxyRange(range: DocumentRange): Token {
   return new Token(range, {
-    rules: [
-      {
-        type: 'callback',
-        path: '&getText',
-      },
-      {
-        type: 'callback',
-        path: '&setText',
-      },
-      {
-        type: 'callback',
-        path: '&getHtml',
-      },
-      {
-        type: 'callback',
-        path: '&setHtml',
-      },
-    ],
+    callbacks: ['&getText', '&setText', '&getHtml', '&setHtml'],
   });
 }
 
 export function proxySelection(selection: DocumentSelection) {
-  return {
-    getRange() {
-      const range = selection.getRange();
+  return new Token(
+    {
+      getRange() {
+        const range = selection.getRange();
 
-      if (!range) {
-        return range;
-      }
+        if (!range) {
+          return range;
+        }
 
-      return proxyRange(range);
+        return proxyRange(range);
+      },
+      setRange(range: DocumentRangeValue | null): void {
+        selection.setRange(range);
+      },
+      addRangeListener(listener: (range: DocumentRangeValue) => void): void {
+        selection.addRangeListener(listener);
+      },
     },
-    setRange(range: DocumentRangeValue | null): void {
-      selection.setRange(range);
+    {
+      callbacks: ['&addRangeListener', '&getRange', '&setRange'],
     },
-    addRangeListener(listener: (range: DocumentRangeValue) => void): void {
-      selection.addRangeListener(listener);
-    },
-  };
+  );
 }

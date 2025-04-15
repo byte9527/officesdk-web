@@ -14,25 +14,28 @@ import type { SchemaEntity, SchemaStructured, SchemaValueCallback, SchemaValueRe
  * value: [window] ==> [{ type: 'array', path: '&' }, { type: 'ref', path: '&[0]' }]
  * value: { foo: [window] } ==> [{ type: 'map', path: '&' }, { type: 'array', path: '&.foo' }, { type: 'ref', path: '&.foo[0]' }]
  */
-export interface TokenRule {
-  type: 'callback' | 'ref' | 'map' | 'array';
-  path: `&${string}`;
-}
 
-function getDescendantPath(path: `&${string}`): string {
+export type TokenRulePath = `&${string}`;
+
+export type TokenRulePaths = [TokenRulePath, ...TokenRulePath[]];
+
+export type TokenRule = {
+  type: 'callback' | 'ref' | 'array' | 'map';
+  paths: TokenRulePaths;
+};
+
+function getDescendantPath(path: TokenRulePath): string {
   return path.slice(1);
 }
-
-/**
- * rules 数组的长度至少为 1。
- */
-export type TokenRules = [TokenRule, ...TokenRule[]];
 
 /**
  * 初始化 Token 的配置
  */
 export interface TokenOptions {
-  rules: TokenRules;
+  arrays?: TokenRulePaths;
+  maps?: TokenRulePaths;
+  callbacks?: TokenRulePaths;
+  refs?: TokenRulePaths;
 }
 
 /**
@@ -85,7 +88,7 @@ function isTokenValue(value: unknown): value is TokenValue {
  * 理论上可以将任意数据封装为 Token，但封装为引用类型的数据只能跨环境作为参数引用，不能在其他环境中直接使用。
  */
 export class Token<T = unknown> {
-  private rules: TokenRules | null = null;
+  private options: TokenOptions = {};
 
   // 重载 1：T extends SmartData ⇒ 只允许传一个参数
   constructor(value: T extends SmartData ? T : never);
@@ -97,19 +100,58 @@ export class Token<T = unknown> {
     options?: TokenOptions,
   ) {
     if (options) {
-      this.rules = options.rules;
+      this.options = options;
     }
   }
 
   public async getSchemaEntity(context: TokenContext): Promise<SchemaEntity> {
     const value = this.value;
-    const rules = this.rules;
+    const rules = this.sortRules();
 
     return this.toSchemaEntity(value, rules, context);
   }
 
-  private async toSchemaEntity(value: unknown, rules: TokenRules | null, context: TokenContext): Promise<SchemaEntity> {
-    if (rules) {
+  private sortRules(): TokenRule[] {
+    const { callbacks, refs, arrays, maps } = this.options;
+
+    const rules: TokenRule[] = [];
+    if (callbacks?.length) {
+      rules.push({
+        type: 'callback',
+        paths: callbacks,
+      });
+    }
+
+    if (refs?.length) {
+      rules.push({
+        type: 'ref',
+        paths: refs,
+      });
+    }
+
+    if (maps?.length) {
+      rules.push({
+        type: 'map',
+        paths: maps,
+      });
+    }
+
+    if (arrays?.length) {
+      rules.push({
+        type: 'array',
+        paths: arrays,
+      });
+    }
+
+    return rules;
+  }
+
+  private async toSchemaEntity(
+    value: unknown,
+    rules: TokenRule[] | null,
+    context: TokenContext,
+  ): Promise<SchemaEntity> {
+    if (rules?.length) {
       return this.iterateRules(value, rules, context);
     }
 
@@ -133,40 +175,44 @@ export class Token<T = unknown> {
     let rule = rules[index];
 
     while (rule) {
-      const path = getDescendantPath(rule.path);
-      iteratePath(schema, path, (object, key, isLast) => {
-        if (isLast) {
-          const current = object.value;
-          const value = current[key];
+      const { type, paths } = rule;
 
-          // 如果这是最后一个 key，则使用 rule 进行处理，
-          // 这里拿到的 value 是一个 SchemaValueData，因为这个 value 之前应该在上层被 toStructured 了
-          const data = isTokenValue(value) ? value.value : value;
-          current[key] = this.parseRule(data, rule, context);
-        } else {
-          // 这是中间的 key，需要转为结构化数据，
-          if (isTokenStructured(object)) {
-            // @ts-expect-error
-            const structured = this.toStructured(object.value[key]);
-            // @ts-expect-error
-            object.value[key] = structured;
-            return structured;
+      for (const path of paths) {
+        const descendantPath = getDescendantPath(path);
+        iteratePath(schema, descendantPath, (object, key, isLast) => {
+          if (isLast) {
+            const current = object.value;
+            const value = current[key];
+
+            // 如果这是最后一个 key，则使用 rule 进行处理，
+            // 这里拿到的 value 是一个 SchemaValueData，因为这个 value 之前应该在上层被 toStructured 了
+            const data = isTokenValue(value) ? value.value : value;
+            current[key] = this.parseRule(data, type, context);
           } else {
-            const structured = this.toStructured(object[key]);
-            object[key] = structured;
+            // 这是中间的 key，需要转为结构化数据，
+            if (isTokenStructured(object)) {
+              // @ts-expect-error
+              const structured = this.toStructured(object.value[key]);
+              // @ts-expect-error
+              object.value[key] = structured;
+              return structured;
+            } else {
+              const structured = this.toStructured(object[key]);
+              object[key] = structured;
 
-            return structured;
+              return structured;
+            }
           }
-        }
-      });
+        });
+      }
 
       rule = rules[++index];
     }
     return schema;
   }
 
-  private parseRule(value: any, rule: TokenRule, context: TokenContext): SchemaEntity {
-    switch (rule.type) {
+  private parseRule(value: any, type: TokenRule['type'], context: TokenContext): SchemaEntity {
+    switch (type) {
       case 'callback': {
         return this.toSchemaCallback(value, context);
       }
@@ -178,9 +224,11 @@ export class Token<T = unknown> {
       /**
        * 如果 rule.type 为 'array' 或 'map，则将 value 转换为结构化数据。
        */
-      case 'map':
+      case 'map': {
+        return this.toStructured(value, 'map');
+      }
       case 'array': {
-        return this.toStructured(value);
+        return this.toStructured(value, 'array');
       }
     }
 
@@ -188,7 +236,7 @@ export class Token<T = unknown> {
     return this.toSchemaData(value);
   }
 
-  private toStructured(value: any): TokenStructured {
+  private toStructured(value: any, type?: 'map' | 'array'): TokenStructured {
     if (isTokenStructured(value)) {
       return value;
     }
@@ -197,7 +245,7 @@ export class Token<T = unknown> {
       return this.toStructured(value.value);
     }
 
-    if (Array.isArray(value)) {
+    if (Array.isArray(value) || type === 'array') {
       return createTokenStructured({
         type: 'array',
         value: value.map((item: any) => this.toSchemaData(item)),
