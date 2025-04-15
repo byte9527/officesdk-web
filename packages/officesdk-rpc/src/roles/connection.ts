@@ -26,13 +26,12 @@
  * might send connection requests simultaneously before the connection is complete.
  * This scenario requires no special handling as the server automatically deduplicates.
  */
-
-import type { TransportableSchema, TransportableData, TransportableCallbackSchema } from './transportable';
+import type { SchemaEntity, SchemaValueCallback } from './schema';
 
 export type ConnectionCallback = (
-  scheme: TransportableCallbackSchema,
-  args: TransportableData[],
-) => TransportableData | void;
+  callback: SchemaValueCallback,
+  args: SchemaEntity[],
+) => Promise<SchemaEntity | void> | void;
 
 /**
  * Server protocol interface
@@ -53,7 +52,7 @@ export type ConnectionServerProtocol = {
    */
   close: (clientId: string) => boolean;
 
-  invoke: (clientId: string, method: string, args: TransportableSchema[]) => TransportableSchema;
+  invoke: (clientId: string, method: string, args: SchemaEntity[]) => SchemaEntity | void;
 
   callback: ConnectionCallback;
 };
@@ -68,13 +67,13 @@ interface ConnectionServerContext {
     has: (clientId: string) => boolean;
   };
   // TODO: 使用范型约束外部调用类型
-  onInvoke: (clientId: string, method: string, schemas: TransportableSchema[]) => any;
+  onInvoke: (clientId: string, method: string, schemas: SchemaEntity[]) => any;
 
   /**
    * Resolve callback from transportable schema
    * @returns
    */
-  resolveCallback: (schema: TransportableCallbackSchema) => ((...args: any[]) => void) | undefined;
+  resolveCallback: (callback: SchemaValueCallback) => ((...args: any[]) => void) | undefined;
 }
 
 export function createConnectionServerProtocol(context: ConnectionServerContext): ConnectionServerProtocol {
@@ -93,7 +92,7 @@ export function createConnectionServerProtocol(context: ConnectionServerContext)
       return true;
     },
 
-    invoke: (clientId: string, method: string, args: TransportableSchema[]): TransportableSchema => {
+    invoke: (clientId: string, method: string, args: SchemaEntity[]): SchemaEntity => {
       if (!context.clients.has(clientId)) {
         throw new Error('Client not found');
       }
@@ -101,8 +100,8 @@ export function createConnectionServerProtocol(context: ConnectionServerContext)
       return context.onInvoke(clientId, method, args);
     },
 
-    callback: (schema: TransportableCallbackSchema, args: TransportableData[]): TransportableData | void => {
-      return context.resolveCallback(schema)?.(...args);
+    callback: (callback: SchemaValueCallback, args: SchemaEntity[]): Promise<SchemaEntity | void> | void => {
+      return context.resolveCallback(callback)?.(...args);
     },
   };
 }
@@ -130,7 +129,7 @@ interface ConnectionClientContext {
    * Resolve callback from transportable schema
    * @returns
    */
-  resolveCallback: (schema: TransportableCallbackSchema) => ((...args: any[]) => void) | undefined;
+  resolveCallback: (callback: SchemaValueCallback) => ((...args: any[]) => void) | undefined;
 }
 
 export function createConnectionClientProtocol(context: ConnectionClientContext): ConnectionClientProtocol {

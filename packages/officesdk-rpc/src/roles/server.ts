@@ -18,7 +18,7 @@ import { isClientNotAccessible } from '../errors';
 import { ServerConnectionPool } from './pool';
 import type { RPCServerProxy, RPCMethods } from './rpc';
 import { Transportable } from './transportable';
-import type { TransportableData } from './transportable';
+import type { TransportableRemoteCallback } from './transportable';
 
 export interface ServerOptions<TMethods extends RPCMethods> {
   /**
@@ -75,13 +75,16 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
     return client;
   };
 
+  // 这里是服务端调用客户端 callback 的地方
+  const transportableRemoteCallback: TransportableRemoteCallback = async (callback, args) => {
+    const clientProxy = ensureClientProxy();
+    const schemas = await Promise.all(args.map((arg) => transportable.createSchemaEntity(arg)));
+    return clientProxy.callback(callback, schemas);
+  };
+
   const transportable = new Transportable({
     name: 'server',
-    callback: async (schema, args): Promise<TransportableData | void> => {
-      const clientProxy = ensureClientProxy();
-
-      return clientProxy.callback(schema, args);
-    },
+    callback: transportableRemoteCallback,
   });
 
   const connection = connect<ConnectionClientProtocol>({
@@ -98,15 +101,15 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
 
         const methods = proxy();
 
-        const args = schemas.map((schema) => transportable.parseSchema(schema));
+        const args = schemas.map((schema) => transportable.parseSchemaEntity(schema));
         const result = methods[method](...args);
 
         if (result) {
-          return transportable.createSchema(result.value, result.rules);
+          return transportable.createSchemaEntity(result);
         }
       },
       resolveCallback: (schema) => {
-        return transportable.parseSchema(schema);
+        return transportable.parseSchemaEntity(schema);
       },
     }),
   });

@@ -1,5 +1,5 @@
+import { Token } from '@officesdk/rpc';
 import type { RPCClientProxy, RPCServerProxy } from '@officesdk/rpc';
-import type { TransportableRules } from '@officesdk/rpc';
 
 export type TestMethods = {
   testInvoke: () => string;
@@ -27,54 +27,26 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
         return invoke('testInvoke', []);
       },
       testCallbackArg: (type, callback) => {
-        return invoke('testCallbackArg', [type, callback], {
-          transformArgs: () => {
-            const rules: TransportableRules[] = [
-              // args[0]
-              [
-                {
-                  type: 'data',
-                },
-              ],
-              // args[1]
-              [
-                {
-                  type: 'callback',
-                  path: 'callback',
-                },
-              ],
-            ];
-
-            return {
-              rules,
-            };
-          },
-        });
+        return invoke('testCallbackArg', [type, callback]);
       },
       testNestedCallback(options) {
-        return invoke('testNestedCallback', [options], {
-          transformArgs: () => {
-            const rules: TransportableRules[] = [
-              // args[0]
-              [
-                {
-                  type: 'callback',
-                  path: 'callback',
-                },
-              ],
-            ];
-
-            return {
-              rules,
-            };
-          },
-        });
+        return invoke('testNestedCallback', [
+          new Token(options, {
+            rules: [
+              // Mark options.callback as callback
+              {
+                type: 'callback',
+                path: '&callback',
+              },
+            ],
+          }),
+        ]);
       },
       testCallbackReturn(type) {
-        return invoke('testCallbackReturn', [type], {});
+        return invoke('testCallbackReturn', [type]);
       },
       testNestedReturn(type) {
-        return invoke('testNestedReturn', [type], {});
+        return invoke('testNestedReturn', [type]);
       },
     };
   };
@@ -88,9 +60,7 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
     return {
       testInvoke: () => {
         output?.('Server .testInvoke has been invoked.');
-        return {
-          value: 'pong',
-        };
+        return 'pong';
       },
       testCallbackArg: (type: string, callback: (event: { type: string; data: unknown }) => void) => {
         output?.('Server .testCallbackArg has been invoked with type: ' + type);
@@ -117,23 +87,16 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
       testCallbackReturn: (type) => {
         output?.('Server .testCallbackReturn has been invoked with type: ' + type);
 
-        return {
-          value: (event: { data: unknown }) => {
-            output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
-            return 'qux';
-          },
-          rules: [
-            {
-              type: 'callback',
-            },
-          ],
-        };
+        return new Token((event: { data: unknown }) => {
+          output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
+          return 'qux';
+        });
       },
       testNestedReturn(type) {
         output?.('Server .testNestedReturn has been invoked with type: ' + type);
 
-        return {
-          value: {
+        return new Token(
+          {
             baz: 'qux',
             callback: (event: { data: unknown }) => {
               output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
@@ -141,17 +104,19 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
             },
             element: document.createElement('div'),
           },
-          rules: [
-            {
-              type: 'callback',
-              path: 'callback',
-            },
-            {
-              type: 'any',
-              path: 'element',
-            },
-          ],
-        };
+          {
+            rules: [
+              {
+                type: 'callback',
+                path: '&callback',
+              },
+              {
+                type: 'ref',
+                path: '&element',
+              },
+            ],
+          },
+        );
       },
     };
   };

@@ -4,9 +4,9 @@ import type { Connection, RemoteProxy } from 'penpal';
 import { OfficeSdkRpcChannel, createConnectionClientProtocol } from './connection';
 import type { ConnectionServerProtocol } from './connection';
 import { generateUniqueId } from '../shared/random';
-import type { RPCClientProxy, RPCMethods, RPCClientInvokeOptions } from './rpc';
+import type { RPCClientProxy, RPCMethods, RPCSchema } from './rpc';
 import { Transportable } from './transportable';
-import type { TransportableData } from './transportable';
+import type { TransportableRemoteCallback } from './transportable';
 
 export interface ClientOptions<TMethods extends RPCMethods> {
   /**
@@ -102,13 +102,17 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
     return server;
   };
 
+  // 这里是客户端调用服务端 callback 的地方
+  const transportableRemoteCallback: TransportableRemoteCallback = async (callback, args) => {
+    const serverProxy = ensureServerProxy();
+
+    const schemas = await Promise.all(args.map((arg) => transportable.createSchemaEntity(arg)));
+    return serverProxy.callback(callback, schemas);
+  };
+
   const transportable = new Transportable({
     name: clientId,
-    callback: async (schema, args): Promise<TransportableData | void> => {
-      const serverProxy = ensureServerProxy();
-
-      return serverProxy.callback(schema, args);
-    },
+    callback: transportableRemoteCallback,
   });
 
   const connection = connect<ConnectionServerProtocol>({
@@ -122,7 +126,7 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
           return;
         }
 
-        return transportable.parseSchema(schema);
+        return transportable.parseSchemaEntity(schema);
       },
     }),
     timeout,
@@ -135,30 +139,28 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
   const { proxy } = options;
 
   const methods = proxy({
-    invoke: async <TName extends keyof TMethods>(
-      method: TName,
-      args: Parameters<TMethods[TName]>,
-      options?: RPCClientInvokeOptions<TMethods[TName]>,
-    ) => {
+    /**
+     * 这里的客户端调用服务端的统一入口
+     * @param method
+     * @param args
+     * @param options
+     * @returns
+     */
+    invoke: async <TName extends keyof TMethods>(method: TName, args: RPCSchema[]) => {
       const serverProxy = ensureServerProxy();
 
-      // 如果需要对参数进行转换，则使用 mapArgs 将参数中的引用数据提取出来，
-      // 并生成对应的引用路径，用于服务端调用时使用
-      const transformArgs = options?.transformArgs;
-      if (transformArgs) {
-        const { rules } = transformArgs(args);
-        const schemas = rules.map((rule, index) => transportable.createSchema(args[index], rule));
+      const schemas = await Promise.all(args.map((arg) => transportable.createSchemaEntity(arg)));
 
-        return serverProxy.invoke(clientId, method as string, schemas);
-      }
-
-      const schemas = args.map((arg) => transportable.createSchema(arg));
-
+      console.log(schemas, args);
       // TODO: 这个 method 类型不严谨
       const response = serverProxy.invoke(clientId, method as string, schemas);
 
       return response.then((data) => {
-        return transportable.parseSchema(data);
+        if (!data) {
+          return;
+        }
+
+        return transportable.parseSchemaEntity(data);
       });
     },
   });
@@ -193,7 +195,6 @@ async function connectServer(
     return server;
   } catch (error) {
     // TODO: 超时处理，发生在同源策略限制时
-    debugger;
 
     throw error;
   }

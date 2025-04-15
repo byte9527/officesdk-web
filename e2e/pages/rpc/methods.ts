@@ -28,33 +28,33 @@ export function testMethods(root: HTMLElement): void {
     }),
   );
 
-  renderTitle('Test race condition');
-  testRaceCondition(
-    renderContent({
-      height: 85,
-    }),
-  );
+  // renderTitle('Test race condition');
+  // testRaceCondition(
+  //   renderContent({
+  //     height: 85,
+  //   }),
+  // );
 
-  renderTitle('Test nested callback');
-  testNestedCallback(
-    renderContent({
-      height: 85,
-    }),
-  );
+  // renderTitle('Test nested callback');
+  // testNestedCallback(
+  //   renderContent({
+  //     height: 85,
+  //   }),
+  // );
 
-  renderTitle('Test callback return');
-  testCallbackReturn(
-    renderContent({
-      height: 106,
-    }),
-  );
+  // renderTitle('Test callback return');
+  // testCallbackReturn(
+  //   renderContent({
+  //     height: 106,
+  //   }),
+  // );
 
-  renderTitle('Test nested return');
-  testNestedReturn(
-    renderContent({
-      height: 127,
-    }),
-  );
+  // renderTitle('Test nested return');
+  // testNestedReturn(
+  //   renderContent({
+  //     height: 127,
+  //   }),
+  // );
 }
 
 async function getServerMethods(

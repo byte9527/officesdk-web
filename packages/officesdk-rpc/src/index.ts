@@ -1,4 +1,4 @@
-export { create, serve } from './roles';
+export { create, serve, Token } from './roles';
 export type {
   RPCMethods,
   RPCClientProxy,
