@@ -14,6 +14,10 @@ module.exports = {
     // Test document cases.
     document: './pages/document/document.ts',
     documentServer: './pages/document/server.ts',
+
+    // Test spreadsheet cases.
+    spreadsheet: './pages/spreadsheet/spreadsheet.ts',
+    spreadsheetServer: './pages/spreadsheet/server.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -60,6 +64,11 @@ module.exports = {
       filename: 'document.html',
       chunks: ['document'],
       template: './pages/document/document.html',
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'spreadsheet.html',
+      chunks: ['spreadsheet'],
+      template: './pages/spreadsheet/spreadsheet.html',
     }),
   ],
   devServer: {

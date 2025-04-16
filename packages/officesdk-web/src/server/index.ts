@@ -1,4 +1,16 @@
 export { serveSDK } from './serve';
 export type { ServeOptions } from './serve';
 export type { EditorContext } from './editor';
-export type { DocumentEditor, EditorContent } from '../shared';
+export type {
+  EditorContent,
+  EditorContentRecord,
+  DocumentEditor,
+  SpreadsheetEditor,
+  SpreadsheetWorkbook,
+  SpreadsheetWorksheet,
+  SpreadsheetCell,
+  SpreadsheetSelection,
+  SpreadsheetRange,
+  SpreadsheetRangeType,
+  SpreadsheetRangeValue,
+} from '../shared';

@@ -4,11 +4,8 @@
   "version": "1.0.0",
   "description": "RPC library for the Office SDK",
   "main": "dist/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "license": "MIT",
-  "files": [],
+  "sideEffects": false,
   "dependencies": {
     "penpal": "^7.0.4"
   }

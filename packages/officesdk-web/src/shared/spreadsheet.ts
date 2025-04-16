@@ -46,7 +46,7 @@ export interface SpreadsheetEditor {
 /**
  * 工作簿接口
  */
-export interface SpreadsheetWorkbook {
+export type SpreadsheetWorkbook = {
   /**
    * 获取所有工作表
    */
@@ -68,7 +68,7 @@ export interface SpreadsheetWorkbook {
    * @param sheetId 工作表ID
    */
   setActiveWorksheet: (sheetId: string) => void;
-}
+};
 
 /**
  * 工作表对象
@@ -227,9 +227,21 @@ export interface SpreadsheetRange {
   getText: () => string;
 
   /**
+   * 设置该区域的内容
+   * @param text 内容
+   */
+  setText: (text: string) => void;
+
+  /**
    * 将区域中的内容以 HTML 格式返回
    */
   getHtml: () => string;
+
+  /**
+   * 设置该区域的内容为 HTML 格式
+   * @param html 内容
+   */
+  setHtml: (html: string) => void;
 }
 
 /**

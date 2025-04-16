@@ -4,7 +4,7 @@ import { serveSDK } from '@officesdk/web/server';
 import { createOutput } from '../shared/output';
 import { createRenderContent } from '../shared/renderer';
 import { createContainerFrame } from '../shared/frames';
-import { mockDocumentEditor } from './mocks/editor';
+import { mockSpreadsheetEditor } from './mocks/editor';
 import { mockEditorContent } from '../editor/mocks/content';
 
 async function main() {
@@ -25,8 +25,8 @@ async function main() {
   output('Creating document server...');
 
   const server = await serveSDK({
-    fileType: FileType.Document,
-    editor: mockDocumentEditor(output),
+    fileType: FileType.Spreadsheet,
+    editor: mockSpreadsheetEditor(output),
     context: {
       content: mockEditorContent(output),
     },

@@ -1,5 +1,3 @@
-import type { TransportableData } from '@officesdk/rpc';
-
 /**
  * 定义的通用返回类型定义
  */
@@ -15,7 +13,5 @@ export type RpcReturnProperties = {
 export type RpcReturnProxy<TProperties extends RpcReturnProperties = RpcReturnProperties> = {
   [K in keyof TProperties]: TProperties[K] extends (...args: infer A) => infer R
     ? (...args: A) => Promise<Awaited<R>>
-    : TProperties[K] extends TransportableData
-      ? TProperties[K]
-      : never;
+    : TProperties[K];
 };
