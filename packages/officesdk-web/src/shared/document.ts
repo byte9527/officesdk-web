@@ -7,15 +7,19 @@ import type { EditorContent } from './editor';
 
 export type DocumentMethods = {
   /**
-   * 选区实例
+   * 获取选区接口
    */
   getSelection: () => DocumentSelection;
 
   /**
-   * 主动保存内容
+   * 获取内容接口
    */
   getContent: () => EditorContent;
 
+  /**
+   * 获取当前文档的缩放接口
+   */
+  getZoom: () => DocumentZoom;
   // TODO: 初始化流程控制，初始化各类异常
 };
 
@@ -24,6 +28,8 @@ export type DocumentMethods = {
  */
 export interface DocumentEditor {
   readonly selection: DocumentSelection;
+  readonly content: EditorContent;
+  readonly zoom: DocumentZoom;
 }
 
 export type DocumentSelection = {
@@ -106,3 +112,41 @@ export interface DocumentRangeValue {
   start: string;
   end: string;
 }
+
+/**
+ * 文档缩放接口
+ */
+export type DocumentZoom = {
+  /**
+   * 获取当前缩放比例。
+   * @returns
+   */
+  getPercentage: () => number;
+  /**
+   * 设置缩放比例，
+   * 有效范围 10 ~ 500。
+   * @param percentage
+   */
+  setPercentage: (percentage: number) => void;
+  /**
+   * 设置自动缩放模式，
+   * none: 不自动缩放，默认值。
+   * window: 根据窗口宽度自动缩放，页面宽度随着窗口宽度变化而变化
+   * page: 根据页面尺寸自动缩放，将页面缩放到可以完整显示的大小
+   * @param mode 缩放模式，可以是 'window' 或 'page'
+   */
+  setFitMode: (mode: 'none' | 'window' | 'page') => void;
+  /**
+   * 获取当前缩放模式。
+   * @returns
+   */
+  getFitMode: () => 'none' | 'window' | 'page';
+  /**
+   * 放大。
+   */
+  zoomIn: () => void;
+  /**
+   * 缩小。
+   */
+  zoomOut: () => void;
+};

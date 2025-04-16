@@ -1,7 +1,7 @@
-import { createClient } from './client';
-import { createContainerFrame, createServerFrame } from '../shared/frames';
-import { createRenderTitle, createRenderContent } from '../shared/renderer';
-import { createOutput } from '../shared/output';
+import { createClient } from '../client';
+import { createContainerFrame, createServerFrame } from '../../shared/frames';
+import { createRenderTitle, createRenderContent } from '../../shared/renderer';
+import { createOutput } from '../../shared/output';
 
 /**
  * Test document sdk cases.

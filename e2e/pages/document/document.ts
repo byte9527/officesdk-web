@@ -1,6 +1,7 @@
-import { testSDK } from './sdk';
-import { testSelection } from './selection';
-// import { testContent } from './content';
+import { testSDK } from './tests/sdk';
+import { testSelection } from './tests/selection';
+import { testZoom } from './tests/zoom';
+import { testContent } from './tests/content';
 
 function main(): void {
   const root = document.getElementById('root');
@@ -11,6 +12,8 @@ function main(): void {
 
   testSDK(root);
   testSelection(root);
+  testZoom(root);
+  testContent(root);
 }
 
 main();

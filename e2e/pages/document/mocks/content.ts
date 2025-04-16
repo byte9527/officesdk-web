@@ -4,11 +4,16 @@ export function mockEditorContent(output: (message: string) => void): EditorCont
   return {
     save: () => {
       output('document.content.save has been called');
-      return Promise.resolve();
     },
-    addContentListener: () => {
+    addContentListener: (listener) => {
       output('document.content.addContentListener has been called');
-      return Promise.resolve();
+
+      setTimeout(() => {
+        listener({
+          id: 'mocked-id',
+          timestamp: Date.now(),
+        });
+      });
     },
   };
 }

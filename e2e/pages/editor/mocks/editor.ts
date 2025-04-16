@@ -47,5 +47,27 @@ export function mockDocumentEditor(output: (message: string) => void): DocumentE
         return Promise.resolve();
       },
     },
+    zoom: {
+      getPercentage: () => {
+        output('document.zoom.getPercentage has been called');
+        return 100;
+      },
+      setPercentage: (percentage: number) => {
+        output(`document.zoom.setPercentage has been called with percentage: ${percentage}`);
+      },
+      setFitMode: (mode: 'none' | 'window' | 'page') => {
+        output(`document.zoom.setFitMode has been called with mode: ${mode}`);
+      },
+      getFitMode: () => {
+        output('document.zoom.getFitMode has been called');
+        return 'none';
+      },
+      zoomIn: () => {
+        output('document.zoom.zoomIn has been called');
+      },
+      zoomOut: () => {
+        output('document.zoom.zoomOut has been called');
+      },
+    },
   };
 }

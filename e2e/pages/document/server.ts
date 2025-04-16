@@ -4,8 +4,8 @@ import { serveSDK } from '@officesdk/web/server';
 import { createOutput } from '../shared/output';
 import { createRenderContent } from '../shared/renderer';
 import { createContainerFrame } from '../shared/frames';
-import { mockDocumentEditor } from './editor';
-import { mockEditorContent } from './content';
+import { mockDocumentEditor } from '../editor/mocks/editor';
+import { mockEditorContent } from './mocks/content';
 
 async function main() {
   const root = document.getElementById('root');
