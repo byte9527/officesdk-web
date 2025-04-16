@@ -1,6 +1,8 @@
 import { fromEntries, entries } from '../shared/object';
 import type { Cloneable } from '../shared/cloneable';
 import type { SchemaEntity, SchemaStructured, SchemaValueCallback, SchemaValueRef, SchemaValueData } from './schema';
+import { isSimpleValue } from '../shared/cloneable';
+import { isPlainObject, isArray } from '../shared/type';
 
 /**
  * 定义传入的数据通过 Token 转换为 schema 的规则，
@@ -87,16 +89,11 @@ function isTokenValue(value: unknown): value is TokenValue {
  * Token 的主要作用是将无法跨环境传输的数据封装为可以跨环境传输的数据或引用参数，
  * 理论上可以将任意数据封装为 Token，但封装为引用类型的数据只能跨环境作为参数引用，不能在其他环境中直接使用。
  */
-export class Token<T = unknown> {
+export class Token {
   private options: TokenOptions = {};
 
-  // 重载 1：T extends SmartData ⇒ 只允许传一个参数
-  constructor(value: T extends SmartData ? T : never);
-
-  // 重载 2：T 不是 SmartData ⇒ 允许传两个参数
-  constructor(value: T, options: T extends SmartData ? (T extends Function ? TokenOptions : never) : TokenOptions);
   constructor(
-    private value: T,
+    private value: unknown,
     options?: TokenOptions,
   ) {
     if (options) {
@@ -151,21 +148,114 @@ export class Token<T = unknown> {
     rules: TokenRule[] | null,
     context: TokenContext,
   ): Promise<SchemaEntity> {
+    // 如果定义了规则，优先使用规则进行转换
     if (rules?.length) {
       return this.iterateRules(value, rules, context);
     }
 
+    // 如果是函数直接转为 callback
     if (typeof value === 'function') {
       return this.toSchemaCallback(value, context);
     }
 
+    // 如果是 Promise 则等待异步完成后再递归调用
     if (value instanceof Promise) {
       return value.then((value) => {
         return this.toSchemaEntity(value, rules, context);
       });
     }
 
-    return this.toSchemaData(value);
+    // 如果是安全可直接传输的值，则直接返回
+    if (isSimpleValue(value)) {
+      return this.toSchemaData(value);
+    }
+
+    // 如果是纯对象或数组，深度遍历对象
+    if (isPlainObject(value) || isArray(value)) {
+      return this.iterateValue(value, context);
+    }
+
+    // 其他未知类型全部转为 ref
+    return this.toSchemaRef(value, context);
+  }
+
+  /**
+   * 自动进行类型转换，流程如下：
+   * 1. 深度递归遍历的 value 中所有属性
+   * 2. 如果 value 是及其下面所有属性都可以通过 structuredClone 传输，则调用 .toSchemaData 转换
+   * 3. 如果 value 中存在一些无法通过 structuredClone 传输的属性，则调用 .toSchemaRef 或 .toSchemaCallback 转换
+   * @param value
+   * @param context
+   * @returns
+   */
+  private async iterateValue(value: Record<string, unknown> | unknown[], context: TokenContext): Promise<SchemaEntity> {
+    // 检查是否所有属性都可以通过 structuredClone 传输
+    if (this.isCloneable(value)) {
+      // 如果所有属性都可以通过 structuredClone 传输，直接转换为 SchemaData
+      return this.toSchemaData(value);
+    }
+
+    // 否则递归处理每个属性
+    if (Array.isArray(value)) {
+      const result: SchemaStructured = {
+        type: 'array',
+        value: [],
+      };
+
+      for (let i = 0; i < value.length; i++) {
+        const item = value[i];
+        // 递归处理数组中的每个元素
+        result.value.push(await this.toSchemaEntity(item, null, context));
+      }
+
+      return createTokenStructured(result);
+    } else {
+      const result: SchemaStructured = {
+        type: 'map',
+        value: {},
+      };
+
+      for (const [key, item] of entries(value)) {
+        // 递归处理对象中的每个属性
+        result.value[key] = await this.toSchemaEntity(item, null, context);
+      }
+
+      return createTokenStructured(result);
+    }
+  }
+
+  /**
+   * 递归检查值及其所有属性是否都可以通过 structuredClone 传输
+   * @param value 要检查的值
+   * @returns 如果值及其所有属性都可以通过 structuredClone 传输，则返回 true
+   */
+  private isCloneable(value: unknown): boolean {
+    // 原始值可以直接传输
+    if (isSimpleValue(value)) {
+      return true;
+    }
+
+    // 函数、Promise 等不能通过 structuredClone 传输
+    if (typeof value === 'function' || value instanceof Promise) {
+      return false;
+    }
+
+    // 非普通对象不能通过 structuredClone 传输
+    if (!isPlainObject(value) && !isArray(value)) {
+      return false;
+    }
+
+    // 递归检查数组的每个元素
+    if (isArray(value)) {
+      return value.every((item) => this.isCloneable(item));
+    }
+
+    // 递归检查对象的每个属性
+    if (isPlainObject(value)) {
+      return Object.values(value).every((item) => this.isCloneable(item));
+    }
+
+    return false;
   }
 
   private iterateRules(value: any, rules: TokenRule[], context: TokenContext): SchemaEntity {

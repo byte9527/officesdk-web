@@ -44,11 +44,7 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
         return invoke('testCallbackArg', [type, callback]);
       },
       testNestedCallback(options) {
-        return invoke('testNestedCallback', [
-          new Token(options, {
-            callbacks: ['&callback'],
-          }),
-        ]);
+        return invoke('testNestedCallback', [new Token(options)]);
       },
       testCallbackReturn(type) {
         return invoke('testCallbackReturn', [type]);
@@ -57,12 +53,7 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
         return invoke('testNestedReturn', [type]);
       },
       testDeepNestedConditions(that) {
-        return invoke('testDeepNestedConditions', [
-          new Token(that, {
-            refs: ['&is.a', '&is.not'],
-            callbacks: ['&maybe.a.callback'],
-          }),
-        ]);
+        return invoke('testDeepNestedConditions', [new Token(that)]);
       },
     };
   };
@@ -111,20 +102,14 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
       testNestedReturn(type) {
         output?.('Server .testNestedReturn has been invoked with type: ' + type);
 
-        return new Token(
-          {
-            baz: 'qux',
-            callback: (event: { data: unknown }) => {
-              output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
-              return 'qux';
-            },
-            element: document.createElement('div'),
+        return new Token({
+          baz: 'qux',
+          callback: (event: { data: unknown }) => {
+            output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
+            return 'qux';
           },
-          {
-            callbacks: ['&callback'],
-            refs: ['&element'],
-          },
-        );
+          element: document.createElement('div'),
+        });
       },
       testDeepNestedConditions(that) {
         output?.('Server .testDeepNestedConditions has been invoked ');
