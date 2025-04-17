@@ -94,10 +94,10 @@ export const createServerProxy: (output?: (message: string) => void) => RPCServe
       testCallbackReturn: (type) => {
         output?.('Server .testCallbackReturn has been invoked with type: ' + type);
 
-        return new Token((event: { data: unknown }) => {
+        return (event: { data: unknown }) => {
           output?.('Server callback has been invoked with event: ' + JSON.stringify(event));
           return 'qux';
-        });
+        };
       },
       testNestedReturn(type) {
         output?.('Server .testNestedReturn has been invoked with type: ' + type);

@@ -103,11 +103,10 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
         const methods = proxy();
 
         const args = schemas.map((schema) => transportable.parseSchemaEntity(schema));
-        const result = methods[method](...args);
+        // TODO: 完成 connection 里的类型约束
+        const result: any = methods[method](...args);
 
-        if (result) {
-          return transportable.createSchemaEntity(result);
-        }
+        return transportable.createSchemaEntity(result);
       },
       resolveCallback: (schema) => {
         // TODO: 这里的类型不严谨，缺少对 callback 的约束

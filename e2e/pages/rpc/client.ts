@@ -1,5 +1,5 @@
 import { create } from '@officesdk/rpc';
-import type { RemoteProxy } from '@officesdk/rpc';
+import type { RPCReturnMethods } from '@officesdk/rpc';
 
 import { createClientProxy } from './proxies';
 import type { TestMethods } from './proxies';
@@ -9,7 +9,7 @@ interface ClientOptions {
   iframe: HTMLIFrameElement;
 }
 
-export async function createClient(options: ClientOptions): Promise<RemoteProxy<TestMethods>> {
+export async function createClient(options: ClientOptions): Promise<RPCReturnMethods<TestMethods>> {
   const { output, iframe } = options;
 
   output?.('Start testing rpc client.');

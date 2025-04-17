@@ -1,7 +1,7 @@
 import type { RPCClientProxy } from '@officesdk/rpc';
-import type { DatabaseTableSDK } from '../../shared';
+import type { DatabaseTableMethods } from '../../shared';
 
-export function createDatabaseTableProxy(): RPCClientProxy<DatabaseTableSDK> {
+export function createDatabaseTableProxy(): RPCClientProxy<DatabaseTableMethods> {
   return (context) => {
     // const { invoke } = context;
 

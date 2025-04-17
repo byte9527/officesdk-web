@@ -1,4 +1,4 @@
-import type { RemoteProxy } from '@officesdk/rpc';
+import type { RPCReturnMethods } from '@officesdk/rpc';
 
 import { createClient } from './client';
 import { createContainerFrame, createServerFrame } from '../shared/frames';
@@ -67,7 +67,7 @@ export function testMethods(root: HTMLElement): void {
 async function getServerMethods(
   iframe: HTMLIFrameElement,
   output: (message: string) => void,
-): Promise<RemoteProxy<TestMethods>> {
+): Promise<RPCReturnMethods<TestMethods>> {
   output('Start creating client...');
 
   const methods = await createClient({
