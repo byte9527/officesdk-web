@@ -42,7 +42,7 @@ export interface RPCClientProxyContext<TMethods extends RPCMethods> {
 /**
  * 定义的通用返回类型定义
  */
-export type RPCReturnMap<> = Record<string, any>;
+export type RPCReturnMap = Record<string, any>;
 
 export type PRCReturnArray = any[];
 
@@ -59,8 +59,6 @@ export type RPCReturnMapProxy<TProperties extends RPCReturnMap> = {
 export type RPCReturnArrayProxy<TArray extends PRCReturnArray> =
   TArray extends Array<infer T> ? RPCReturnValueProxy<T>[] : never;
 
-export type RPCReturnPrimitive = string | number | boolean | null | undefined;
-
 export type RPCReturnValueProxy<T> = T extends PRCReturnArray
   ? RPCReturnArrayProxy<T>
   : T extends RPCReturnCallback
@@ -69,14 +67,18 @@ export type RPCReturnValueProxy<T> = T extends PRCReturnArray
       ? RPCReturnMapProxy<T>
       : T;
 
+/**
+ * RPC 回调的返回值都应该匹配范型 RPCReturnValueProxy<R>
+ */
 export type RPCReturnCallbackProxy<T extends RPCReturnCallback> = T extends (...args: infer A) => infer R
   ? (...args: A) => Promise<R extends any ? RPCReturnValueProxy<R> : never>
   : never;
 
+/**
+ * 拦截 RPC 方法列表的所有返回值，使其匹配范型 RPCReturnValueProxy<R>
+ */
 export type RPCReturnMethods<TMethods extends RPCMethods> = {
-  [K in keyof TMethods]: TMethods[K] extends (...args: infer A) => infer R
-    ? RPCReturnCallbackProxy<TMethods[K]>
-    : TMethods[K];
+  [K in keyof TMethods]: TMethods[K] extends RPCReturnCallback ? RPCReturnCallbackProxy<TMethods[K]> : TMethods[K];
 };
 
 /**
@@ -93,5 +95,5 @@ export type RPCClientProxy<TMethods extends RPCMethods> = (
  * 并返回一个对象，该对象需要经过 Transportable 转换为 TransportableSchema 后返回客户端。
  */
 export type RPCServerProxy<TMethods extends RPCMethods> = () => {
-  [K in keyof TMethods]: TMethods[K] extends (...args: infer A) => infer R ? (...args: [...A]) => R : never;
+  [K in keyof TMethods]: TMethods[K] extends (...args: any[]) => any ? TMethods[K] : never;
 };
