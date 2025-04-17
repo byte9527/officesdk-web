@@ -1,16 +1,12 @@
-import type { RemoteProxy } from '@officesdk/rpc';
-import type {
-  DocumentMethods,
-  DocumentSelection,
-  DocumentRange,
-  DocumentRangeValue,
-  RpcReturnProxy,
-} from '../../shared';
+import type { RPCReturnMethods, RPCReturnMapProxy } from '@officesdk/rpc';
+import type { DocumentMethods, DocumentSelection, DocumentRange, DocumentRangeValue } from '../../shared';
 
-export function createSelectionFacade(methods: RemoteProxy<DocumentMethods>): RpcReturnProxy<DocumentSelection> {
-  let selectionCache: Promise<DocumentSelection> | null = null;
+export function createSelectionFacade(
+  methods: RPCReturnMethods<DocumentMethods>,
+): RPCReturnMapProxy<DocumentSelection> {
+  let selectionCache: Promise<RPCReturnMapProxy<DocumentSelection>> | null = null;
 
-  const getSelection = async (): Promise<DocumentSelection> => {
+  const getSelection = async (): Promise<RPCReturnMapProxy<DocumentSelection>> => {
     if (selectionCache) {
       return selectionCache;
     }
@@ -20,7 +16,7 @@ export function createSelectionFacade(methods: RemoteProxy<DocumentMethods>): Rp
   };
 
   return {
-    getRange: async (): Promise<DocumentRange | null> => {
+    getRange: async (): Promise<RPCReturnMapProxy<DocumentRange> | null> => {
       const selection = await getSelection();
       return selection.getRange();
     },

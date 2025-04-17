@@ -1,18 +1,14 @@
-import type { RemoteProxy } from '@officesdk/rpc';
+import type { RPCReturnMethods, RPCReturnMapProxy } from '@officesdk/rpc';
+
 import type { SpreadsheetMethods, SpreadsheetWorkbook, SpreadsheetWorksheet } from '../../shared';
 
-// Create a type that matches RpcReturnProperties
-type WorkbookFacade = {
-  getWorksheets: () => Promise<SpreadsheetWorksheet[]>;
-  getWorksheetById: (sheetId: string) => Promise<SpreadsheetWorksheet | null>;
-  getActiveWorksheet: () => Promise<SpreadsheetWorksheet>;
-  setActiveWorksheet: (sheetId: string) => Promise<void>;
-};
+export function createWorkbookFacade(
+  methods: RPCReturnMethods<SpreadsheetMethods>,
+): RPCReturnMapProxy<SpreadsheetWorkbook> {
+  let workbookCache: Promise<RPCReturnMapProxy<SpreadsheetWorkbook>> | null = null;
 
-export function createWorkbookFacade(methods: RemoteProxy<SpreadsheetMethods>): WorkbookFacade {
-  let workbookCache: Promise<SpreadsheetWorkbook> | null = null;
-
-  const getWorkbook = async (): Promise<SpreadsheetWorkbook> => {
+  // workbook 是全局单例，所以可以缓存
+  const getWorkbook = async (): Promise<RPCReturnMapProxy<SpreadsheetWorkbook>> => {
     if (workbookCache) {
       return workbookCache;
     }
@@ -22,17 +18,17 @@ export function createWorkbookFacade(methods: RemoteProxy<SpreadsheetMethods>): 
   };
 
   return {
-    getWorksheets: async (): Promise<SpreadsheetWorksheet[]> => {
+    getWorksheets: async (): Promise<RPCReturnMapProxy<SpreadsheetWorksheet>[]> => {
       const workbook = await getWorkbook();
       return workbook.getWorksheets();
     },
 
-    getWorksheetById: async (sheetId: string): Promise<SpreadsheetWorksheet | null> => {
+    getWorksheetById: async (sheetId: string): Promise<RPCReturnMapProxy<SpreadsheetWorksheet> | null> => {
       const workbook = await getWorkbook();
       return workbook.getWorksheetById(sheetId);
     },
 
-    getActiveWorksheet: async (): Promise<SpreadsheetWorksheet> => {
+    getActiveWorksheet: async (): Promise<RPCReturnMapProxy<SpreadsheetWorksheet>> => {
       const workbook = await getWorkbook();
       return workbook.getActiveWorksheet();
     },

@@ -1,21 +1,23 @@
 import { testSDK } from './tests/sdk';
-import { testSelection } from './tests/selection';
-import { testContent } from './tests/content';
 import { testWorkbook } from './tests/workbook';
-import { testWorksheet } from './tests/worksheet';
+import { testSelections } from './tests/selections';
+import { testCell } from './tests/cell';
+import { testContent } from './tests/content';
 
-function main(): void {
+async function main(): Promise<void> {
   const root = document.getElementById('root');
 
   if (!root) {
     throw new Error('root element not found');
   }
 
-  testSDK(root);
-  testSelection(root);
-  testContent(root);
-  testWorkbook(root);
-  testWorksheet(root);
+  await testSDK(root);
+  await testWorkbook(root);
+  await testSelections(root);
+  await testContent(root);
+  await testCell(root);
+  await testWorkbook(root);
+  // testWorksheet(root);
 }
 
 main();

@@ -1,10 +1,10 @@
-import type { RemoteProxy } from '@officesdk/rpc';
-import type { DocumentMethods, RpcReturnProxy, DocumentZoom } from '../../shared';
+import type { RPCReturnMethods, RPCReturnMapProxy } from '@officesdk/rpc';
+import type { DocumentMethods, DocumentZoom } from '../../shared';
 
-export function createZoomFacade(methods: RemoteProxy<DocumentMethods>): RpcReturnProxy<DocumentZoom> {
-  let zoomCache: Promise<DocumentZoom> | null = null;
+export function createZoomFacade(methods: RPCReturnMethods<DocumentMethods>): RPCReturnMapProxy<DocumentZoom> {
+  let zoomCache: Promise<RPCReturnMapProxy<DocumentZoom>> | null = null;
 
-  const getZoom = async (): Promise<DocumentZoom> => {
+  const getZoom = async (): Promise<RPCReturnMapProxy<DocumentZoom>> => {
     if (zoomCache) {
       return zoomCache;
     }

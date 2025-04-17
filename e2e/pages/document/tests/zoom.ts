@@ -4,33 +4,33 @@ import { createRenderTitle, createRenderContent } from '../../shared/renderer';
  * Test document sdk cases.
  * @param root - Root container element for the test UI
  */
-export function testZoom(root: HTMLElement): void {
+export async function testZoom(root: HTMLElement): Promise<void> {
   const renderTitle = createRenderTitle({ container: root });
   const renderContent = createRenderContent({ container: root });
 
   renderTitle('Test zoom');
-  testGetZoom(
+  await testGetZoom(
     renderContent({
       height: 1 + 21 * 4,
     }),
   );
 
   renderTitle('Test set zoom');
-  testSetZoom(
+  await testSetZoom(
     renderContent({
       height: 1 + 21 * 5,
     }),
   );
 
   renderTitle('Test zoom in out');
-  testZoomInOut(
+  await testZoomInOut(
     renderContent({
       height: 1 + 21 * 6,
     }),
   );
 
   renderTitle('Test fit mode');
-  testFitMode(
+  await testFitMode(
     renderContent({
       height: 1 + 21 * 10,
     }),
@@ -38,81 +38,81 @@ export function testZoom(root: HTMLElement): void {
 }
 
 /**
- * 测试获取缩放比例
- * @param content - 测试 UI 的容器元素
+ * Test getting zoom percentage
+ * @param content - Test UI container element
  */
 async function testGetZoom(content: HTMLElement): Promise<void> {
   const { editor, output } = await createEditor(content);
 
-  output('获取当前缩放比例...');
+  output('Getting current zoom percentage...');
   const zoom = editor.zoom;
   const percentage = await zoom.getPercentage();
-  output(`当前缩放比例: ${percentage}%`);
+  output(`Current zoom percentage: ${percentage}%`);
 }
 
 /**
- * 测试设置缩放比例
- * @param content - 测试 UI 的容器元素
+ * Test setting zoom percentage
+ * @param content - Test UI container element
  */
 async function testSetZoom(content: HTMLElement): Promise<void> {
   const { editor, output } = await createEditor(content);
 
-  output('设置缩放比例...');
+  output('Setting zoom percentage...');
   const zoom = editor.zoom;
 
-  // 测试设置有效范围内的缩放比例
+  // Test setting zoom percentage within valid range
   await zoom.setPercentage(150);
-  output('缩放比例设置为 150%');
+  output('Zoom percentage set to 150%');
 
   const percentage = await zoom.getPercentage();
-  output(`当前缩放比例: ${percentage}%`);
+  output(`Current zoom percentage: ${percentage}%`);
 }
 
 /**
- * 测试放大和缩小功能
- * @param content - 测试 UI 的容器元素
+ * Test zoom in and zoom out functions
+ * @param content - Test UI container element
  */
 async function testZoomInOut(content: HTMLElement): Promise<void> {
   const { editor, output } = await createEditor(content);
 
   const zoom = editor.zoom;
 
-  output('测试放大功能...');
+  output('Testing zoom in function...');
   await zoom.zoomIn();
   let percentage = await zoom.getPercentage();
-  output(`放大后的缩放比例: ${percentage}%`);
+  output(`Zoom percentage after zooming in: ${percentage}%`);
 
-  output('测试缩小功能...');
+  output('Testing zoom out function...');
   await zoom.zoomOut();
   percentage = await zoom.getPercentage();
-  output(`缩小后的缩放比例: ${percentage}%`);
+  output(`Zoom percentage after zooming out: ${percentage}%`);
 }
 
 /**
- * 测试缩放适应模式
- * @param content - 测试 UI 的容器元素
+ * Test zoom fit modes
+ * @param content - Test UI container element
  */
 async function testFitMode(content: HTMLElement): Promise<void> {
   const { editor, output } = await createEditor(content);
 
   const zoom = editor.zoom;
 
-  output('测试获取当前缩放模式...');
+  output('Testing get current fit mode...');
   let mode = await zoom.getFitMode();
-  output(`当前缩放模式: ${mode}`);
+  output(`Current fit mode: ${mode}`);
 
-  output('测试设置窗口适应模式...');
+  output('Testing set window fit mode...');
   await zoom.setFitMode('window');
   mode = await zoom.getFitMode();
-  output(`设置后的缩放模式: ${mode}`);
+  output(`Fit mode after setting: ${mode}`);
 
-  output('测试设置页面适应模式...');
+  output('Testing set page fit mode...');
   await zoom.setFitMode('page');
   mode = await zoom.getFitMode();
-  output(`设置后的缩放模式: ${mode}`);
+  output(`Fit mode after setting: ${mode}`);
 
-  output('测试设置无自动缩放模式...');
+  output('Testing set none fit mode...');
   await zoom.setFitMode('none');
   mode = await zoom.getFitMode();
-  output(`设置后的缩放模式: ${mode}`);
+  output(`Fit mode after setting: ${mode}`);
 }

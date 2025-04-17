@@ -1,10 +1,10 @@
-import type { RemoteProxy } from '@officesdk/rpc';
-import type { SpreadsheetMethods, EditorContent, EditorContentRecord, RpcReturnProxy } from '../../shared';
+import type { RPCReturnMethods, RPCReturnMapProxy } from '@officesdk/rpc';
+import type { EditorMethods, EditorContent, EditorContentRecord } from '../../shared';
 
-export function createContentFacade(methods: RemoteProxy<SpreadsheetMethods>): RpcReturnProxy<EditorContent> {
-  let contentCache: Promise<EditorContent> | null = null;
+export function createContentFacade(methods: RPCReturnMethods<EditorMethods>): RPCReturnMapProxy<EditorContent> {
+  let contentCache: Promise<RPCReturnMapProxy<EditorContent>> | null = null;
 
-  const getContent = async (): Promise<EditorContent> => {
+  const getContent = async (): Promise<RPCReturnMapProxy<EditorContent>> => {
     if (contentCache) {
       return contentCache;
     }

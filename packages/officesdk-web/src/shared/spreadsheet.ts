@@ -73,7 +73,7 @@ export type SpreadsheetWorkbook = {
 /**
  * 工作表对象
  */
-export interface SpreadsheetWorksheet {
+export type SpreadsheetWorksheet = {
   /**
    * 工作表对应编号
    */
@@ -135,12 +135,12 @@ export interface SpreadsheetWorksheet {
    * @param column 单元格所在列
    */
   locateCell: (row: number, column: number) => void;
-}
+};
 
 /**
  * 表格单元格对象
  */
-export interface SpreadsheetCell {
+export type SpreadsheetCell = {
   /**
    * 单元格所在的行号
    */
@@ -165,7 +165,7 @@ export interface SpreadsheetCell {
    * 获取单元格的值
    */
   getCellValue: () => string;
-}
+};
 
 /**
  * 选区类型
@@ -308,7 +308,7 @@ export type SpreadsheetRangeValue =
 /**
  * 表格选区接口
  */
-export interface SpreadsheetSelection {
+export type SpreadsheetSelection = {
   /**
    * 获取选区的区域范围
    * @param value 可选的选区值
@@ -320,4 +320,4 @@ export interface SpreadsheetSelection {
    * @param value 选区的区域范围或null
    */
   setRange: (value: SpreadsheetRangeValue | null) => void;
-}
+};

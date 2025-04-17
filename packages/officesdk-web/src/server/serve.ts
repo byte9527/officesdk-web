@@ -82,7 +82,7 @@ export function serveSDK<T extends FileType>(options: ServeOptions<T>): Promise<
 
   if (isSpreadsheetEditor(editor, fileType)) {
     return serve({
-      proxy: createSpreadsheetProxy(editor),
+      proxy: createSpreadsheetProxy(editor, context),
     });
   }
 

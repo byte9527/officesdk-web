@@ -5,19 +5,19 @@ import { createRenderTitle, createRenderContent } from '../../shared/renderer';
  * Test document sdk cases.
  * @param root - Root container element for the test UI
  */
-export function testContent(root: HTMLElement): void {
+export async function testContent(root: HTMLElement): Promise<void> {
   const renderTitle = createRenderTitle({ container: root });
   const renderContent = createRenderContent({ container: root });
 
   renderTitle('Test save content');
-  testSaveContent(
+  await testSaveContent(
     renderContent({
       height: 1 + 21 * 4,
     }),
   );
 
   renderTitle('Test content listener');
-  testContentListener(
+  await testContentListener(
     renderContent({
       height: 1 + 21 * 5,
     }),

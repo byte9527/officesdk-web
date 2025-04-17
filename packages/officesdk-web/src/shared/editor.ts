@@ -1,3 +1,7 @@
+export type EditorMethods = {
+  getContent: () => EditorContent;
+};
+
 /**
  * 编辑器内容接口
  */

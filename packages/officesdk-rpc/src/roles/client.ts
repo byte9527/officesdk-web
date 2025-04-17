@@ -4,7 +4,7 @@ import type { Connection, RemoteProxy } from 'penpal';
 import { OfficeSdkRpcChannel, createConnectionClientProtocol } from './connection';
 import type { ConnectionServerProtocol } from './connection';
 import { generateUniqueId } from '../shared/random';
-import type { RPCClientProxy, RPCMethods, RPCSchema } from './rpc';
+import type { RPCClientProxy, RPCMethods, RPCSchema, RPCReturnMethods } from './rpc';
 import { Transportable } from './transportable';
 import type { TransportableRemoteCallback } from './transportable';
 import type { SchemaEntity } from './schema';
@@ -50,7 +50,7 @@ interface ServerRecord<TMethods extends RPCMethods> {
    */
   clientIds: Set<string>;
 
-  methods: RemoteProxy<TMethods>;
+  methods: RPCReturnMethods<TMethods>;
 }
 
 let serverMap = new WeakMap<Window, ServerRecord<any>>();
@@ -64,7 +64,7 @@ export interface Client<TMethods extends RPCMethods> {
   /**
    * 客户端代理方法
    */
-  methods: RemoteProxy<TMethods>;
+  methods: RPCReturnMethods<TMethods>;
 }
 
 /**

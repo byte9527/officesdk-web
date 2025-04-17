@@ -1,32 +1,43 @@
-import { mockSpreadsheetEditor } from '../mocks/editor';
+import { createClient } from '../client';
+import { createContainerFrame, createServerFrame } from '../../shared/frames';
+import { createRenderTitle, createRenderContent } from '../../shared/renderer';
+import { createOutput } from '../../shared/output';
 
-export function testSDK(container: HTMLElement): void {
-  const output = (message: string) => {
-    const p = document.createElement('p');
-    p.textContent = message;
-    container.appendChild(p);
-  };
+/**
+ * Test document sdk cases.
+ * @param root - Root container element for the test UI
+ */
+export async function testSDK(root: HTMLElement): Promise<void> {
+  const renderTitle = createRenderTitle({ container: root });
+  const renderContent = createRenderContent({ container: root });
 
-  const editor = mockSpreadsheetEditor(output);
+  renderTitle('Test sdk connection');
+  testConnect(
+    renderContent({
+      height: 85,
+    }),
+  );
+}
 
-  // Test workbook operations
-  editor.workbook.getWorksheets();
-  editor.workbook.getWorksheetById('mock-sheet-1');
-  editor.workbook.getActiveWorksheet();
-  editor.workbook.setActiveWorksheet('mock-sheet-2');
+/**
+ * Tests the basic connection scenario where client is created first
+ * @param content - Container element for the test UI
+ */
+async function testConnect(content: HTMLElement): Promise<void> {
+  const iframe = createServerFrame(content, 'spreadsheetServer');
+  const container = createContainerFrame(content);
+  const output = createOutput({
+    container,
+  });
 
-  // Test worksheet operations
-  const sheet = editor.activeSheet;
-  sheet.getSelections();
-  sheet.getCell(0, 0);
-  sheet.getActiveCell();
-  sheet.setActiveCell({ row: 1, column: 1 });
-  sheet.locateCell(2, 2);
+  const sdk = createClient({
+    output,
+    iframe,
+  });
 
-  // Test cell operations
-  const cell = editor.activeCell;
-  if (cell) {
-    cell.getCellText();
-    cell.getCellValue();
-  }
+  output('Connecting...');
+
+  await sdk.connect();
+
+  output('Connected');
 }

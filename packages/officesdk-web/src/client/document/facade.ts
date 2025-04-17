@@ -1,23 +1,23 @@
-import type { Client } from '@officesdk/rpc';
-import type { DocumentMethods, DocumentSelection, EditorContent, DocumentZoom, RpcReturnProxy } from '../../shared';
+import type { Client, RPCReturnMapProxy } from '@officesdk/rpc';
+import type { DocumentMethods, DocumentSelection, EditorContent, DocumentZoom } from '../../shared';
 import { createSelectionFacade } from './selection';
-import { createContentFacade } from './content';
+import { createContentFacade } from '../editor/content';
 import { createZoomFacade } from './zoom';
 export interface DocumentFacade {
   /**
    * 选区实例
    */
-  readonly selection: RpcReturnProxy<DocumentSelection>;
+  readonly selection: RPCReturnMapProxy<DocumentSelection>;
 
   /**
    * 主动保存内容
    */
-  readonly content: RpcReturnProxy<EditorContent>;
+  readonly content: RPCReturnMapProxy<EditorContent>;
 
   /**
    * 缩放实例
    */
-  readonly zoom: RpcReturnProxy<DocumentZoom>;
+  readonly zoom: RPCReturnMapProxy<DocumentZoom>;
 
   // TODO: 初始化流程控制，初始化各类异常
 }

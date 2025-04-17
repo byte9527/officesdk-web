@@ -1,38 +1,34 @@
-import type { Client } from '@officesdk/rpc';
+import type { Client, RPCReturnMapProxy } from '@officesdk/rpc';
 import type {
   SpreadsheetMethods,
   SpreadsheetWorkbook,
-  SpreadsheetWorksheet,
   SpreadsheetCell,
   SpreadsheetSelection,
-  EditorContent,
-  RpcReturnProxy,
+  SpreadsheetWorksheet,
 } from '../../shared';
 import { createWorkbookFacade } from './workbook';
-import { createWorksheetFacade } from './worksheet';
-import type { WorksheetFacade } from './worksheet';
-import { createContentFacade } from './content';
+import { createContentFacade } from '../editor/content';
 
 export interface SpreadsheetFacade {
   /**
    * 工作簿实例
    */
-  readonly workbook: RpcReturnProxy<SpreadsheetWorkbook>;
+  readonly workbook: RPCReturnMapProxy<SpreadsheetWorkbook>;
 
   /**
    * 当前活跃工作表
    */
-  readonly activeSheet: Promise<WorksheetFacade>;
+  readonly activeSheet: Promise<RPCReturnMapProxy<SpreadsheetWorksheet>>;
 
   /**
    * 当前活动单元格
    */
-  readonly activeCell: Promise<SpreadsheetCell | null>;
+  readonly activeCell: Promise<RPCReturnMapProxy<SpreadsheetCell> | null>;
 
   /**
    * 当前选区
    */
-  readonly selections: Promise<SpreadsheetSelection[] | null>;
+  readonly selections: Promise<RPCReturnMapProxy<SpreadsheetSelection>[] | null>;
 
   /**
    * 内容接口
@@ -42,22 +38,23 @@ export interface SpreadsheetFacade {
 
 export function createSpreadsheetFacade(proxy: Client<SpreadsheetMethods>): SpreadsheetFacade {
   const { methods } = proxy;
+
+  // 下面是单例的实例，再额外包装一层
   const workbook = createWorkbookFacade(methods);
-  const activeSheet = createWorksheetFacade(methods);
   const content = createContentFacade(methods);
 
   return {
     get workbook() {
       return workbook;
     },
-    get activeSheet() {
-      return activeSheet;
-    },
     get activeCell() {
       return methods.getActiveCell();
     },
     get selections() {
       return methods.getSelections();
+    },
+    get activeSheet() {
+      return methods.getActiveSheet();
     },
     get content() {
       return content;

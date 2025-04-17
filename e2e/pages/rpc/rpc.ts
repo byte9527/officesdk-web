@@ -10,7 +10,7 @@ function main(): void {
     throw new Error('root element not found');
   }
 
-  // testOpen(root);
+  testOpen(root);
   testMethods(root);
 }
 
