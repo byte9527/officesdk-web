@@ -61,7 +61,11 @@ export type RPCReturnMapProxy<TProperties extends RPCReturnMap> = {
       (
         ...args: A
       ) => Promise<
-        R extends PRCReturnArray ? RPCReturnArrayProxy<R> : R extends RPCReturnMap ? RPCReturnMapProxy<R> : Awaited<R>
+        R extends PRCReturnArray
+          ? RPCReturnArrayProxy<R>
+          : R extends RPCReturnMap
+            ? RPCReturnMapProxy<Awaited<R>>
+            : Awaited<R>
       >
     : TProperties[K];
 };

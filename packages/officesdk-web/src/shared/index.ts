@@ -1,5 +1,5 @@
 export { FileType, assertFileType } from './file';
-export type { EditorContent, EditorContentRecord, EditorMethods } from './editor';
+export type { EditorContent, EditorContentRecord, EditorMethods, EditorOutline, EditorOutlineItem } from './editor';
 export type {
   DocumentMethods,
   DocumentEditor,
@@ -22,4 +22,14 @@ export type {
   SpreadsheetSelection,
   SpreadsheetWorksheet,
 } from './spreadsheet';
-export type { PdfMethods, PdfEditor } from './pdf';
+export type {
+  PdfMethods,
+  PdfEditor,
+  PdfPage,
+  PdfPages,
+  PdfSelection,
+  PdfRange,
+  PdfRangeValue,
+  PdfOutline,
+  PdfOutlineItem,
+} from './pdf';

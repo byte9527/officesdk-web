@@ -7,6 +7,18 @@ import type { PdfMethods, PdfEditor } from '../../shared';
  */
 export function createPdfProxy(editor: PdfEditor): RPCServerProxy<PdfMethods> {
   return () => {
-    return {};
+    return {
+      getPages: () => {
+        return editor.pages;
+      },
+
+      getSelection: () => {
+        return editor.selection;
+      },
+
+      getOutline: () => {
+        return editor.outline;
+      },
+    };
   };
 }
