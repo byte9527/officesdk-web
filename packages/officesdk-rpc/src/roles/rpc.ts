@@ -30,7 +30,7 @@ export type RPCSchema = Token | SmartData;
 export type RPCClientInvoke<TMethods extends RPCMethods> = <TName extends keyof TMethods>(
   method: TName,
   args: RPCSchema[],
-) => Promise<RPCReturnMapProxy<ReturnType<TMethods[TName]>>>;
+) => Promise<RPCReturnValueProxy<ReturnType<TMethods[TName]>>>;
 
 export interface RPCClientProxyContext<TMethods extends RPCMethods> {
   /**
@@ -42,9 +42,7 @@ export interface RPCClientProxyContext<TMethods extends RPCMethods> {
 /**
  * 定义的通用返回类型定义
  */
-export type RPCReturnMap = {
-  [index: string]: any;
-};
+export type RPCReturnMap<> = Record<string, any>;
 
 export type PRCReturnArray = any[];
 
@@ -52,42 +50,32 @@ export type RPCReturnCallback = (...args: any[]) => any;
 
 export type RPCReturnMapProxy<TProperties extends RPCReturnMap> = {
   [K in keyof TProperties]: TProperties[K] extends (...args: infer A) => infer R
-    ? // 如果函数返回值
-      // R extends RPCReturnMap
-      // ? (...args: A) => Promise<RPCReturnMapProxy<R>>
-      // : R extends PRCReturnArray
-      //   ? (...args: A) => Promise<RPCReturnArrayProxy<R>>
-      //   :
-      (
-        ...args: A
-      ) => Promise<
-        R extends PRCReturnArray
-          ? RPCReturnArrayProxy<R>
-          : R extends RPCReturnMap
-            ? RPCReturnMapProxy<Awaited<R>>
-            : Awaited<R>
-      >
+    ? Awaited<R> extends any
+      ? (...args: A) => Promise<RPCReturnValueProxy<Awaited<R>>>
+      : never
     : TProperties[K];
 };
 
-// TODO: 这里貌似不完善，缺少类型套娃支持
 export type RPCReturnArrayProxy<TArray extends PRCReturnArray> =
-  TArray extends Array<infer T>
-    ? T extends PRCReturnArray
-      ? RPCReturnArrayProxy<T>[]
-      : T extends RPCReturnMap
-        ? RPCReturnMapProxy<T>[]
-        : T
-    : // TODO: 如果是 Callback[] ，需要继续递归
-      never;
+  TArray extends Array<infer T> ? RPCReturnValueProxy<T>[] : never;
+
+export type RPCReturnPrimitive = string | number | boolean | null | undefined;
+
+export type RPCReturnValueProxy<T> = T extends PRCReturnArray
+  ? RPCReturnArrayProxy<T>
+  : T extends RPCReturnCallback
+    ? RPCReturnCallbackProxy<T>
+    : T extends RPCReturnMap
+      ? RPCReturnMapProxy<T>
+      : T;
+
+export type RPCReturnCallbackProxy<T extends RPCReturnCallback> = T extends (...args: infer A) => infer R
+  ? (...args: A) => Promise<R extends any ? RPCReturnValueProxy<R> : never>
+  : never;
 
 export type RPCReturnMethods<TMethods extends RPCMethods> = {
   [K in keyof TMethods]: TMethods[K] extends (...args: infer A) => infer R
-    ? (
-        ...args: A
-      ) => Promise<
-        R extends PRCReturnArray ? RPCReturnArrayProxy<R> : R extends RPCReturnMap ? RPCReturnMapProxy<R> : Awaited<R>
-      >
+    ? RPCReturnCallbackProxy<TMethods[K]>
     : TMethods[K];
 };
 
@@ -97,7 +85,7 @@ export type RPCReturnMethods<TMethods extends RPCMethods> = {
  */
 export type RPCClientProxy<TMethods extends RPCMethods> = (
   context: RPCClientProxyContext<TMethods>,
-) => RPCReturnMethods<TMethods>; // TODO: 这里的返回类型 RemoteProxy 需要优化： 1. 不允许嵌套 2. 需要支持将所有 callback 转为异步，并约束 callback 的参数类型为 TransportableData
+) => RPCReturnMethods<TMethods>;
 
 /**
  * 服务端协议，用于定义可供服务端远程调用的方法。

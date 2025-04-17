@@ -1,6 +1,6 @@
-import type { RPCClientProxy, RPCReturnMapProxy } from '@officesdk/rpc';
+import type { RPCClientProxy } from '@officesdk/rpc';
 
-import type { SpreadsheetMethods, SpreadsheetSelection } from '../../shared';
+import type { SpreadsheetMethods } from '../../shared';
 
 export function createSpreadsheetProxy(): RPCClientProxy<SpreadsheetMethods> {
   return (context) => {
@@ -20,8 +20,7 @@ export function createSpreadsheetProxy(): RPCClientProxy<SpreadsheetMethods> {
       },
 
       getSelections: async () => {
-        // 这里实际返回类型为这个，和类型自动退到出来的不一样
-        return invoke('getSelections', []) as Promise<RPCReturnMapProxy<SpreadsheetSelection>[] | null>;
+        return invoke('getSelections', []);
       },
 
       getContent: async () => {
