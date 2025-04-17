@@ -10,7 +10,17 @@ export type {
 } from './document';
 export type { DatabaseTableMethods, DatabaseTableEditor } from './dbtable';
 export type { LiteDocMethods, LiteDocEditor } from './ltdoc';
-export type { PresentationMethods, PresentationEditor } from './presentation';
+export type {
+  PresentationMethods,
+  PresentationEditor,
+  PresentationSelection,
+  PresentationTextRange,
+  PresentationTextRangeValue,
+  PresentationShape,
+  PresentationZoom,
+  PresentationSlide,
+  PresentationSlides,
+} from './presentation';
 export type {
   SpreadsheetMethods,
   SpreadsheetEditor,
