@@ -13,8 +13,8 @@ import { isPlainObject, isArray } from '../shared/type';
  * value: { foo: document } ==> [{ type: 'ref', path: '&.foo' }]
  * value: () => {} ==> [{ type: 'callback', path: '&' }]
  * value: { foo: () => {} } ==> [{ type: 'callback', path: '&.foo' }]
- * value: [window] ==> [{ type: 'array', path: '&' }, { type: 'ref', path: '&[0]' }]
- * value: { foo: [window] } ==> [{ type: 'map', path: '&' }, { type: 'array', path: '&.foo' }, { type: 'ref', path: '&.foo[0]' }]
+ * value: [window] ==> [{ type: 'ref', path: '&[0]' }]
+ * value: { foo: [window] } ==> [{ type: 'ref', path: '&.foo[0]' }]
  */
 
 export type TokenRulePath = `&${string}`;
