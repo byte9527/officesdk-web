@@ -13,4 +13,5 @@ export type {
   SpreadsheetRange,
   SpreadsheetRangeType,
   SpreadsheetRangeValue,
+  PdfEditor,
 } from '../shared';

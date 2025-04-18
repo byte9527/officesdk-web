@@ -9,3 +9,6 @@ export type { DocumentFacade } from './document';
 
 // 表格
 export type { SpreadsheetFacade } from './spreadsheet';
+
+// PDF
+export type { PdfFacade } from './pdf';

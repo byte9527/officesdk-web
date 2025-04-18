@@ -1,5 +1,5 @@
 export { createSDK, FileType } from './client';
-export type { CreateOptions, OfficeSDK, DocumentFacade, SpreadsheetFacade } from './client';
+export type { CreateOptions, OfficeSDK, DocumentFacade, SpreadsheetFacade, PdfFacade } from './client';
 export type {
   EditorContent,
   EditorContentRecord,

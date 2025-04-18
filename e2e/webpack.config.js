@@ -18,6 +18,10 @@ module.exports = {
     // Test spreadsheet cases.
     spreadsheet: './pages/spreadsheet/spreadsheet.ts',
     spreadsheetServer: './pages/spreadsheet/server.ts',
+
+    // Test pdf cases.
+    pdf: './pages/pdf/pdf.ts',
+    pdfServer: './pages/pdf/server.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -69,6 +73,11 @@ module.exports = {
       filename: 'spreadsheet.html',
       chunks: ['spreadsheet'],
       template: './pages/spreadsheet/spreadsheet.html',
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'pdf.html',
+      chunks: ['pdf'],
+      template: './pages/pdf/pdf.html',
     }),
   ],
   devServer: {
