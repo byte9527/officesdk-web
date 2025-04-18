@@ -22,6 +22,10 @@ module.exports = {
     // Test pdf cases.
     pdf: './pages/pdf/pdf.ts',
     pdfServer: './pages/pdf/server.ts',
+
+    // Test presentation cases.
+    presentation: './pages/presentation/presentation.ts',
+    presentationServer: './pages/presentation/server.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -78,6 +82,11 @@ module.exports = {
       filename: 'pdf.html',
       chunks: ['pdf'],
       template: './pages/pdf/pdf.html',
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'presentation.html',
+      chunks: ['presentation'],
+      template: './pages/presentation/presentation.html',
     }),
   ],
   devServer: {
