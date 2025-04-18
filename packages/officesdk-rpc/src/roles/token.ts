@@ -190,7 +190,7 @@ export class Token {
    */
   private async iterateValue(value: Record<string, unknown> | unknown[], context: TokenContext): Promise<SchemaEntity> {
     // 检查是否所有属性都可以通过 structuredClone 传输
-    if (this.isCloneable(value)) {
+    if (this.isStructuredCloneable(value)) {
       // 如果所有属性都可以通过 structuredClone 传输，直接转换为 SchemaData
       return this.toSchemaData(value);
     }
@@ -229,7 +229,7 @@ export class Token {
    * @param value 要检查的值
    * @returns 如果值及其所有属性都可以通过 structuredClone 传输，则返回 true
    */
-  private isCloneable(value: unknown): boolean {
+  private isStructuredCloneable(value: unknown): boolean {
     // 原始值可以直接传输
     if (isSimpleValue(value)) {
       return true;
@@ -247,12 +247,12 @@ export class Token {
 
     // 递归检查数组的每个元素
     if (isArray(value)) {
-      return value.every((item) => this.isCloneable(item));
+      return value.every((item) => this.isStructuredCloneable(item));
     }
 
     // 递归检查对象的每个属性
     if (isPlainObject(value)) {
-      return Object.values(value).every((item) => this.isCloneable(item));
+      return Object.values(value).every((item) => this.isStructuredCloneable(item));
     }
 
     return false;

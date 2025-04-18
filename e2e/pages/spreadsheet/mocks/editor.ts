@@ -8,6 +8,7 @@ import type {
   SpreadsheetSelection,
   SpreadsheetRange,
   SpreadsheetRangeValue,
+  SpreadsheetRangeType,
 } from '@officesdk/web';
 
 function createCell(
@@ -29,32 +30,61 @@ function createCell(
   };
 }
 
-function createRange(output: (message: string) => void, props: SpreadsheetRangeValue): SpreadsheetRange {
-  let text = 'mock range text';
-  let html = '<div>mock range html</div>';
-  return {
-    column: 0,
-    row: 0,
-    rowCount: 0,
-    columnCount: 0,
-    ...props,
-    getText: () => {
-      output('spreadsheet.range.getText has been called');
-      return text;
-    },
-    setText: (text: string) => {
-      output(`spreadsheet.range.setText has been called with text: ${text}`);
-      text = text;
-    },
-    getHtml: () => {
-      output('spreadsheet.range.getHtml has been called');
-      return html;
-    },
-    setHtml: (html: string) => {
-      output(`spreadsheet.range.setHtml has been called with html: ${html}`);
-      html = html;
-    },
-  };
+class Range implements SpreadsheetRange {
+  private text = 'mock range text';
+  private html = '<div>mock range html</div>';
+  public type: `${SpreadsheetRangeType}` = 'cells';
+  public row = 0;
+  public column = 0;
+  public rowCount = 0;
+  public columnCount = 0;
+
+  constructor(
+    private value: SpreadsheetRangeValue,
+    private output: (message: string) => void,
+  ) {
+    this.type = value.type;
+
+    if (value.type === 'cells') {
+      this.row = value.row;
+      this.column = value.column;
+      this.rowCount = value.rowCount;
+      this.columnCount = value.columnCount;
+    } else if (value.type === 'rows') {
+      this.row = value.row;
+      this.rowCount = value.rowCount;
+    } else if (value.type === 'columns') {
+      this.column = value.column;
+      this.columnCount = value.columnCount;
+    } else if (value.type === 'sheet') {
+      this.rowCount = 1;
+      this.columnCount = 1;
+    }
+  }
+
+  getText() {
+    this.output('range.getText has been called');
+    return this.text;
+  }
+
+  getHtml() {
+    this.output('range.getHtml has been called');
+    return this.html;
+  }
+
+  setText(text: string) {
+    this.output('range.setText has been called');
+    this.text = text;
+  }
+
+  setHtml(html: string) {
+    this.output('range.setHtml has been called');
+    this.html = html;
+  }
+}
+
+function createRange(output: (message: string) => void, value: SpreadsheetRangeValue): SpreadsheetRange {
+  return new Range(value, output);
 }
 
 function createSelection(output: (message: string) => void, props: { range: SpreadsheetRange }): SpreadsheetSelection {
@@ -66,7 +96,7 @@ function createSelection(output: (message: string) => void, props: { range: Spre
       if (value) {
         return createRange(output, value);
       }
-      return range;
+      return createRange(output, { type: 'cells', row: 0, column: 0, rowCount: 1, columnCount: 1 });
     },
     setRange: (value: SpreadsheetRangeValue | null) => {
       output('spreadsheet.selection.setRange has been called');

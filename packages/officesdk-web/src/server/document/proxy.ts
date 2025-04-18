@@ -2,6 +2,10 @@ import type { RPCServerProxy } from '@officesdk/rpc';
 
 import type { DocumentMethods, DocumentEditor } from '../../shared';
 import type { EditorContext } from '../editor';
+import { createDocumentSelectionProxy } from './selection';
+import { createEditorContentProxy } from '../editor/content';
+import { createDocumentZoomProxy } from './zoom';
+
 /**
  * 定义 Document 的 RPC 代理的客户端调用接口
  * @returns
@@ -10,15 +14,15 @@ export function createDocumentProxy(editor: DocumentEditor, context: EditorConte
   return () => {
     return {
       getSelection: () => {
-        return editor.selection;
+        return createDocumentSelectionProxy(editor.selection);
       },
 
       getContent: () => {
-        return context.content;
+        return createEditorContentProxy(context.content);
       },
 
       getZoom: () => {
-        return editor.zoom;
+        return createDocumentZoomProxy(editor.zoom);
       },
     };
   };
