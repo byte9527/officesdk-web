@@ -2,6 +2,8 @@ import type { RPCServerProxy } from '@officesdk/rpc';
 import type { PresentationMethods, PresentationEditor } from '../../shared';
 import { createEditorContentProxy } from '../editor/content';
 import { createPresentationZoomProxy } from './zoom';
+import { createPresentationSelectionProxy } from './selection';
+import { createPresentationSlidesProxy } from './slides';
 
 /**
  * 定义幻灯片的 RPC 代理的服务端调用接口
@@ -14,7 +16,7 @@ export function createPresentationProxy(editor: PresentationEditor): RPCServerPr
        * 获取选区接口
        */
       getSelection: () => {
-        return editor.selection;
+        return createPresentationSelectionProxy(editor.selection);
       },
 
       /**
@@ -35,7 +37,7 @@ export function createPresentationProxy(editor: PresentationEditor): RPCServerPr
        * 获取幻灯片集合接口
        */
       getSlides: () => {
-        return editor.slides;
+        return createPresentationSlidesProxy(editor.slides);
       },
     };
   };
