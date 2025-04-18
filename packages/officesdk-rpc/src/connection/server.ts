@@ -33,9 +33,8 @@ import { OfficeSdkRpcChannel, createConnectionServerProtocol } from './connectio
 import type { ConnectionClientProtocol } from './connection';
 import { isClientNotAccessible } from '../errors';
 import { ServerConnectionPool } from './pool';
-import type { RPCServerProxy, RPCMethods } from './rpc';
-import { Transportable } from './transportable';
-import type { TransportableRemoteCallback } from './transportable';
+import { Transportable } from '../transport';
+import type { TransportableRemoteCallback, RPCServerProxy, RPCMethods } from '../transport';
 
 export interface ServerOptions<TMethods extends RPCMethods> {
   /**

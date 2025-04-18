@@ -1,8 +1,6 @@
-import { fromEntries, entries } from '../shared/object';
-import type { Cloneable } from '../shared/cloneable';
+import type { Cloneable } from '../utils';
 import type { SchemaEntity, SchemaStructured, SchemaValueCallback, SchemaValueRef, SchemaValueData } from './schema';
-import { isSimpleValue } from '../shared/cloneable';
-import { isPlainObject, isArray } from '../shared/type';
+import { isSimpleValue, isPlainObject, isArray, entries, fromEntries } from '../utils';
 
 /**
  * Defines rules for transforming input data into schemas through Tokens.

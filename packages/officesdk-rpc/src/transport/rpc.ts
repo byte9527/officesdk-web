@@ -15,7 +15,7 @@
  * to provide a complete, type-safe remote procedure call framework for cross-window communication.
  */
 
-import type { Token } from './token';
+import type { Token } from '../core/token';
 
 /**
  * Represents a method that can be called via RPC

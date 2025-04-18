@@ -32,8 +32,8 @@
  * might send connection requests simultaneously before the connection is complete.
  * This scenario requires no special handling as the server automatically deduplicates.
  */
-import type { SchemaEntity, SchemaValueCallback } from './schema';
-import type { RPCMethods } from './rpc';
+import type { SchemaEntity, SchemaValueCallback } from '../core';
+import type { RPCMethods } from '../transport';
 
 /**
  * Represents a callback function that can be invoked across window boundaries

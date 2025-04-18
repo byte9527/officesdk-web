@@ -28,10 +28,15 @@ import type { Connection, RemoteProxy } from 'penpal';
 
 import { OfficeSdkRpcChannel, createConnectionClientProtocol } from './connection';
 import type { ConnectionServerProtocol } from './connection';
-import { generateUniqueId } from '../shared/random';
-import type { RPCClientProxy, RPCMethods, RPCReturnMethods, RPCClientInvokeArgs } from './rpc';
-import { Transportable } from './transportable';
-import type { TransportableRemoteCallback } from './transportable';
+import { generateUniqueId } from '../utils';
+import { Transportable } from '../transport';
+import type {
+  TransportableRemoteCallback,
+  RPCClientProxy,
+  RPCMethods,
+  RPCReturnMethods,
+  RPCClientInvokeArgs,
+} from '../transport';
 
 /**
  * Configuration options for creating a client instance

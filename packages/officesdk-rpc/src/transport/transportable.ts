@@ -7,9 +7,9 @@
  * When the local end receives data through callbacks, it uses protocol information to restore the original values.
  */
 
-import type { SchemaValueCallback, SchemaValueRef, SchemaEntity } from './schema';
-import { fromEntries, entries } from '../shared/object';
-import { isToken, Token } from './token';
+import type { SchemaValueCallback, SchemaValueRef, SchemaEntity } from '../core';
+import { fromEntries, entries } from '../utils';
+import { isToken, Token } from '../core/token';
 
 interface TransportableLocalOptions {
   /**
