@@ -246,6 +246,12 @@ The `@officesdk/rpc` library consists of the following main modules:
 
 Issues and pull requests are welcome to help improve this library.
 
+## Roadmap
+
+- [ ] Finish this README with more examples
+- [ ] Add unit tests
+- [ ] Add error handling for more edge cases
+
 ## Licence
 
 MIT
