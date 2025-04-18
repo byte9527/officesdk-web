@@ -99,23 +99,27 @@ The `Token` class handles complex data serialisation, enabling reference types t
 import { Token } from '@officesdk/rpc';
 
 const complexObject = {
-  data: new Map(),
+  body: document.body,
   callback: () => console.log('Hello')
 };
 
-...
-{
-  someServerMethod: (data) => {
+const methods ={
+  getComplexObject: () => {
     // Define rules for serialisation
     return new Token(complexObject, {
       // The other side can call this callback
       callbacks: ['&.callback'],
       // The other side can pass this ref value through callbacks, but can't access its properties
-      refs: ['&.data'],
+      refs: ['&.body'],
     });
   }
 }
-...
+
+const server = serve({
+  methods,
+});
+
+server.connect()
 ```
 
 
