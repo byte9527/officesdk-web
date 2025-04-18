@@ -98,7 +98,7 @@ export type SpreadsheetWorksheet = {
    * 获取选区的物理位置（相对于浏览器窗口）
    * @param range 选区范围
    */
-  getPhysicalPosition: (range: SpreadsheetRange) => {
+  getPhysicalPosition: (range: SpreadsheetRangeValue) => {
     left: number;
     top: number;
     width: number;
@@ -125,9 +125,9 @@ export type SpreadsheetWorksheet = {
 
   /**
    * 激活工作表中某个单元格
-   * @param options 单元格位置信息
+   * @param cell 单元格位置信息
    */
-  setActiveCell: (options: { row: number; column: number }) => void;
+  setActiveCell: (cell: { row: number; column: number }) => void;
 
   /**
    * 定位到单元格所在位置
