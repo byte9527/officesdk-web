@@ -4,10 +4,9 @@ import type { Connection, RemoteProxy } from 'penpal';
 import { OfficeSdkRpcChannel, createConnectionClientProtocol } from './connection';
 import type { ConnectionServerProtocol } from './connection';
 import { generateUniqueId } from '../shared/random';
-import type { RPCClientProxy, RPCMethods, RPCSchema, RPCReturnMethods } from './rpc';
+import type { RPCClientProxy, RPCMethods, RPCReturnMethods, RPCClientInvokeArgs } from './rpc';
 import { Transportable } from './transportable';
 import type { TransportableRemoteCallback } from './transportable';
-import type { SchemaEntity } from './schema';
 
 export interface ClientOptions<TMethods extends RPCMethods> {
   /**
@@ -124,17 +123,12 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
       resolveCallback: (schema) => {
         // 过滤掉非本客户端的回调
         if (schema.source !== clientId) {
-          return;
+          return (): never => {
+            throw new Error(`Invalid callback source: ${schema.source}, can not resolve callback from other client.`);
+          };
         }
 
-        // TODO: 这里的类型不严谨，缺少对 callback 的约束
-        const callback: (...args: any[]) => any = transportable.parseSchemaEntity(schema);
-        return (...schemas: SchemaEntity[]) => {
-          const args = schemas.map((schema) => transportable.parseSchemaEntity(schema));
-          const result = callback(...args);
-
-          return transportable.createSchemaEntity(result);
-        };
+        return transportable.resolveSchemaCallback(schema);
       },
     }),
     timeout,
@@ -154,7 +148,10 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
      * @param options
      * @returns
      */
-    invoke: async <TName extends keyof TMethods>(method: TName, args: RPCSchema[]) => {
+    invoke: async <TName extends keyof TMethods>(
+      method: TName,
+      args: RPCClientInvokeArgs<Parameters<TMethods[TName]>>,
+    ) => {
       const serverProxy = ensureServerProxy();
 
       const schemas = await Promise.all(args.map((arg) => transportable.createSchemaEntity(arg)));

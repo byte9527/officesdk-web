@@ -19,7 +19,6 @@ import { ServerConnectionPool } from './pool';
 import type { RPCServerProxy, RPCMethods } from './rpc';
 import { Transportable } from './transportable';
 import type { TransportableRemoteCallback } from './transportable';
-import type { SchemaEntity } from './schema';
 
 export interface ServerOptions<TMethods extends RPCMethods> {
   /**
@@ -97,26 +96,19 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
         ensureClientProxy();
 
         if (!clientIdPool.has(clientId)) {
-          return;
+          // TODO: 抛出自定义错误
+          throw new Error(`Client ${clientId} not found`);
         }
 
         const methods = proxy();
 
         const args = schemas.map((schema) => transportable.parseSchemaEntity(schema));
-        // TODO: 完成 connection 里的类型约束
-        const result: any = methods[method](...args);
+        const result = methods[method](...args);
 
         return transportable.createSchemaEntity(result);
       },
       resolveCallback: (schema) => {
-        // TODO: 这里的类型不严谨，缺少对 callback 的约束
-        const callback: (...args: any[]) => any = transportable.parseSchemaEntity(schema);
-        return (...schemas: SchemaEntity[]) => {
-          const args = schemas.map((schema) => transportable.parseSchemaEntity(schema));
-          const result = callback(...args);
-
-          return transportable.createSchemaEntity(result);
-        };
+        return transportable.resolveSchemaCallback(schema);
       },
     }),
   });

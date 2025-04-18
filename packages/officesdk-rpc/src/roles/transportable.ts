@@ -6,7 +6,6 @@
  */
 
 import type { SchemaValueCallback, SchemaValueRef, SchemaEntity } from './schema';
-import type { RPCSchema } from './rpc';
 import { fromEntries, entries } from '../shared/object';
 import { isToken, Token } from './token';
 
@@ -22,16 +21,7 @@ interface TransportableLocalOptions {
   callback: TransportableRemoteCallback;
 }
 
-export type TransportableRemoteCallback = (
-  callback: SchemaValueCallback,
-  args: RPCSchema[],
-) => Promise<SchemaEntity | void>;
-
-const TransportableProxyValue = Symbol('TransportableProxyValue');
-
-type TransportableProxy<T> = T & {
-  [TransportableProxyValue]: SchemaValueRef;
-};
+export type TransportableRemoteCallback = (callback: SchemaValueCallback, args: any[]) => Promise<SchemaEntity | void>;
 
 export class Transportable {
   private refsMap: Map<string, any> = new Map();
@@ -48,7 +38,7 @@ export class Transportable {
     this.callback = options.callback;
   }
 
-  public createSchemaEntity(schema: RPCSchema): Promise<SchemaEntity> {
+  public createSchemaEntity(schema: unknown): Promise<SchemaEntity> {
     let token: Token;
     if (isToken(schema)) {
       token = schema;
@@ -68,17 +58,12 @@ export class Transportable {
         return schema.value;
       }
 
-      case 'ref':
       case 'callback': {
-        if (schema.source !== this.name) {
-          return this.proxyRemote(schema);
-        }
-        const ref = this.refsMap.get(schema.ref);
-        if (!ref) {
-          // TODO: 抛出自定义错误
-          throw new Error(`Invalid reference: ${schema.ref}`);
-        }
-        return ref.value;
+        return this.parseSchemaCallback(schema);
+      }
+
+      case 'ref': {
+        return this.parseSchemaRef(schema);
       }
 
       case 'array': {
@@ -96,10 +81,22 @@ export class Transportable {
     }
   }
 
-  private proxyRemote(value: SchemaValueCallback | SchemaValueRef): TransportableProxy<any> {
-    if (value.type === 'callback') {
-      const callback = async (...args: RPCSchema[]) => {
-        const result = await this.callback(value, args);
+  public resolveSchemaCallback(schema: SchemaValueCallback): (...args: any[]) => Promise<SchemaEntity> {
+    const callback = this.parseSchemaCallback(schema);
+
+    return (...schemas: SchemaEntity[]) => {
+      const args = schemas.map((schema) => this.parseSchemaEntity(schema));
+      const result = callback(...args);
+
+      return this.createSchemaEntity(result);
+    };
+  }
+
+  private parseSchemaCallback(schema: SchemaValueCallback): (...args: any[]) => Promise<SchemaEntity> {
+    // 如果 callback 来自远端，则需要代理
+    if (schema.source !== this.name) {
+      return async (...args: any[]) => {
+        const result = await this.callback(schema, args);
 
         if (result) {
           return this.parseSchemaEntity(result);
@@ -107,20 +104,22 @@ export class Transportable {
 
         return result;
       };
-      callback[TransportableProxyValue] = value;
-      return callback;
+    } else {
+      const ref = this.refsMap.get(schema.ref);
+      if (!ref) {
+        // TODO: 抛出自定义错误
+        throw new Error(`Invalid reference: ${schema.ref}`);
+      }
+      return ref.value;
     }
+  }
 
-    if (value.type === 'ref') {
-      // TODO: 如何使用
+  private parseSchemaRef(schema: SchemaValueRef): Record<string, never> {
+    if (schema.source !== this.name) {
       const proxy = new Proxy(
         {},
         {
           get(target, prop) {
-            if (prop === TransportableProxyValue) {
-              return value;
-            }
-
             throw new Error('Unexpected remote property access');
           },
           set() {
@@ -131,6 +130,13 @@ export class Transportable {
 
       return proxy;
     }
+
+    const ref = this.refsMap.get(schema.ref);
+    if (!ref) {
+      // TODO: 抛出自定义错误
+      throw new Error(`Invalid reference: ${schema.ref}`);
+    }
+    return ref.value;
   }
 
   /**

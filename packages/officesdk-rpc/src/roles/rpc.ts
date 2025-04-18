@@ -1,4 +1,4 @@
-import type { Token, SmartData } from './token';
+import type { Token } from './token';
 
 /**
  * 可通过 penpal 调用的方法，返回值约束为合法的 JSON 类型
@@ -16,15 +16,16 @@ export type RPCMethods = {
   [key: string]: RPCMethod;
 };
 
+export type RPCClientInvokeArgs<T extends any[]> = {
+  [K in keyof T]: T[K] | Token;
+};
 /**
  * 定义在 rpc 调用时可以作为调用 invoke 的参数，或是作为客户端返回值的类型。
  * 这个类型也可以用在 callback 流程中使用。
  */
-export type RPCSchema = Token | SmartData;
-
 export type RPCClientInvoke<TMethods extends RPCMethods> = <TName extends keyof TMethods>(
   method: TName,
-  args: RPCSchema[],
+  args: RPCClientInvokeArgs<Parameters<TMethods[TName]>>,
 ) => Promise<RPCReturnValueProxy<ReturnType<TMethods[TName]>>>;
 
 export interface RPCClientProxyContext<TMethods extends RPCMethods> {

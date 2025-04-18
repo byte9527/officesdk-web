@@ -27,6 +27,7 @@
  * This scenario requires no special handling as the server automatically deduplicates.
  */
 import type { SchemaEntity, SchemaValueCallback } from './schema';
+import type { RPCMethods } from './rpc';
 
 export type ConnectionCallback = (callback: SchemaValueCallback, args: SchemaEntity[]) => any; // TODO: 返回值的类型现在未知
 
@@ -49,7 +50,7 @@ export type ConnectionServerProtocol = {
    */
   close: (clientId: string) => boolean;
 
-  invoke: (clientId: string, method: string, args: SchemaEntity[]) => SchemaEntity | void;
+  invoke: (clientId: string, method: string, args: SchemaEntity[]) => Promise<SchemaEntity | void>;
 
   callback: ConnectionCallback;
 };
@@ -57,24 +58,30 @@ export type ConnectionServerProtocol = {
 /**
  * Context required for server initialization
  */
-interface ConnectionServerContext {
+interface ConnectionServerContext<TMethods extends RPCMethods> {
   clients: {
     add: (clientId: string) => void;
     delete: (clientId: string) => void;
     has: (clientId: string) => boolean;
   };
   // TODO: 使用范型约束外部调用类型
-  onInvoke: (clientId: string, method: string, schemas: SchemaEntity[]) => any;
+  onInvoke: <TName extends keyof TMethods>(
+    clientId: string,
+    method: TName,
+    schemas: SchemaEntity[],
+  ) => Promise<SchemaEntity | void>;
 
   /**
    * Resolve callback from transportable schema
    * @returns
    */
-  // TODO: 类型不严谨
-  resolveCallback: (callback: SchemaValueCallback) => (...args: any[]) => any;
+  // 这里 callback 可能为任意一个函数，所以参数类型无法固定
+  resolveCallback: (callback: SchemaValueCallback) => (...args: any[]) => Promise<SchemaEntity>;
 }
 
-export function createConnectionServerProtocol(context: ConnectionServerContext): ConnectionServerProtocol {
+export function createConnectionServerProtocol<TMethods extends RPCMethods>(
+  context: ConnectionServerContext<TMethods>,
+): ConnectionServerProtocol {
   return {
     open: (clientId: string): boolean => {
       // TODO: Should throw error on duplicate registration
@@ -90,7 +97,7 @@ export function createConnectionServerProtocol(context: ConnectionServerContext)
       return true;
     },
 
-    invoke: (clientId: string, method: string, args: SchemaEntity[]): SchemaEntity => {
+    invoke: (clientId: string, method: string, args: SchemaEntity[]): Promise<SchemaEntity | void> => {
       if (!context.clients.has(clientId)) {
         throw new Error('Client not found');
       }
@@ -127,8 +134,7 @@ interface ConnectionClientContext {
    * Resolve callback from transportable schema
    * @returns
    */
-  // TODO: 类型不严谨
-  resolveCallback: (callback: SchemaValueCallback) => ((...args: any[]) => any | void) | undefined;
+  resolveCallback: (callback: SchemaValueCallback) => (...args: any[]) => any;
 }
 
 export function createConnectionClientProtocol(context: ConnectionClientContext): ConnectionClientProtocol {
@@ -141,7 +147,7 @@ export function createConnectionClientProtocol(context: ConnectionClientContext)
     },
 
     callback: (callback: SchemaValueCallback, args: SchemaEntity[]) => {
-      return context.resolveCallback(callback)?.(...args);
+      return context.resolveCallback(callback)(...args);
     },
   };
 }
