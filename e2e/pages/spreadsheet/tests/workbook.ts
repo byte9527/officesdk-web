@@ -32,8 +32,8 @@ export async function testWorkbook(root: HTMLElement): Promise<void> {
 }
 
 /**
- * 测试获取工作表信息
- * @param content - 测试 UI 的容器元素
+ * Test getting worksheet information
+ * @param content - Container element for test UI
  */
 async function testGetWorksheets(content: HTMLElement): Promise<void> {
   const { editor, output } = await createEditor(content);
@@ -55,8 +55,8 @@ async function testGetWorksheets(content: HTMLElement): Promise<void> {
 }
 
 /**
- * 测试获取指定ID的工作表
- * @param content - 测试 UI 的容器元素
+ * Test getting worksheet by specified ID
+ * @param content - Container element for test UI
  */
 async function testGetWorksheetById(content: HTMLElement): Promise<void> {
   const { editor, output } = await createEditor(content);
@@ -64,18 +64,18 @@ async function testGetWorksheetById(content: HTMLElement): Promise<void> {
   output('Get workbook...');
   const workbook = editor.workbook;
 
-  // 先获取所有工作表
+  // Get all worksheets first
   const worksheets = await workbook.getWorksheets();
 
   if (!worksheets.length) {
     throw new Error('No worksheets found');
   }
 
-  // 获取第一个工作表的ID
+  // Get the ID of the first worksheet
   const firstSheetId = worksheets[0].id;
   output(`Try to get the worksheet with id ${firstSheetId}...`);
 
-  // 根据ID获取工作表
+  // Get worksheet by ID
   const worksheet = await workbook.getWorksheetById(firstSheetId);
 
   if (!worksheet) {
@@ -86,8 +86,8 @@ async function testGetWorksheetById(content: HTMLElement): Promise<void> {
 }
 
 /**
- * 测试设置活动工作表
- * @param content - 测试 UI 的容器元素
+ * Test setting active worksheet
+ * @param content - Container element for test UI
  */
 async function testSetActiveWorksheet(content: HTMLElement): Promise<void> {
   const { editor, output } = await createEditor(content);
@@ -95,18 +95,18 @@ async function testSetActiveWorksheet(content: HTMLElement): Promise<void> {
   output('Get workbook...');
   const workbook = editor.workbook;
 
-  // 获取所有工作表
+  // Get all worksheets
   const worksheets = await workbook.getWorksheets();
 
   if (!worksheets.length) {
     throw new Error('No worksheets found');
   }
 
-  // 获取当前活动工作表
+  // Get current active worksheet
   const activeWorksheet = await workbook.getActiveWorksheet();
   output(`Current active worksheet: ${activeWorksheet.name}`);
 
-  // 寻找一个非活动工作表
+  // Find a non-active worksheet
   const nonActiveWorksheet = worksheets.find((sheet) => !sheet.isActive);
 
   if (!nonActiveWorksheet) {
@@ -116,7 +116,7 @@ async function testSetActiveWorksheet(content: HTMLElement): Promise<void> {
   output(`Try to set the worksheet "${nonActiveWorksheet.name}" to active state...`);
   await workbook.setActiveWorksheet(nonActiveWorksheet.id);
 
-  // 重新获取活动工作表确认更改
+  // Get active worksheet again to confirm the change
   const newActiveWorksheet = await workbook.getActiveWorksheet();
   output(`Current active worksheet has been changed to: ${newActiveWorksheet.name}`);
 }

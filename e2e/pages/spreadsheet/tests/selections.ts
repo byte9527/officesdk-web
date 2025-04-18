@@ -24,8 +24,8 @@ export async function testSelections(root: HTMLElement): Promise<void> {
 }
 
 /**
- * 测试获取选区信息
- * @param content - 测试 UI 的容器元素
+ * Test getting selection information
+ * @param content - Container element for test UI
  */
 async function testGetSelections(content: HTMLElement): Promise<void> {
   const { editor, output } = await createEditor(content);
@@ -53,8 +53,8 @@ async function testGetSelections(content: HTMLElement): Promise<void> {
 }
 
 /**
- * 测试设置选区信息
- * @param content - 测试 UI 的容器元素
+ * Test setting selection information
+ * @param content - Container element for test UI
  */
 async function testSetSelections(content: HTMLElement): Promise<void> {
   const { editor, output } = await createEditor(content);
