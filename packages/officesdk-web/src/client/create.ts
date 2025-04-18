@@ -1,4 +1,4 @@
-import { create } from '@officesdk/rpc';
+import { create } from '@shimo/officesdk-rpc';
 
 import { FileType, assertFileType } from '../shared';
 import { createDocumentProxy, createDocumentFacade } from './document';
@@ -129,7 +129,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
     },
     connect: async (): Promise<OfficeSDKMap[T]> => {
       // Get the content window of the iframe,
-      // which can use @officesdk/rpc create method.
+      // which can use @shimo/officesdk-rpc create method.
       const remoteWindow = await getContentWindow(container);
 
       if (fileType === FileType.Document) {

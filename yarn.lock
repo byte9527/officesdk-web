@@ -1466,8 +1466,8 @@ __metadata:
     "@babel/plugin-transform-runtime": ^7.24.7
     "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.24.7
-    "@officesdk/rpc": "file:../packages/officesdk-rpc"
-    "@officesdk/web": "file:../packages/officesdk-web"
+    "@shimo/officesdk-rpc": "file:../packages/officesdk-rpc"
+    "@shimo/officesdk-web": "file:../packages/officesdk-web"
     babel-loader: ^9.1.3
     css-loader: ^6.10.0
     html-webpack-plugin: ^5.6.0
@@ -1479,37 +1479,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@officesdk/rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
+"@shimo/officesdk-rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=3e150e&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@shimo/officesdk-rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=3e150e&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     penpal: ^7.0.4
   checksum: 8ca8dec9b5ddc315293f4b48499ff3a25a76a903155a30ea44a402a0e6e12c097451e0c2bcf0c64bd13a2efa8353df00692384c52456c4989abf30bb538bbcb3
   languageName: node
   linkType: hard
 
-"@officesdk/rpc@workspace:*, @officesdk/rpc@workspace:packages/officesdk-rpc":
+"@shimo/officesdk-rpc@workspace:*, @shimo/officesdk-rpc@workspace:packages/officesdk-rpc":
   version: 0.0.0-use.local
-  resolution: "@officesdk/rpc@workspace:packages/officesdk-rpc"
+  resolution: "@shimo/officesdk-rpc@workspace:packages/officesdk-rpc"
   dependencies:
     penpal: ^7.0.4
   languageName: unknown
   linkType: soft
 
-"@officesdk/web@file:../packages/officesdk-web::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
+"@shimo/officesdk-web@file:../packages/officesdk-web::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=72a3f3&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@shimo/officesdk-web@file:../packages/officesdk-web#../packages/officesdk-web::hash=72a3f3&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
-    "@officesdk/rpc": "workspace:*"
+    "@shimo/officesdk-rpc": "workspace:*"
   checksum: 988bd9b834373fd1e5f462465163aee5edbded4eb4e183c2a281124984264edcf751e6036c63b1be3afb8638a74a3dcd625ffe59f6e702f8fe49134e73fbdc1c
   languageName: node
   linkType: hard
 
-"@officesdk/web@workspace:packages/officesdk-web":
+"@shimo/officesdk-web@workspace:packages/officesdk-web":
   version: 0.0.0-use.local
-  resolution: "@officesdk/web@workspace:packages/officesdk-web"
+  resolution: "@shimo/officesdk-web@workspace:packages/officesdk-web"
   dependencies:
-    "@officesdk/rpc": "workspace:*"
+    "@shimo/officesdk-rpc": "workspace:*"
   languageName: unknown
   linkType: soft
 

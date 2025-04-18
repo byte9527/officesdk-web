@@ -1,5 +1,5 @@
-import { create } from '@officesdk/rpc';
-import type { RPCReturnMethods } from '@officesdk/rpc';
+import { create } from '@shimo/officesdk-rpc';
+import type { RPCReturnMethods } from '@shimo/officesdk-rpc';
 
 import { createClientProxy } from './proxies';
 import type { TestMethods } from './proxies';

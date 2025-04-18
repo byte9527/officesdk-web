@@ -1,4 +1,4 @@
-import type { DocumentEditor } from '@officesdk/web/server';
+import type { DocumentEditor } from '@shimo/officesdk-web/server';
 
 export function mockDocumentEditor(output: (message: string) => void): DocumentEditor {
   return {

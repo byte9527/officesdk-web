@@ -1,6 +1,6 @@
-import { createSDK, FileType } from '@officesdk/web';
-import type { SpreadsheetFacade } from '@officesdk/web';
-import type { OfficeSDK } from '@officesdk/web';
+import { createSDK, FileType } from '@shimo/officesdk-web';
+import type { SpreadsheetFacade } from '@shimo/officesdk-web';
+import type { OfficeSDK } from '@shimo/officesdk-web';
 
 import { createContainerFrame, createServerFrame } from '../shared/frames';
 import { createOutput } from '../shared/output';

@@ -1,4 +1,4 @@
-import type { Client, RPCReturnMapProxy } from '@officesdk/rpc';
+import type { Client, RPCReturnMapProxy } from '@shimo/officesdk-rpc';
 import type { DocumentMethods, DocumentSelection, EditorContent, DocumentZoom } from '../../shared';
 import { createSelectionFacade } from './selection';
 import { createContentFacade } from '../editor/content';

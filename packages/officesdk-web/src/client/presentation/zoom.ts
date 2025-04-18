@@ -1,4 +1,4 @@
-import type { RPCReturnMethods, RPCReturnMapProxy } from '@officesdk/rpc';
+import type { RPCReturnMethods, RPCReturnMapProxy } from '@shimo/officesdk-rpc';
 import type { PresentationMethods, PresentationZoom } from '../../shared';
 
 export function createZoomFacade(methods: RPCReturnMethods<PresentationMethods>): RPCReturnMapProxy<PresentationZoom> {

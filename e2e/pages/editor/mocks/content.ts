@@ -1,4 +1,4 @@
-import type { EditorContent } from '@officesdk/web/server';
+import type { EditorContent } from '@shimo/officesdk-web/server';
 
 export function mockEditorContent(output: (message: string) => void): EditorContent {
   return {

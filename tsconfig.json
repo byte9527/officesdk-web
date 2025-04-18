@@ -14,13 +14,13 @@
     "noUnusedLocals": true,
     "baseUrl": ".",
     "paths": {
-      "@officesdk/rpc": [
+      "@shimo/officesdk-rpc": [
         "packages/officesdk-rpc/src"
       ],
-      "@officesdk/web": [
+      "@shimo/officesdk-web": [
         "packages/officesdk-web/src"
       ],
-      "@officesdk/web/server": [
+      "@shimo/officesdk-web/server": [
         "packages/officesdk-web/src/server"
       ]
     }

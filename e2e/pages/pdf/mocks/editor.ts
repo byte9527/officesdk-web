@@ -1,4 +1,4 @@
-import type { PdfEditor } from '@officesdk/web/server';
+import type { PdfEditor } from '@shimo/officesdk-web/server';
 
 export function mockPdfEditor(output: (message: string) => void): PdfEditor {
   return {

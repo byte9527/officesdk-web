@@ -1,5 +1,5 @@
 {
-  "name": "@officesdk/web",
+  "name": "@shimo/officesdk-web",
   "private": true,
   "version": "1.0.0",
   "description": "Web JS SDK for the Office SDK",
@@ -7,6 +7,6 @@
   "license": "MIT",
   "sideEffects": false,
   "dependencies": {
-    "@officesdk/rpc": "workspace:*"
+    "@shimo/officesdk-rpc": "workspace:*"
   }
 }

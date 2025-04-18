@@ -1,1 +1,1 @@
-# @officesdk/rpc
+# @shimo/officesdk-rpc

@@ -1,4 +1,4 @@
-import type { Client } from '@officesdk/rpc';
+import type { Client } from '@shimo/officesdk-rpc';
 import type { LiteDocMethods } from '../../shared';
 
 export interface LTDocFacade {

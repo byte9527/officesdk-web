@@ -1,4 +1,4 @@
-import type { RPCServerProxy } from '@officesdk/rpc';
+import type { RPCServerProxy } from '@shimo/officesdk-rpc';
 import type { DatabaseTableMethods, DatabaseTableEditor } from '../../shared';
 
 /**

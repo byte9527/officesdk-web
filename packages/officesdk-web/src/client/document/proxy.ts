@@ -1,4 +1,4 @@
-import type { RPCClientProxy } from '@officesdk/rpc';
+import type { RPCClientProxy } from '@shimo/officesdk-rpc';
 import type { DocumentMethods } from '../../shared';
 
 /**

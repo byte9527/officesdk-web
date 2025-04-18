@@ -1,4 +1,4 @@
-import { serve } from '@officesdk/rpc';
+import { serve } from '@shimo/officesdk-rpc';
 
 import { createServerProxy } from './proxies';
 import type { TestMethods } from './proxies';

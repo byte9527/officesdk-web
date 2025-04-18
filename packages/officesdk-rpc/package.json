@@ -1,5 +1,5 @@
 {
-  "name": "@officesdk/rpc",
+  "name": "@shimo/officesdk-rpc",
   "private": true,
   "version": "1.0.0",
   "description": "RPC library for the Office SDK",

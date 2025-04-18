@@ -1,4 +1,4 @@
-import type { RPCServerProxy } from '@officesdk/rpc';
+import type { RPCServerProxy } from '@shimo/officesdk-rpc';
 import type { LiteDocMethods, LiteDocEditor } from '../../shared';
 
 /**

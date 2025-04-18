@@ -1,5 +1,5 @@
-import { serve } from '@officesdk/rpc';
-import type { Server } from '@officesdk/rpc';
+import { serve } from '@shimo/officesdk-rpc';
+import type { Server } from '@shimo/officesdk-rpc';
 
 import { createDocumentProxy } from './document';
 import { createSpreadsheetProxy } from './spreadsheet';
