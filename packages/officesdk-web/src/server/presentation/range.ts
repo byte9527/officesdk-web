@@ -2,12 +2,8 @@ import type { PresentationTextRange } from '../../shared';
 
 export function createPresentationTextRangeProxy(range: PresentationTextRange): PresentationTextRange {
   return {
-    get start() {
-      return range.start;
-    },
-    get end() {
-      return range.end;
-    },
+    start: range.start,
+    end: range.end,
     getText: () => {
       return range.getText();
     },
