@@ -5,33 +5,81 @@ import { isSimpleValue } from '../shared/cloneable';
 import { isPlainObject, isArray } from '../shared/type';
 
 /**
- * 定义传入的数据通过 Token 转换为 schema 的规则，
- * 需要特殊转换后传输的数据，绝大多数都是一个对象或是函数，
- * 此时需要指定着部分需要转换的数据在 value 中的路径，
- * 举几个常规的 rule 关系：
+ * Defines rules for transforming input data into schemas through Tokens.
+ *
+ * This library facilitates cross-environment communication (like between iframes or windows)
+ * by serializing data that normally cannot be transferred using structuredClone.
+ *
+ * Most data requiring special transformation is typically objects or functions.
+ * The rules specify paths within the value where data needs transformation.
+ *
+ * The '&' symbol represents the root of the value being processed.
+ *
+ * Common rule relationship examples:
  * value: window ==> [{ type: 'ref', path: '&' }]
+ *   - Converts the entire window object to a reference
+ *
  * value: { foo: document } ==> [{ type: 'ref', path: '&.foo' }]
+ *   - Converts only the document property to a reference
+ *
  * value: () => {} ==> [{ type: 'callback', path: '&' }]
+ *   - Converts the function to a callback reference
+ *
  * value: { foo: () => {} } ==> [{ type: 'callback', path: '&.foo' }]
+ *   - Converts only the function at foo property to a callback reference
+ *
  * value: [window] ==> [{ type: 'ref', path: '&[0]' }]
+ *   - Converts the first array element to a reference
+ *
  * value: { foo: [window] } ==> [{ type: 'ref', path: '&.foo[0]' }]
+ *   - Converts the first element of the array in foo property to a reference
  */
 
+/**
+ * Represents a path in a value that needs transformation.
+ * Always starts with '&' to denote the root of the value being processed.
+ * Can include property access notation (.prop) and array indexing ([index]).
+ */
 export type TokenRulePath = `&${string}`;
 
+/**
+ * A non-empty array of TokenRulePaths to ensure at least one path is specified.
+ */
 export type TokenRulePaths = [TokenRulePath, ...TokenRulePath[]];
 
+/**
+ * Defines a transformation rule with a type and associated paths.
+ *
+ * Types include:
+ * - 'callback': Transforms functions into callable remote references
+ * - 'ref': Transforms objects into remote references
+ * - 'array': Forces value to be processed as an array
+ * - 'map': Forces value to be processed as an object map
+ */
 export type TokenRule = {
   type: 'callback' | 'ref' | 'array' | 'map';
   paths: TokenRulePaths;
 };
 
+/**
+ * Removes the leading '&' from a TokenRulePath to get the actual property path.
+ *
+ * @param path - The TokenRulePath starting with '&'
+ * @returns The path string without the leading '&'
+ */
 function getDescendantPath(path: TokenRulePath): string {
   return path.slice(1);
 }
 
 /**
- * 初始化 Token 的配置
+ * Configuration options for Token initialization.
+ * These define how different types of data should be transformed.
+ *
+ * Each property is an array of paths specifying where to apply the transformation:
+ * - arrays: Paths to values that should be treated as arrays
+ * - maps: Paths to values that should be treated as object maps
+ * - callbacks: Paths to functions that should be transformed into remote callable references
+ * - refs: Paths to objects that should be transformed into remote references
  */
 export interface TokenOptions {
   arrays?: TokenRulePaths;
@@ -41,22 +89,55 @@ export interface TokenOptions {
 }
 
 /**
- * 可以自动识别进行转换的数据类型，
- * 这类数据也不依赖 rule 进行转换。
+ * Data types that can be automatically identified and transformed without explicit rules.
+ * This includes:
+ * - Cloneable: Data that can be transferred via structuredClone
+ * - Function: Automatically converted to callbacks
+ * - Promise: Awaited and then processed based on the resolved value type
  */
 export type SmartData = Cloneable | Function | Promise<SmartData>;
 
+/**
+ * Context provided to the Token for creating references and identifying the source.
+ * This is used to maintain reference identity across different environments.
+ */
 export interface TokenContext {
+  /**
+   * Creates a unique reference ID for a callback or reference value.
+   * This ID is used to identify the value across different environments.
+   *
+   * @param value - Object containing the type and actual value to reference
+   * @returns A unique reference ID string
+   */
   createRefId(value: { type: 'callback' | 'ref'; value: any }): string;
+
+  /**
+   * The name of the source environment.
+   * Used to identify where referenced values or callbacks originated from.
+   */
   name: string;
 }
 
+/**
+ * Symbol used to mark objects as TokenStructured.
+ * This allows for type checking and prevents double-processing.
+ */
 const TokenStructuredSymbol = Symbol('TokenStructured');
 
+/**
+ * Represents a structured token type (array or map) that has been processed.
+ * The symbol property ensures we can identify it as already processed.
+ */
 type TokenStructured = {
   [TokenStructuredSymbol]: true;
 } & SchemaStructured;
 
+/**
+ * Creates a TokenStructured object by adding the TokenStructuredSymbol.
+ *
+ * @param value - The SchemaStructured object to mark
+ * @returns The same object marked as a TokenStructured
+ */
 function createTokenStructured(value: SchemaStructured): TokenStructured {
   return {
     [TokenStructuredSymbol]: true,
@@ -64,16 +145,36 @@ function createTokenStructured(value: SchemaStructured): TokenStructured {
   };
 }
 
+/**
+ * Checks if a value is a TokenStructured object.
+ *
+ * @param value - The value to check
+ * @returns True if the value is a TokenStructured object
+ */
 function isTokenStructured(value: unknown): value is TokenStructured {
   return typeof value === 'object' && Object.getOwnPropertyDescriptor(value, TokenStructuredSymbol)?.value == true;
 }
 
+/**
+ * Symbol used to mark objects as TokenValue.
+ * This allows for type checking and prevents double-processing.
+ */
 const TokenValueSymbol = Symbol('TokenData');
 
+/**
+ * Represents a value token type (primitive data) that has been processed.
+ * The symbol property ensures we can identify it as already processed.
+ */
 type TokenValue = {
   [TokenValueSymbol]: true;
 } & SchemaValueData;
 
+/**
+ * Creates a TokenValue object by adding the TokenValueSymbol.
+ *
+ * @param value - The SchemaValueData object to mark
+ * @returns The same object marked as a TokenValue
+ */
 function createTokenValue(value: SchemaValueData): TokenValue {
   return {
     [TokenValueSymbol]: true,
@@ -81,17 +182,40 @@ function createTokenValue(value: SchemaValueData): TokenValue {
   };
 }
 
+/**
+ * Checks if a value is a TokenValue object.
+ *
+ * @param value - The value to check
+ * @returns True if the value is a TokenValue object
+ */
 function isTokenValue(value: unknown): value is TokenValue {
   return typeof value === 'object' && Object.getOwnPropertyDescriptor(value, TokenValueSymbol)?.value == true;
 }
 
 /**
- * Token 的主要作用是将无法跨环境传输的数据封装为可以跨环境传输的数据或引用参数，
- * 理论上可以将任意数据封装为 Token，但封装为引用类型的数据只能跨环境作为参数引用，不能在其他环境中直接使用。
+ * The Token class is responsible for transforming data that cannot be directly transmitted
+ * across different environments (like window or iframe boundaries) into transmittable formats.
+ *
+ * It handles:
+ * 1. Converting functions to callback references
+ * 2. Converting complex objects to remote references
+ * 3. Preserving primitives and serializable objects as direct data
+ * 4. Structuring nested data types (arrays and objects)
+ *
+ * Any data can theoretically be packaged as a Token, but data packaged as a reference type
+ * can only be used as a reference parameter across environments and cannot be directly
+ * accessed in other environments.
  */
 export class Token {
+  /** Configuration options for token transformation */
   private options: TokenOptions = {};
 
+  /**
+   * Creates a new Token instance.
+   *
+   * @param value - The value to be tokenized for cross-environment transmission
+   * @param options - Optional configuration to specify how different parts of the value should be tokenized
+   */
   constructor(
     private value: unknown,
     options?: TokenOptions,
@@ -101,6 +225,13 @@ export class Token {
     }
   }
 
+  /**
+   * Transforms the token's value into a schema entity that can be transmitted
+   * across environments.
+   *
+   * @param context - The context for creating references and identifying the source
+   * @returns A promise resolving to a SchemaEntity representation of the value
+   */
   public async getSchemaEntity(context: TokenContext): Promise<SchemaEntity> {
     const value = this.value;
     const rules = this.sortRules();
@@ -108,6 +239,12 @@ export class Token {
     return this.toSchemaEntity(value, rules, context);
   }
 
+  /**
+   * Organizes transformation rules in a specific order for processing.
+   * Order: callbacks, refs, maps, arrays
+   *
+   * @returns An array of TokenRule objects in the correct processing order
+   */
   private sortRules(): TokenRule[] {
     const { callbacks, refs, arrays, maps } = this.options;
 
@@ -143,59 +280,80 @@ export class Token {
     return rules;
   }
 
+  /**
+   * Core method that transforms any value into a SchemaEntity.
+   * It uses a combination of rules and type detection to determine
+   * the appropriate transformation.
+   *
+   * @param value - The value to transform
+   * @param rules - Optional rules to guide the transformation
+   * @param context - The context for creating references
+   * @returns A promise resolving to a SchemaEntity representation of the value
+   */
   private async toSchemaEntity(
     value: unknown,
     rules: TokenRule[] | null,
     context: TokenContext,
   ): Promise<SchemaEntity> {
-    // 如果定义了规则，优先使用规则进行转换
+    // If rules are defined, prioritize using rules for transformation
+    // This allows explicit control over how specific parts of the data are transformed
     if (rules?.length) {
       return this.iterateRules(value, rules, context);
     }
 
-    // 如果是函数直接转为 callback
+    // If value is a function, directly convert to callback
+    // Functions cannot be cloned, so they must be converted to references
     if (typeof value === 'function') {
       return this.toSchemaCallback(value, context);
     }
 
-    // 如果是 Promise 则等待异步完成后再递归调用
+    // If value is a Promise, wait for it to resolve and then recursively process
+    // This allows async values to be transformed properly
     if (value instanceof Promise) {
       return value.then((value) => {
         return this.toSchemaEntity(value, rules, context);
       });
     }
 
-    // 如果是安全可直接传输的值，则直接返回
+    // If value is a simple type that can be safely transmitted, return directly
+    // These include primitives like numbers, strings, booleans, null, undefined
     if (isSimpleValue(value)) {
       return this.toSchemaData(value);
     }
 
-    // 如果是纯对象或数组，深度遍历对象
+    // If value is a plain object or array, deeply traverse the object
+    // This handles composite types recursively
     if (isPlainObject(value) || isArray(value)) {
       return this.iterateValue(value, context);
     }
 
-    // 其他未知类型全部转为 ref
+    // All other unknown types are converted to references
+    // This includes DOM elements, built-in objects like Map, Set, etc.
     return this.toSchemaRef(value, context);
   }
 
   /**
-   * 自动进行类型转换，流程如下：
-   * 1. 深度递归遍历的 value 中所有属性
-   * 2. 如果 value 是及其下面所有属性都可以通过 structuredClone 传输，则调用 .toSchemaData 转换
-   * 3. 如果 value 中存在一些无法通过 structuredClone 传输的属性，则调用 .toSchemaRef 或 .toSchemaCallback 转换
-   * @param value
-   * @param context
-   * @returns
+   * Automatically performs smart type conversion of objects and arrays.
+   * This is the core traversal logic for composite data types.
+   *
+   * Process:
+   * 1. Checks if the entire value (including all properties) is structuredClone-compatible
+   * 2. If yes, converts the entire value as data (optimization)
+   * 3. If no, recursively processes each property individually
+   *
+   * @param value - The composite value (object or array) to process
+   * @param context - The context for creating references
+   * @returns A promise resolving to a SchemaEntity representation of the value
    */
   private async iterateValue(value: Record<string, unknown> | unknown[], context: TokenContext): Promise<SchemaEntity> {
-    // 检查是否所有属性都可以通过 structuredClone 传输
+    // Check if all properties can be transmitted via structuredClone
+    // This is an optimization to avoid unnecessary deep transformation
     if (this.isStructuredCloneable(value)) {
-      // 如果所有属性都可以通过 structuredClone 传输，直接转换为 SchemaData
+      // If all properties can be transmitted via structuredClone, directly convert to SchemaData
       return this.toSchemaData(value);
     }
 
-    // 否则递归处理每个属性
+    // Otherwise recursively process each property
     if (Array.isArray(value)) {
       const result: SchemaStructured = {
         type: 'array',
@@ -204,7 +362,7 @@ export class Token {
 
       for (let i = 0; i < value.length; i++) {
         const item = value[i];
-        // 递归处理数组中的每个元素
+        // Recursively process each element in the array
         result.value.push(await this.toSchemaEntity(item, null, context));
       }
 
@@ -216,7 +374,7 @@ export class Token {
       };
 
       for (const [key, item] of entries(value)) {
-        // 递归处理对象中的每个属性
+        // Recursively process each property in the object
         result.value[key] = await this.toSchemaEntity(item, null, context);
       }
 
@@ -225,32 +383,35 @@ export class Token {
   }
 
   /**
-   * 递归检查值及其所有属性是否都可以通过 structuredClone 传输
-   * @param value 要检查的值
-   * @returns 如果值及其所有属性都可以通过 structuredClone 传输，则返回 true
+   * Recursively checks if a value and all its properties can be transmitted via structuredClone.
+   * This is used to determine if a complex object can be sent directly or needs transformation.
+   *
+   * @param value - The value to check
+   * @returns true if the value and all its properties can be transmitted via structuredClone
    */
   private isStructuredCloneable(value: unknown): boolean {
-    // 原始值可以直接传输
+    // Primitive values can be directly transmitted
     if (isSimpleValue(value)) {
       return true;
     }
 
-    // 函数、Promise 等不能通过 structuredClone 传输
+    // Functions, Promises, etc. cannot be transmitted via structuredClone
     if (typeof value === 'function' || value instanceof Promise) {
       return false;
     }
 
-    // 非普通对象不能通过 structuredClone 传输
+    // Non-plain objects cannot be transmitted via structuredClone
+    // This includes DOM elements, custom class instances, etc.
     if (!isPlainObject(value) && !isArray(value)) {
       return false;
     }
 
-    // 递归检查数组的每个元素
+    // Recursively check each element in the array
     if (isArray(value)) {
       return value.every((item) => this.isStructuredCloneable(item));
     }
 
-    // 递归检查对象的每个属性
+    // Recursively check each property in the object
     if (isPlainObject(value)) {
       return Object.values(value).every((item) => this.isStructuredCloneable(item));
     }
@@ -258,15 +419,27 @@ export class Token {
     return false;
   }
 
+  /**
+   * Applies transformation rules to specific paths within a value.
+   * This is used when explicit rules are provided in the options.
+   *
+   * @param value - The value to transform according to rules
+   * @param rules - An array of rules to apply
+   * @param context - The context for creating references
+   * @returns A SchemaEntity representation of the transformed value
+   */
   private iterateRules(value: any, rules: TokenRule[], context: TokenContext): SchemaEntity {
+    // First convert the entire value to a structured format
     let schema: SchemaEntity = this.toStructured(value);
     schema;
     let index = 0;
     let rule = rules[index];
 
+    // Process each rule sequentially
     while (rule) {
       const { type, paths } = rule;
 
+      // Apply the current rule to each specified path
       for (const path of paths) {
         const descendantPath = getDescendantPath(path);
         iteratePath(schema, descendantPath, (object, key, isLast) => {
@@ -274,12 +447,13 @@ export class Token {
             const current = object.value;
             const value = current[key];
 
-            // 如果这是最后一个 key，则使用 rule 进行处理，
-            // 这里拿到的 value 是一个 SchemaValueData，因为这个 value 之前应该在上层被 toStructured 了
+            // If this is the last key in the path, apply the rule transformation
+            // The value obtained here is a SchemaValueData because this value should have been structured by toStructured at the upper level
             const data = isTokenValue(value) ? value.value : value;
             current[key] = this.parseRule(data, type, context);
           } else {
-            // 这是中间的 key，需要转为结构化数据，
+            // If this is an intermediate key in the path, ensure it's structured properly
+            // This prepares the object structure for the final transformation
             if (isTokenStructured(object)) {
               // @ts-expect-error
               const structured = this.toStructured(object.value[key]);
@@ -296,45 +470,70 @@ export class Token {
         });
       }
 
+      // Move to the next rule
       rule = rules[++index];
     }
     return schema;
   }
 
+  /**
+   * Applies a specific transformation rule to a value.
+   *
+   * @param value - The value to transform
+   * @param type - The type of transformation to apply
+   * @param context - The context for creating references
+   * @returns A SchemaEntity representation of the transformed value
+   */
   private parseRule(value: any, type: TokenRule['type'], context: TokenContext): SchemaEntity {
     switch (type) {
       case 'callback': {
+        // Convert value to a callable remote reference
         return this.toSchemaCallback(value, context);
       }
 
       case 'ref': {
+        // Convert value to a remote reference
         return this.toSchemaRef(value, context);
       }
 
       /**
-       * 如果 rule.type 为 'array' 或 'map，则将 value 转换为结构化数据。
+       * If rule.type is 'array' or 'map', convert value to structured data.
+       * This forces the interpretation of the value as the specified type.
        */
       case 'map': {
+        // Force interpret as a map/object
         return this.toStructured(value, 'map');
       }
       case 'array': {
+        // Force interpret as an array
         return this.toStructured(value, 'array');
       }
     }
 
-    // 如果类型不匹配，返回数据类型
+    // If type doesn't match any known rule, fall back to treating as data
     return this.toSchemaData(value);
   }
 
+  /**
+   * Converts a value to a structured format (array or map).
+   * This is used to prepare composite values for further processing.
+   *
+   * @param value - The value to structure
+   * @param type - Optional type to force (array or map)
+   * @returns A TokenStructured representation of the value
+   */
   private toStructured(value: any, type?: 'map' | 'array'): TokenStructured {
+    // If already structured, return as is
     if (isTokenStructured(value)) {
       return value;
     }
 
+    // If it's a token value, unwrap and structure the inner value
     if (isTokenValue(value)) {
       return this.toStructured(value.value);
     }
 
+    // Force array type or handle array values
     if (Array.isArray(value) || type === 'array') {
       return createTokenStructured({
         type: 'array',
@@ -342,12 +541,21 @@ export class Token {
       });
     }
 
+    // Default to map/object type
     return createTokenStructured({
       type: 'map',
       value: fromEntries(entries(value).map(([k, v]) => [k, this.toSchemaData(v)])),
     });
   }
 
+  /**
+   * Converts a function to a callback schema.
+   * This allows functions to be called remotely across environments.
+   *
+   * @param value - The function to convert
+   * @param context - The context for creating references
+   * @returns A SchemaValueCallback representation of the function
+   */
   private toSchemaCallback(value: Function, context: TokenContext): SchemaValueCallback {
     return {
       type: 'callback',
@@ -359,6 +567,14 @@ export class Token {
     };
   }
 
+  /**
+   * Converts a value to a reference schema.
+   * This allows complex objects to be referenced remotely across environments.
+   *
+   * @param value - The value to convert to a reference
+   * @param context - The context for creating references
+   * @returns A SchemaValueRef representation of the value
+   */
   private toSchemaRef(value: unknown, context: TokenContext): SchemaValueRef {
     return {
       type: 'ref',
@@ -370,11 +586,20 @@ export class Token {
     };
   }
 
+  /**
+   * Converts a value to a data schema.
+   * This is used for values that can be directly transmitted.
+   *
+   * @param value - The value to convert
+   * @returns A SchemaValueData representation of the value
+   */
   private toSchemaData(value: any): SchemaValueData {
+    // If already a token value, return as is
     if (isTokenValue(value)) {
       return value;
     }
 
+    // Create a new token value
     return createTokenValue({
       type: 'data',
       value,
@@ -382,10 +607,24 @@ export class Token {
   }
 }
 
+/**
+ * Checks if a value is a Token instance.
+ *
+ * @param value - The value to check
+ * @returns True if the value is a Token instance
+ */
 export function isToken(value: unknown): value is Token {
   return value instanceof Token;
 }
 
+/**
+ * Traverses a path within an object and applies a callback to each segment.
+ * Used to navigate nested objects when applying transformation rules.
+ *
+ * @param obj - The object to traverse
+ * @param path - The path string using dot notation
+ * @param callback - Function to call for each path segment
+ */
 function iteratePath(obj: any, path: string, callback: (object: any, key: string, isLast: boolean) => any): void {
   let current = obj;
 

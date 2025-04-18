@@ -1,3 +1,28 @@
+/**
+ * Office SDK Cross-Window Communication Client
+ *
+ * This file implements the client-side of the cross-window or cross-iframe communication system.
+ * It allows a window to connect to and communicate with server windows (typically iframes or parent windows)
+ * that provide specific functionality.
+ *
+ * Key features:
+ * 1. Connection management - Establishes and maintains connections to server windows
+ * 2. Connection reuse - Multiple client instances can share a single connection to the same server
+ * 3. Remote method invocation - Provides proxy methods to call functions on the server
+ * 4. Serialization - Automatically handles serialization of complex data types and functions
+ * 5. Callback support - Enables server code to invoke callback functions defined in the client
+ *
+ * The client works together with the server (server.ts), transportable (transportable.ts), and
+ * token (token.ts) components to provide a complete cross-window communication solution that
+ * supports passing complex data structures, functions, and maintaining references across
+ * different execution contexts.
+ *
+ * Usage pattern:
+ * 1. Create a client instance with appropriate options
+ * 2. Use the returned proxy methods to call server functions
+ * 3. Data and callbacks are automatically serialized/deserialized across environments
+ */
+
 import { connect, WindowMessenger } from 'penpal';
 import type { Connection, RemoteProxy } from 'penpal';
 
@@ -8,11 +33,15 @@ import type { RPCClientProxy, RPCMethods, RPCReturnMethods, RPCClientInvokeArgs 
 import { Transportable } from './transportable';
 import type { TransportableRemoteCallback } from './transportable';
 
+/**
+ * Configuration options for creating a client instance
+ */
 export interface ClientOptions<TMethods extends RPCMethods> {
   /**
-   * 需要创建连接的 iframe.contentWindow
+   * The remote window to connect to, typically an iframe.contentWindow
    */
   remoteWindow: Window;
+
   /**
    * Subset of the allowedOrigins option in WindowMessenger.
    * ----
@@ -25,59 +54,80 @@ export interface ClientOptions<TMethods extends RPCMethods> {
   allowedOrigins?: string[];
 
   /**
-   * 连接超时时间
+   * Connection timeout in milliseconds
    */
   timeout?: number;
 
   /**
-   * 远程调用协议代理，用于生成客户端远程调用服务端的方法，
-   * 需要保证服务端按照同样的 RPCMethods 协议提供方法实现
+   * Remote procedure call protocol proxy
+   *
+   * Generates methods for the client to call on the server.
+   * The server must implement methods according to the same RPCMethods protocol.
    */
   proxy: RPCClientProxy<TMethods>;
 }
 
 /**
- * 服务端记录，用于将服务端 Window 和客户端信息进行关联
+ * Internal record of a server connection
+ * Used to associate server Windows with client information and reuse connections
  */
 interface ServerRecord<TMethods extends RPCMethods> {
   /**
-   * penpal connection
+   * The Penpal connection to the server
    */
   connection: Connection<ConnectionServerProtocol>;
+
   /**
-   * 已生成的客户端 id 记录
+   * Set of client IDs registered with this server
    */
   clientIds: Set<string>;
 
-  methods: RPCReturnMethods<TMethods>;
-}
-
-let serverMap = new WeakMap<Window, ServerRecord<any>>();
-
-export interface Client<TMethods extends RPCMethods> {
   /**
-   * 客户端 id
-   */
-  id: string;
-
-  /**
-   * 客户端代理方法
+   * Generated proxy methods for calling server functions
    */
   methods: RPCReturnMethods<TMethods>;
 }
 
 /**
- * 传入通信协议，创建一个客户端
+ * Global cache mapping Window objects to their server records
+ * Uses WeakMap to allow garbage collection when windows are destroyed
+ */
+let serverMap = new WeakMap<Window, ServerRecord<any>>();
+
+/**
+ * Client interface for interacting with a server
+ */
+export interface Client<TMethods extends RPCMethods> {
+  /**
+   * Unique identifier for this client
+   */
+  id: string;
+
+  /**
+   * Proxy methods for calling functions on the server
+   */
+  methods: RPCReturnMethods<TMethods>;
+}
+
+/**
+ * Creates a client instance that can communicate with a server
+ *
+ * If a connection to the specified window already exists, it will be reused.
+ * Multiple clients can share a single connection to the same server window.
+ *
+ * @param options - Configuration options for the client
+ * @returns A Promise resolving to a Client instance
  */
 export async function create<TMethods extends RPCMethods>(options: ClientOptions<TMethods>): Promise<Client<TMethods>> {
   const { remoteWindow, allowedOrigins, timeout } = options;
 
   const serverRecordCache = serverMap.get(remoteWindow);
 
+  // Generate a unique ID for this client
   const clientId = generateUniqueId();
 
-  // 如果服务端已经存在，并且已经连接过了，则直接使用缓存的连接
-  // 否则需要重新创建连接
+  // If we already have a connection to this server, reuse it
+  // This allows multiple clients to share a single connection
   if (serverRecordCache) {
     await connectServer(serverRecordCache.connection, clientId);
 
@@ -87,13 +137,19 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
     };
   }
 
+  // Create a new messenger for communication with the server
   const messenger = new WindowMessenger({
     remoteWindow,
     allowedOrigins,
   });
 
+  // Track client IDs registered with this server
   const clientIds = new Set<string>([]);
 
+  /**
+   * Helper function to ensure server proxy is available before using it
+   * Throws an error if server is not yet connected
+   */
   const ensureServerProxy = (): RemoteProxy<ConnectionServerProtocol> => {
     if (!server) {
       throw new Error('Unexpected invoke before server connected');
@@ -102,26 +158,45 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
     return server;
   };
 
-  // 这里是客户端调用服务端 callback 的地方
+  /**
+   * Callback handler for client-to-server callbacks
+   *
+   * This function is invoked when the client needs to execute a callback in the server's context
+   * It serializes the arguments, forwards them to the server, and returns the result
+   */
   const transportableRemoteCallback: TransportableRemoteCallback = async (callback, args) => {
     const serverProxy = ensureServerProxy();
 
+    // Convert all arguments to serializable schema entities
     const schemas = await Promise.all(args.map((arg) => transportable.createSchemaEntity(arg)));
+    // Call the callback on the server side
     return serverProxy.callback(callback, schemas);
   };
 
+  // Create a Transportable instance for serializing/deserializing data
   const transportable = new Transportable({
     name: clientId,
     callback: transportableRemoteCallback,
   });
 
+  // Initialize the connection to the server
   const connection = connect<ConnectionServerProtocol>({
     channel: OfficeSdkRpcChannel,
     messenger,
     methods: createConnectionClientProtocol({
+      /**
+       * Returns the set of client IDs associated with this connection
+       */
       getClients: () => clientIds,
+
+      /**
+       * Resolves a callback schema for remote execution
+       *
+       * @param schema - The callback schema to resolve
+       * @returns A function that can be called to execute the callback remotely
+       */
       resolveCallback: (schema) => {
-        // 过滤掉非本客户端的回调
+        // Reject callbacks from other clients for security
         if (schema.source !== clientId) {
           return (): never => {
             throw new Error(`Invalid callback source: ${schema.source}, can not resolve callback from other client.`);
@@ -134,19 +209,22 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
     timeout,
   });
 
+  // Register this client ID with the connection
   clientIds.add(clientId);
 
+  // Connect to the server and register this client
   const serverPromise = connectServer(connection, clientId);
 
   const { proxy } = options;
 
+  // Create the proxy methods for calling server functions
   const methods = proxy({
     /**
-     * 这里的客户端调用服务端的统一入口
-     * @param method
-     * @param args
-     * @param options
-     * @returns
+     * Central function for invoking methods on the server
+     *
+     * @param method - The name of the method to call
+     * @param args - Arguments to pass to the method
+     * @returns A Promise resolving to the result from the server
      */
     invoke: async <TName extends keyof TMethods>(
       method: TName,
@@ -154,11 +232,13 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
     ) => {
       const serverProxy = ensureServerProxy();
 
+      // Serialize the arguments for transmission
       const schemas = await Promise.all(args.map((arg) => transportable.createSchemaEntity(arg)));
 
-      // TODO: 这个 method 类型不严谨
+      // TODO: Improve type safety for method name
       const response = serverProxy.invoke(clientId, method as string, schemas);
 
+      // Parse the response when it arrives
       return response.then((data) => {
         if (!data) {
           return;
@@ -169,14 +249,17 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
     },
   });
 
+  // Wait for the connection to be established
   let server = await serverPromise;
 
+  // Create a record of this server connection
   const serverRecord = {
     connection,
     clientIds,
     methods,
   };
 
+  // Cache the server record for potential reuse
   serverMap.set(remoteWindow, serverRecord);
 
   return {
@@ -186,19 +269,25 @@ export async function create<TMethods extends RPCMethods>(options: ClientOptions
 }
 
 /**
- * 连接服务端
+ * Establishes a connection to the server and registers a client ID
+ *
+ * @param connection - The Penpal connection to the server
+ * @param clientId - The client ID to register
+ * @returns A Promise resolving to the server proxy
  */
 async function connectServer(
   connection: Connection<ConnectionServerProtocol>,
   clientId: string,
 ): Promise<RemoteProxy<ConnectionServerProtocol>> {
   try {
+    // Wait for the connection to be established
     const server = await connection.promise;
+    // Register this client ID with the server
     await server.open(clientId);
 
     return server;
   } catch (error) {
-    // TODO: 超时处理，发生在同源策略限制时
+    // TODO: Improve timeout handling, especially for same-origin policy issues
 
     throw error;
   }

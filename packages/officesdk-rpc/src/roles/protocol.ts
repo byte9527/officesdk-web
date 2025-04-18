@@ -1,4 +1,10 @@
 /**
+ * Office SDK Cross-Window Communication Protocol
+ *
+ * This file defines the connection protocols for establishing and maintaining communications
+ * between client and server environments across window boundaries. It provides the fundamental
+ * connection mechanism upon which the higher-level RPC functionality is built.
+ *
  * Connection protocol for recording client's unique identity on the server side.
  * Since the underlying communication is based on penpal, there's no need for TCP-like
  * three-way handshake to confirm message delivery. The connection is established
@@ -49,12 +55,29 @@ export type ServerProtocol = {
 
 /**
  * Context required for server initialization
+ *
+ * Provides methods for managing client connections that the server protocol implementation will use
  */
 interface ServerContext {
+  /**
+   * Register a new client with the server
+   * @param id The unique client identifier
+   */
   addClient: (id: string) => void;
+
+  /**
+   * Remove a client from the server
+   * @param id The unique client identifier to remove
+   */
   deleteClient: (id: string) => void;
 }
 
+/**
+ * Creates a server protocol implementation based on the provided context
+ *
+ * @param context - The server context with client management methods
+ * @returns An implementation of the ServerProtocol interface
+ */
 export function createServerProtocol(context: ServerContext): ServerProtocol {
   return {
     open: (clientId: string): boolean => {
@@ -78,20 +101,38 @@ export function createServerProtocol(context: ServerContext): ServerProtocol {
  * These interfaces are for remote invocation by server, not for client's own use
  */
 export type ClientProtocol = {
+  /**
+   * Server requests the client's identity information
+   * @returns Array of client IDs associated with this client
+   */
   open: () => string[];
+
+  /**
+   * Server notifies the client that a connection is being closed
+   * @param clientId The client ID being closed
+   */
   close: (clientId: string) => void;
 };
 
 /**
  * Context required for client initialization
+ *
+ * Provides methods for accessing client information that the client protocol implementation will use
  */
 interface ClientContext {
   /**
    * Get identity information of connected clients
+   * @returns A set of client IDs currently registered
    */
   getClients: () => Set<string>;
 }
 
+/**
+ * Creates a client protocol implementation based on the provided context
+ *
+ * @param context - The client context with client information methods
+ * @returns An implementation of the ClientProtocol interface
+ */
 export function createClientProtocol(context: ClientContext): ClientProtocol {
   return {
     open: (): string[] => {
@@ -103,52 +144,10 @@ export function createClientProtocol(context: ClientContext): ClientProtocol {
   };
 }
 
-export const OfficeSdkRpcChannel = '#office-sdk-rpc';
-
-export enum RPCArgType {
-  String = 'string',
-  Number = 'number',
-  Boolean = 'boolean',
-  Object = 'object',
-  Callback = 'callback',
-  Null = 'null',
-  Undefined = 'undefined',
-  Array = 'array',
-}
-
 /**
- * 可通过 penpal 调用的参数形式我们约束为合法的 JSON 类型
- */
-export type RPCParameter =
-  | string
-  | number
-  | boolean
-  | RPCMethod
-  | null
-  | undefined
-  | RPCParameter[]
-  | { [key: string]: RPCParameter };
-
-/**
- * 可通过 penpal 调用的方法，返回值约束为合法的 JSON 类型
- */
-export type RPCMethod = (...args: any[]) => any;
-
-/**
+ * Channel identifier for Office SDK RPC communications
  *
+ * This constant is used to identify the communication channel between client and server,
+ * ensuring that messages are properly routed to the correct handlers.
  */
-export type RPCMethods = {
-  [index: string]: RPCMethod;
-};
-
-/**
- * 远程调用协议，用于定义服务端提供的远程调用方法。
- * 服务端需要基于这个协议提供 penpal 的 Methods 实现，
- * 客户端基于这个协议可以创建 penpal 的 RemoteProxy 实现
- */
-export type RPCProtocol<TMethods extends RPCMethods> = {
-  client: {
-    [K in keyof TMethods]: TMethods[K];
-  };
-  server: TMethods;
-};
+export const OfficeSdkRpcChannel = '#office-sdk-rpc';
