@@ -1,8 +1,8 @@
 import type { Client, RPCReturnMapProxy } from '@officesdk/rpc';
-import type { PdfMethods, PdfPages, PdfSelection, EditorOutline } from '../../shared';
+import type { PdfMethods, PdfPages, PdfSelection, PdfOutline } from '../../shared';
 import { createSelectionFacade } from './selection';
 import { createPagesFacade } from './pages';
-import { createOutlineFacade } from './outline';
+import { createOutlineFacade } from '../editor/outline';
 
 export interface PdfFacade {
   /**
@@ -18,14 +18,14 @@ export interface PdfFacade {
   /**
    * 目录实例
    */
-  readonly outline: RPCReturnMapProxy<EditorOutline>;
+  readonly outline: RPCReturnMapProxy<PdfOutline>;
 }
 
 export function createPdfFacade(client: Client<PdfMethods>): PdfFacade {
   const { methods } = client;
   const pages = createPagesFacade(methods);
   const selection = createSelectionFacade(methods);
-  const outline = createOutlineFacade(methods);
+  const outline = createOutlineFacade<{ text: string }>(methods);
 
   return {
     get pages() {

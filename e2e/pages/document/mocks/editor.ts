@@ -69,5 +69,43 @@ export function mockDocumentEditor(output: (message: string) => void): DocumentE
         output('document.zoom.zoomOut has been called');
       },
     },
+    TOCs: {
+      getAll: () => {
+        output('document.TOCs.getAll has been called');
+        return Promise.resolve([]);
+      },
+      getOne: () => {
+        output('document.TOCs.getOne has been called');
+        return Promise.resolve(null);
+      },
+      deleteAll: () => {
+        output('document.TOCs.deleteAll has been called');
+        return Promise.resolve(true);
+      },
+      deleteOne: () => {
+        output('document.TOCs.deleteOne has been called');
+        return Promise.resolve(true);
+      },
+      add: () => {
+        output('document.TOCs.add has been called');
+        return Promise.resolve(true);
+      },
+    },
+    outline: {
+      getContent: () => {
+        output('document.outline.getContent has been called');
+        return Promise.resolve([]);
+      },
+      addChangedListener: () => {
+        output('document.outline.addChangedListener has been called');
+        return () => {
+          output('document.outline.addChangedListener has been removed');
+        };
+      },
+      goto: () => {
+        output('document.outline.goto has been called');
+        return Promise.resolve(true);
+      },
+    },
   };
 }

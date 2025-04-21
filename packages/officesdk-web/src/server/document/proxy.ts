@@ -6,6 +6,7 @@ import { createDocumentSelectionProxy } from './selection';
 import { createEditorContentProxy } from '../editor/content';
 import { createDocumentZoomProxy } from './zoom';
 import { createDocumentTOCsProxy } from './tocs';
+import { createDocumentOutlineProxy } from './outline';
 
 /**
  * 定义 Document 的 RPC 代理的客户端调用接口
@@ -28,6 +29,10 @@ export function createDocumentProxy(editor: DocumentEditor, context: EditorConte
 
       getTOCs: () => {
         return createDocumentTOCsProxy(editor.TOCs);
+      },
+
+      getOutline: () => {
+        return createDocumentOutlineProxy(editor.outline);
       },
     };
   };

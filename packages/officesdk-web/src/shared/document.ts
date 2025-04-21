@@ -1,4 +1,4 @@
-import type { EditorContent } from './editor';
+import type { EditorContent, EditorOutline, EditorOutlineItem } from './editor';
 /**
  * Document 远程调用的方法定义，
  * 作为契约，用于统一约束客户端和服务端的接口。
@@ -26,8 +26,27 @@ export type DocumentMethods = {
    * 一个文档中可以存在多个目录，这个接口是用来管理文档中的所有目录的。
    */
   getTOCs: () => DocumentTOCs;
+
+  /**
+   *  传统文档目录大纲接口
+   */
+  getOutline: () => DocumentOutline;
   // TODO: 初始化流程控制，初始化各类异常
 };
+
+/**
+ * 传统文档目录大纲项接口
+ */
+export type DocumentOutline = EditorOutline<{
+  text: string;
+}>;
+
+/**
+ * 传统文档目录大纲项信息，用于描述传统文档中的目录项信息。
+ */
+export type DocumentOutlineItem = EditorOutlineItem<{
+  text: string;
+}>;
 
 /**
  * 文档编辑器实例接口
@@ -37,6 +56,7 @@ export interface DocumentEditor {
   readonly content: EditorContent;
   readonly zoom: DocumentZoom;
   readonly TOCs: DocumentTOCs;
+  readonly outline: DocumentOutline;
 }
 
 export type DocumentSelection = {

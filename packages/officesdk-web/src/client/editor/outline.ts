@@ -1,11 +1,13 @@
 import type { RPCReturnMethods, RPCReturnMapProxy } from '@officesdk/rpc';
 
-import type { PdfMethods, EditorOutline, EditorOutlineItem } from '../../shared';
+import type { EditorOutlineMethods, EditorOutline, EditorOutlineItem } from '../../shared';
 
-export function createOutlineFacade(methods: RPCReturnMethods<PdfMethods>): RPCReturnMapProxy<EditorOutline> {
-  let outlineCache: Promise<RPCReturnMapProxy<EditorOutline>> | null = null;
+export function createOutlineFacade<Content>(
+  methods: RPCReturnMethods<EditorOutlineMethods<Content>>,
+): RPCReturnMapProxy<EditorOutline<Content>> {
+  let outlineCache: Promise<RPCReturnMapProxy<EditorOutline<Content>>> | null = null;
 
-  const getOutline = async (): Promise<RPCReturnMapProxy<EditorOutline>> => {
+  const getOutline = async (): Promise<RPCReturnMapProxy<EditorOutline<Content>>> => {
     if (outlineCache) {
       return outlineCache;
     }
@@ -19,7 +21,7 @@ export function createOutlineFacade(methods: RPCReturnMethods<PdfMethods>): RPCR
       const outline = await getOutline();
       return outline.getContent();
     },
-    addChangedListener: async (listener: (content: EditorOutlineItem[]) => void) => {
+    addChangedListener: async (listener: (content: EditorOutlineItem<Content>[]) => void) => {
       const outline = await getOutline();
       return outline.addChangedListener(listener);
     },

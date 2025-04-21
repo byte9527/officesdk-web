@@ -10,9 +10,15 @@ export function createDocumentTOCsProxy(TOCs: DocumentTOCs): DocumentTOCs {
       const item = await TOCs.getOne(index);
       return item ? createDocumentTocItemProxy(item) : null;
     },
-    deleteAll: () => TOCs.deleteAll(),
-    deleteOne: (index: number) => TOCs.deleteOne(index),
-    add: (options: { range?: string }) => TOCs.add(options),
+    deleteAll: async () => {
+      return TOCs.deleteAll();
+    },
+    deleteOne: async (index: number) => {
+      return TOCs.deleteOne(index);
+    },
+    add: async (options: { range?: string }) => {
+      return TOCs.add(options);
+    },
   };
 }
 
