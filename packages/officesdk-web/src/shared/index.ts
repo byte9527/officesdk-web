@@ -7,6 +7,9 @@ export type {
   DocumentRangeValue,
   DocumentSelection,
   DocumentZoom,
+  DocumentTOCs,
+  DocumentTocItem,
+  DocumentTocContentItem,
 } from './document';
 export type { DatabaseTableMethods, DatabaseTableEditor } from './dbtable';
 export type { LiteDocMethods, LiteDocEditor } from './ltdoc';
