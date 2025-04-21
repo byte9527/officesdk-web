@@ -6,6 +6,9 @@
   "main": "dist/index.js",
   "license": "MIT",
   "sideEffects": false,
+  "scripts": {
+    "rollup": "rollup -c"
+  },
   "dependencies": {
     "@shimo/officesdk-rpc": "workspace:*"
   }

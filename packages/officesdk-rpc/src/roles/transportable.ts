@@ -9,7 +9,7 @@ import type { SchemaValueCallback, SchemaValueRef, SchemaEntity } from './schema
 import { fromEntries, entries } from '../shared/object';
 import { isToken, Token } from './token';
 
-interface TransportableLocalOptions {
+export interface TransportableLocalOptions {
   /**
    * 名称，用于标记数据来源
    */

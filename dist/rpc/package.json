@@ -1,8 +1,27 @@
 {
-  "name": "@officesdk/rpc",
-  "version": "1.0.0",
+  "name": "@shimo/officesdk-rpc",
+  "version": "1.0.0-15",
   "description": "RPC library for the Office SDK",
   "main": "dist/index.js",
+  "types": "./index.d.ts",
+  "unpkg": "./umd/index.js",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./cjs/index.js",
+      "types": "./index.d.ts"
+    }
+  },
+  "files": [
+    "index.d.ts",
+    "cjs",
+    "esm",
+    "umd"
+  ],
+  "publishConfig": {
+    "access": "public",
+     "registry": "http://registry.npm.shimo.run/"
+  },
   "author": {
     "name": "magicismight",
     "email": "master@horcrux.cn",
@@ -26,8 +45,6 @@
     "pdf"
   ],
   "license": "MIT",
-  "files": [
-  ],
   "dependencies": {
     "penpal": "^7.0.4"
   }

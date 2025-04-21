@@ -1,5 +1,19 @@
 export { createSDK, FileType } from './client';
-export type { CreateOptions, OfficeSDK, DocumentFacade, SpreadsheetFacade, PdfFacade } from './client';
+export { EditorModeType, EditorStandardRole } from './shared';
+
+export type {
+  DocumentFacade,
+  SpreadsheetFacade,
+  PresentationFacade,
+  LTDocFacade,
+  DatabaseTableFacade,
+  PdfFacade,
+  OfficeSDKMap,
+  CreateOptions,
+  OfficeSDK,
+  createContentFacade,
+} from './client';
+
 export type {
   EditorContent,
   EditorContentRecord,
@@ -16,4 +30,19 @@ export type {
   SpreadsheetRange,
   SpreadsheetRangeType,
   SpreadsheetRangeValue,
+  PdfPages,
+  PdfPage,
+  PdfSelection,
+  PdfRangeValue,
+  EditorOutline,
+  PdfRange,
+  PresentationSelection,
+  PresentationZoom,
+  PresentationSlides,
+  PresentationTextRange,
+  PresentationTextRangeValue,
+  PresentationShape,
+  PresentationSlide,
+  EditorOutlineItem,
+  EditorMethods,
 } from './shared';

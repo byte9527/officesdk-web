@@ -1,8 +1,37 @@
 {
-  "name": "@officesdk/web",
-  "version": "1.0.0",
+  "name": "@shimo/officesdk-web",
+  "version": "1.0.0-21",
   "description": "Web JS SDK for the Office SDK",
   "main": "dist/index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./cjs/index.js"
+    },
+    "./server": {
+      "import": "./esm/server/index.js",
+      "require": "./cjs/server/index.js"
+    }
+  },
+   "typesVersions": {
+    "*": {
+      "server": ["esm/server/index.d.ts"]
+    }
+  },
+  "dependencies": {
+    "@shimo/officesdk-rpc": "^1.0.0-15"
+  },
+  "files": [
+    "index.d.ts",
+    "cjs",
+    "esm",
+    "umd"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "http://registry.npm.shimo.run/"
+  },
   "author": {
     "name": "magicismight",
     "email": "master@horcrux.cn",
@@ -25,7 +54,5 @@
     "ppt",
     "pdf"
   ],
-  "license": "MIT",
-  "files": [
-  ]
+  "license": "MIT"
 }

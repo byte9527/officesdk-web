@@ -36,7 +36,7 @@ export interface ServeOptions<T extends FileType> {
   context: EditorContext;
 }
 
-type EditorMap = {
+export type EditorMap = {
   [FileType.Document]: DocumentEditor;
   [FileType.Spreadsheet]: SpreadsheetEditor;
   [FileType.Presentation]: PresentationEditor;

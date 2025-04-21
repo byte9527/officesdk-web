@@ -1,3 +1,25 @@
+/**
+ * 编辑器模式
+ * - `standard` 标准模式，会根据用户权限配置不同的功能
+ * - `preview` 预览模式，只能查看内容
+ */
+export enum EditorModeType {
+  Standard = 'standard',
+  Preview = 'preview'
+}
+
+/**
+ * 编辑器在 `standard` 模式下的权限模式
+ * - `editor` 编辑模式
+ * - `viewer` 阅读模式
+ * - `reviewer` 评论模式
+ */
+export enum EditorStandardRole {
+  Editor = 'editor',
+  Viewer = 'viewer',
+  Reviewer = 'reviewer'
+}
+
 export type EditorMethods = {
   getContent: () => EditorContent;
 };

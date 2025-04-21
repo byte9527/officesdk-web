@@ -46,7 +46,7 @@ export interface Server {
 
 // TODO: 需要返回 Server 实例， onOpen 和 onClose 需要迁移到 Server 实例的方法上去
 export async function serve<TMethods extends RPCMethods>(options: ServerOptions<TMethods>): Promise<Server> {
-  const { allowedOrigins, proxy } = options;
+  const { allowedOrigins = ['*'], proxy } = options;
 
   let messenger: WindowMessenger;
   try {

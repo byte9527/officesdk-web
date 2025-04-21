@@ -70,7 +70,7 @@ export interface Client<TMethods extends RPCMethods> {
  * 传入通信协议，创建一个客户端
  */
 export async function create<TMethods extends RPCMethods>(options: ClientOptions<TMethods>): Promise<Client<TMethods>> {
-  const { remoteWindow, allowedOrigins, timeout } = options;
+  const { remoteWindow, allowedOrigins = ['*'], timeout } = options;
 
   const serverRecordCache = serverMap.get(remoteWindow);
 

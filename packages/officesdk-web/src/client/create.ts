@@ -15,7 +15,8 @@ import { createPdfProxy, createPdfFacade } from './pdf';
 import type { PdfFacade } from './pdf';
 import { generateUrl } from './url';
 import { createContainer, connectContainer, getContentWindow } from './container';
-
+import type { EditorModeType, EditorStandardRole } from '../shared';
+import { mapToPreviewType } from '../shared/file';
 /**
  * 初始化 Office SDK 的配置项，
  * 需要传入 endpoint、 token、 fileId 用于连接服务端并鉴权，
@@ -62,9 +63,17 @@ export interface CreateOptions<T extends FileType> {
    * 语言
    */
   lang?: 'zh-CN' | 'en-US';
+    /**
+   * 编辑器模式
+   */
+  mode?: EditorModeType;
+  /**
+   *  编辑器在 `standard` 模式下的权限模式
+   */
+  role?: EditorStandardRole;
 }
 
-type OfficeSDKMap = {
+export type OfficeSDKMap = {
   [FileType.Document]: DocumentFacade;
   [FileType.Spreadsheet]: SpreadsheetFacade;
   [FileType.Presentation]: PresentationFacade;
@@ -106,7 +115,7 @@ export interface OfficeSDK<T extends FileType> {
  * 创建 Office SDK 实例
  */
 export function createSDK<T extends FileType>(options: CreateOptions<T>): OfficeSDK<T> {
-  const { fileType, endpoint, token, fileId, path, root, iframe } = options;
+  const { fileType, endpoint, token, fileId, path, root, iframe, mode, role } = options;
 
   assertFileType(fileType);
 
@@ -117,7 +126,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
     url = new URL(iframe.src);
     container = connectContainer({ iframe, root });
   } else {
-    url = generateUrl({ endpoint, token, fileId, path });
+    url = generateUrl({ endpoint, token, fileId, path, mode, role, fileType: mapToPreviewType(fileType) });
     container = createContainer({ source: url.toString(), root });
   }
 

@@ -12,6 +12,8 @@
     "test:rpc": "echo \"Error: no test specified\" && exit 1",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:e2e": "yarn workspace @officesdk/e2e start",
+    "lint": "eslint ./packages --ext .ts",
+    "build": "bash ./scripts/build.sh",
     "tsc": "tsc -p tsconfig.json --noEmit"
   },
   "repository": {
@@ -37,7 +39,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
     "@microsoft/api-extractor": "^7.43.7",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
     "@typescript-eslint/eslint-plugin": "~7.18.0",
     "@typescript-eslint/parser": "~7.18.0",
     "eslint": "^8",
@@ -48,7 +54,9 @@
     "husky": "^9.0.11",
     "lint-staged": "^14",
     "npm-run-all": "~4.1.5",
-    "prettier": "~3.2.5",
+    "prettier": "^3.5.3",
+    "rollup": "^4.40.0",
+    "rollup-plugin-dts": "^6.2.1",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "typescript": "~5.4.5"
   },
@@ -64,5 +72,8 @@
       "git add"
     ]
   },
-  "packageManager": "yarn@3.7.0"
+  "packageManager": "yarn@3.7.0",
+  "dependencies": {
+    "@rollup/plugin-terser": "^0.4.4"
+  }
 }

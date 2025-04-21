@@ -1,3 +1,5 @@
+import { EditorModeType, EditorStandardRole } from '../shared';
+
 export interface UrlOptions {
   /**
    * 服务器地址， OFFICE SDK 部署的地址
@@ -15,6 +17,10 @@ export interface UrlOptions {
    * 文件 ID
    */
   fileId: string;
+  /**
+   * 文件 类型
+   */
+  fileType: string;
 
   /**
    * 自定义页面路径
@@ -25,6 +31,14 @@ export interface UrlOptions {
    * 语言
    */
   lang?: string;
+  /**
+   * 编辑器模式
+   */
+  mode?: EditorModeType;
+  /**
+   *  编辑器在 `standard` 模式下的权限模式
+   */
+  role?: EditorStandardRole;
 }
 
 /**
@@ -54,9 +68,19 @@ function getLang(lang?: string): string | null {
  * @returns
  */
 export function generateUrl(options: UrlOptions): URL {
-  const defaultPath = '/v1/file/page';
+  const defaultPath = '/v1/api/file/page';
+  const defaultMode = EditorModeType.Standard;
+  const defaultRole = EditorStandardRole.Viewer
 
-  const { endpoint, token, fileId, path = defaultPath } = options;
+  const {
+    endpoint,
+    token,
+    fileId,
+    fileType,
+    path = defaultPath,
+    mode = defaultMode,
+    role = defaultRole
+  } = options;
 
   let url: URL;
 
@@ -73,8 +97,11 @@ export function generateUrl(options: UrlOptions): URL {
     // TODO: path、params 支持配置
     url.pathname = path;
 
-    url.searchParams.set('file_id', fileId);
+    url.searchParams.set('fileID', fileId);
     url.searchParams.set('token', token);
+    url.searchParams.set('fileType', fileType);
+    url.searchParams.set('modeType', mode);
+    url.searchParams.set('modeRole', role);
 
     const lang = getLang(options.lang);
     if (lang) {

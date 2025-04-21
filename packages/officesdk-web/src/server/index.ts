@@ -1,10 +1,8 @@
-export { serveSDK } from './serve';
-export type { ServeOptions } from './serve';
-export type { EditorContext } from './editor';
 export type {
   EditorContent,
   EditorContentRecord,
   DocumentEditor,
+  DocumentZoom,
   SpreadsheetEditor,
   SpreadsheetWorkbook,
   SpreadsheetWorksheet,
@@ -13,5 +11,31 @@ export type {
   SpreadsheetRange,
   SpreadsheetRangeType,
   SpreadsheetRangeValue,
+  DocumentSelection,
+  DocumentRange,
+  DocumentRangeValue,
+  LiteDocEditor,
+  PresentationEditor,
+  DatabaseTableEditor,
   PdfEditor,
+  PdfPages,
+  PdfSelection,
+  PdfOutline,
+  PresentationSelection,
+  PresentationZoom,
+  PresentationSlides,
+  EditorOutline,
+  PdfPage,
+  PdfRangeValue,
+  PdfRange,
+  PresentationTextRange,
+  PresentationTextRangeValue,
+  PresentationShape,
+  PresentationSlide,
+  EditorOutlineItem,
 } from '../shared';
+
+export { serveSDK } from './serve';
+export type { ServeOptions, EditorMap } from './serve';
+export { FileType } from '../shared';
+export type { EditorContext } from './editor';

@@ -1,11 +1,7 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [
-    {
-      "path": "../officesdk-rpc"
-    }
-  ],
   "compilerOptions": {
+    "declaration": false
   },
   "include": [
     "src/**/*.ts"
