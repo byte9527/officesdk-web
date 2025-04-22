@@ -10,5 +10,8 @@ export function createPdfRangeProxy(range: PdfRange): PdfRange {
     getHtml: () => {
       return range.getHtml();
     },
+    getBounding: () => {
+      return range.getBounding();
+    },
   };
 }

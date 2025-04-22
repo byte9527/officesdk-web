@@ -146,6 +146,49 @@ export interface PdfRange {
    * @returns
    */
   getHtml: () => string;
+
+  /**
+   * 获取选区在当前屏幕上的位置信息
+   * @returns
+   */
+  getBounding: () => PdfRangeBounding | null;
+}
+
+/**
+ * 记录选区在屏幕上的矩形位置信息，
+ * 包含整个选区包围盒的四个边界值（top, right, bottom, left），
+ * 以及第一行开始和最后一行结束的横向坐标。
+ * 这些信息是选区中所有 ClientRects 的集合范围。
+ */
+export interface PdfRangeBounding {
+  /**
+   * 区域的上边界值，
+   * 表示所有选区中最上方的 Y 坐标。
+   */
+  top: number;
+  /**
+   * 区域的右边界值，
+   * 表示所有选区中最右侧的 X 坐标。
+   */
+  right: number;
+  /**
+   * 区域的下边界值，
+   * 表示所有选区中最下方的 Y 坐标。
+   */
+  bottom: number;
+  /**
+   * 区域的左边界值，
+   * 表示所有选区中最左侧的 X 坐标。
+   */
+  left: number;
+  /**
+   * 第一行选区的起始 X 坐标。
+   */
+  start: number;
+  /**
+   * 最后一行选区的结束 X 坐标。
+   */
+  end: number;
 }
 
 /**
