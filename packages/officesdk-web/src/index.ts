@@ -2,18 +2,17 @@ export { createSDK, FileType } from './client';
 export { EditorModeType, EditorStandardRole } from './shared';
 
 export type {
+  CreateOptions,
+  OfficeSDK,
   DocumentFacade,
   SpreadsheetFacade,
+  PdfFacade,
   PresentationFacade,
   LTDocFacade,
   DatabaseTableFacade,
-  PdfFacade,
   OfficeSDKMap,
-  CreateOptions,
-  OfficeSDK,
   createContentFacade,
 } from './client';
-
 export type {
   EditorContent,
   EditorContentRecord,
@@ -22,6 +21,10 @@ export type {
   DocumentRangeValue,
   DocumentSelection,
   DocumentZoom,
+  DocumentTOCs,
+  DocumentTocItem,
+  DocumentTocContentItem,
+  DocumentOutline,
   SpreadsheetEditor,
   SpreadsheetWorkbook,
   SpreadsheetWorksheet,
@@ -34,6 +37,7 @@ export type {
   PdfPage,
   PdfSelection,
   PdfRangeValue,
+  PdfOutline,
   EditorOutline,
   PdfRange,
   PresentationSelection,
@@ -44,5 +48,5 @@ export type {
   PresentationShape,
   PresentationSlide,
   EditorOutlineItem,
-  EditorMethods,
+  EditorContentMethods,
 } from './shared';

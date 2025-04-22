@@ -3,6 +3,10 @@ export type {
   EditorContentRecord,
   DocumentEditor,
   DocumentZoom,
+  DocumentTOCs,
+  DocumentOutline,
+  DocumentTocItem,
+  DocumentTocContentItem,
   SpreadsheetEditor,
   SpreadsheetWorkbook,
   SpreadsheetWorksheet,
@@ -15,7 +19,6 @@ export type {
   DocumentRange,
   DocumentRangeValue,
   LiteDocEditor,
-  PresentationEditor,
   DatabaseTableEditor,
   PdfEditor,
   PdfPages,
@@ -33,6 +36,8 @@ export type {
   PresentationShape,
   PresentationSlide,
   EditorOutlineItem,
+  PdfOutlineItem,
+  PresentationEditor,
 } from '../shared';
 
 export { serveSDK } from './serve';

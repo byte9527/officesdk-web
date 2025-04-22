@@ -20,7 +20,7 @@ export enum EditorStandardRole {
   Reviewer = 'reviewer'
 }
 
-export type EditorMethods = {
+export type EditorContentMethods = {
   getContent: () => EditorContent;
 };
 
@@ -55,6 +55,10 @@ export interface EditorContentRecord {
    */
   id: string;
 }
+
+export type EditorOutlineMethods<Content> = {
+  getOutline: () => EditorOutline<Content>;
+};
 
 /**
  * 通用目录接口

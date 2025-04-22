@@ -1,21 +1,21 @@
 /**
- * 随机种子
+ * Random seed
  */
 let randomSeed = Math.ceil(Date.now() * Math.random());
 
 /**
- * 计数器
+ * Counter
  */
 let counter = 0;
 
 /**
- * 基于当前时间戳生成一个唯一的 id，
+ * Generates a unique ID based on the current timestamp
  */
 export function generateUniqueId(length = 7): string {
-  // 基于当前时间戳生成伪随机
+  // Generate pseudo-random based on current timestamp
   let msAsBase = randomSeed % Math.pow(36, length);
 
-  // 如果毫秒数小于 100，则取反，保证至少 3 位数
+  // If milliseconds are less than 100, invert to ensure at least 3 digits
   if (msAsBase < Math.pow(36, length - 1)) {
     msAsBase = Math.pow(36, length - 1) - msAsBase;
   }

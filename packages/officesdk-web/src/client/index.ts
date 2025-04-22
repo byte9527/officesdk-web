@@ -7,8 +7,6 @@ export type { createContentFacade } from './editor/content';
 export { FileType } from '../shared/file';
 
 export type { LTDocFacade } from './ltdoc';
-export type { PresentationFacade } from './presentation';
-export type { PdfFacade } from './pdf';
 export type { DatabaseTableFacade } from './dbtable';
 
 // 文档
@@ -16,3 +14,9 @@ export type { DocumentFacade } from './document';
 
 // 表格
 export type { SpreadsheetFacade } from './spreadsheet';
+
+// 幻灯片
+export type { PresentationFacade } from './presentation';
+
+// PDF
+export type { PdfFacade } from './pdf';

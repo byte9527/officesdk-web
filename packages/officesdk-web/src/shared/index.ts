@@ -1,9 +1,10 @@
 export { FileType, assertFileType } from './file';
 export { EditorModeType, EditorStandardRole } from './editor';
 
-export type { EditorContent, EditorContentRecord, EditorMethods, EditorOutline, EditorOutlineItem } from './editor';
+export type { EditorContent, EditorContentRecord, EditorContentMethods, EditorOutline, EditorOutlineItem, EditorOutlineMethods } from './editor';
 
 export type { LiteDocMethods, LiteDocEditor } from './ltdoc';
+
 export type {
   DocumentMethods,
   DocumentEditor,
@@ -11,6 +12,11 @@ export type {
   DocumentRangeValue,
   DocumentSelection,
   DocumentZoom,
+  DocumentTOCs,
+  DocumentTocItem,
+  DocumentTocContentItem,
+  DocumentOutline,
+  DocumentOutlineItem,
 } from './document';
 export type { DatabaseTableMethods, DatabaseTableEditor } from './dbtable';
 

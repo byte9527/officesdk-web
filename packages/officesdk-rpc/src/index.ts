@@ -1,17 +1,37 @@
-export { create, serve, Token } from './roles';
+/**
+ * Office SDK RPC Library
+ *
+ * A library for cross-window communication with RPC capabilities.
+ * Provides tools for establishing connections between windows/iframes,
+ * serializing complex data, and executing remote method calls.
+ */
+
+// Export core client and server functionality
+export { create, serve } from './connection';
+export type { Client, Server, ClientOptions, ServerOptions } from './connection';
+
+// Export Token for data serialization
+export { Token } from './core';
 export type {
-  RPCMethods,
+  TokenOptions,
+  TokenRule,
+  TokenRulePaths,
+  SmartData,
   TokenContext,
   SchemaEntity,
-  SchemaValue,
   SchemaValueCallback,
+  SchemaValue,
+  SchemaStructured,
+  TokenRulePath,
   SchemaValueRef,
   SchemaValueData,
   SchemaStructuredArray,
   SchemaStructuredMap,
-  SchemaStructured,
-  Client,
-  ClientOptions,
+} from './core';
+
+// Export RPC types for API definition
+export type {
+  RPCMethods,
   RPCClientInvokeArgs,
   RPCMethod,
   RPCClientProxy,
@@ -21,23 +41,20 @@ export type {
   RPCReturnMethods,
   RPCReturnMapProxy,
   RPCReturnArrayProxy,
-  Server,
-  ServerOptions,
-  Transportable,
-  TransportableLocalOptions,
+} from './transport';
+
+// Export serialization types
+export { Transportable } from './transport';
+export type {
   TransportableRemoteCallback,
-  TokenOptions,
-  TokenRulePaths,
-  TokenRulePath,
-  TokenRule,
-  SmartData,
   RPCReturnValueProxy,
   RPCMap,
   PRCArray,
-  RPCReturnCallbackProxy
-} from './roles';
+  RPCReturnCallbackProxy,
+  TransportableLocalOptions,
+} from './transport';
 
-export type { Cloneable } from './shared/cloneable';
+// Export error types and utilities
+export * from './errors';
 
-// TODO: 需要重构 RemoteProxy 类型： 1. 不允许嵌套 2. 需要支持将所有 callback 转为异步，并约束 callback 的参数类型为 TransportableData
-export type { RemoteProxy } from 'penpal';
+export type { Cloneable } from './utils';

@@ -1,4 +1,10 @@
 /**
+ * Office SDK Cross-Window Communication Protocol
+ *
+ * This file defines the connection protocols for establishing and maintaining communications
+ * between client and server environments across window boundaries. It provides the fundamental
+ * connection mechanism upon which the higher-level RPC functionality is built.
+ *
  * Connection protocol for recording client's unique identity on the server side.
  * Since the underlying communication is based on penpal, there's no need for TCP-like
  * three-way handshake to confirm message delivery. The connection is established
@@ -26,16 +32,12 @@
  * might send connection requests simultaneously before the connection is complete.
  * This scenario requires no special handling as the server automatically deduplicates.
  */
-import type { SchemaEntity, SchemaValueCallback } from './schema';
-import type { RPCMethods } from './rpc';
-
-export type ConnectionCallback = (callback: SchemaValueCallback, args: SchemaEntity[]) => any; // TODO: 返回值的类型现在未知
 
 /**
  * Server protocol interface
  * These interfaces are for remote invocation by clients, not for server's own use
  */
-export type ConnectionServerProtocol = {
+export type ServerProtocol = {
   /**
    * Client registers its identity with the server
    * All subsequent calls must include this clientId as identity token
@@ -49,64 +51,47 @@ export type ConnectionServerProtocol = {
    * @returns Whether the connection was closed successfully
    */
   close: (clientId: string) => boolean;
-
-  invoke: (clientId: string, method: string, args: SchemaEntity[]) => Promise<SchemaEntity | void>;
-
-  callback: ConnectionCallback;
 };
 
 /**
  * Context required for server initialization
+ *
+ * Provides methods for managing client connections that the server protocol implementation will use
  */
-interface ConnectionServerContext<TMethods extends RPCMethods> {
-  clients: {
-    add: (clientId: string) => void;
-    delete: (clientId: string) => void;
-    has: (clientId: string) => boolean;
-  };
-  // TODO: 使用范型约束外部调用类型
-  onInvoke: <TName extends keyof TMethods>(
-    clientId: string,
-    method: TName,
-    schemas: SchemaEntity[],
-  ) => Promise<SchemaEntity | void>;
+interface ServerContext {
+  /**
+   * Register a new client with the server
+   * @param id The unique client identifier
+   */
+  addClient: (id: string) => void;
 
   /**
-   * Resolve callback from transportable schema
-   * @returns
+   * Remove a client from the server
+   * @param id The unique client identifier to remove
    */
-  // 这里 callback 可能为任意一个函数，所以参数类型无法固定
-  resolveCallback: (callback: SchemaValueCallback) => (...args: any[]) => Promise<SchemaEntity>;
+  deleteClient: (id: string) => void;
 }
 
-export function createConnectionServerProtocol<TMethods extends RPCMethods>(
-  context: ConnectionServerContext<TMethods>,
-): ConnectionServerProtocol {
+/**
+ * Creates a server protocol implementation based on the provided context
+ *
+ * @param context - The server context with client management methods
+ * @returns An implementation of the ServerProtocol interface
+ */
+export function createServerProtocol(context: ServerContext): ServerProtocol {
   return {
     open: (clientId: string): boolean => {
       // TODO: Should throw error on duplicate registration
-      context.clients.add(clientId);
+      context.addClient(clientId);
 
       return true;
     },
 
     close: (clientId: string): boolean => {
       // TODO: Should throw error if clientId doesn't exist
-      context.clients.delete(clientId);
+      context.deleteClient(clientId);
 
       return true;
-    },
-
-    invoke: (clientId: string, method: string, args: SchemaEntity[]): Promise<SchemaEntity | void> => {
-      if (!context.clients.has(clientId)) {
-        throw new Error('Client not found');
-      }
-
-      return context.onInvoke(clientId, method, args);
-    },
-
-    callback: (callback: SchemaValueCallback, args: SchemaEntity[]) => {
-      return context.resolveCallback(callback)?.(...args);
     },
   };
 }
@@ -115,29 +100,40 @@ export function createConnectionServerProtocol<TMethods extends RPCMethods>(
  * Client protocol interface
  * These interfaces are for remote invocation by server, not for client's own use
  */
-export type ConnectionClientProtocol = {
+export type ClientProtocol = {
+  /**
+   * Server requests the client's identity information
+   * @returns Array of client IDs associated with this client
+   */
   open: () => string[];
+
+  /**
+   * Server notifies the client that a connection is being closed
+   * @param clientId The client ID being closed
+   */
   close: (clientId: string) => void;
-  callback: ConnectionCallback;
 };
 
 /**
  * Context required for client initialization
+ *
+ * Provides methods for accessing client information that the client protocol implementation will use
  */
-interface ConnectionClientContext {
+interface ClientContext {
   /**
    * Get identity information of connected clients
+   * @returns A set of client IDs currently registered
    */
   getClients: () => Set<string>;
-
-  /**
-   * Resolve callback from transportable schema
-   * @returns
-   */
-  resolveCallback: (callback: SchemaValueCallback) => (...args: any[]) => any;
 }
 
-export function createConnectionClientProtocol(context: ConnectionClientContext): ConnectionClientProtocol {
+/**
+ * Creates a client protocol implementation based on the provided context
+ *
+ * @param context - The client context with client information methods
+ * @returns An implementation of the ClientProtocol interface
+ */
+export function createClientProtocol(context: ClientContext): ClientProtocol {
   return {
     open: (): string[] => {
       return Array.from(context.getClients());
@@ -145,11 +141,13 @@ export function createConnectionClientProtocol(context: ConnectionClientContext)
     close: (clientId: string): void => {
       // TODO: Record the incoming clientId
     },
-
-    callback: (callback: SchemaValueCallback, args: SchemaEntity[]) => {
-      return context.resolveCallback(callback)(...args);
-    },
   };
 }
 
+/**
+ * Channel identifier for Office SDK RPC communications
+ *
+ * This constant is used to identify the communication channel between client and server,
+ * ensuring that messages are properly routed to the correct handlers.
+ */
 export const OfficeSdkRpcChannel = '#office-sdk-rpc';

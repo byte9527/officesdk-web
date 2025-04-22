@@ -1,7 +1,7 @@
 import type { RPCReturnMethods, RPCReturnMapProxy } from '@shimo/officesdk-rpc';
-import type { EditorMethods, EditorContent, EditorContentRecord } from '../../shared';
+import type { EditorContentMethods, EditorContent, EditorContentRecord } from '../../shared';
 
-export function createContentFacade(methods: RPCReturnMethods<EditorMethods>): RPCReturnMapProxy<EditorContent> {
+export function createContentFacade(methods: RPCReturnMethods<EditorContentMethods>): RPCReturnMapProxy<EditorContent> {
   let contentCache: Promise<RPCReturnMapProxy<EditorContent>> | null = null;
 
   const getContent = async (): Promise<RPCReturnMapProxy<EditorContent>> => {

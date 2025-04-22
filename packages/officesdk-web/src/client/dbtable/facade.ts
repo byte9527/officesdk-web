@@ -1,4 +1,5 @@
-import type { Client } from '@officesdk/rpcort type { DatabaseTableMethods } from '../../shared';
+import type { Client } from '@shimo/officesdk-rpc';
+import type { DatabaseTableMethods } from '../../shared';
 
 export interface DatabaseTableFacade {
   // TODO:

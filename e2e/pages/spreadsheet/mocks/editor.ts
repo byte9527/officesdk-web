@@ -40,7 +40,7 @@ class Range implements SpreadsheetRange {
   public columnCount = 0;
 
   constructor(
-    private value: SpreadsheetRangeValue,
+    value: SpreadsheetRangeValue,
     private output: (message: string) => void,
   ) {
     this.type = value.type;
@@ -96,6 +96,11 @@ function createSelection(output: (message: string) => void, props: { range: Spre
       if (value) {
         return createRange(output, value);
       }
+
+      if (range) {
+        return range;
+      }
+
       return createRange(output, { type: 'cells', row: 0, column: 0, rowCount: 1, columnCount: 1 });
     },
     setRange: (value: SpreadsheetRangeValue | null) => {
@@ -132,15 +137,15 @@ function createMockWorksheet(
     name: props.name,
     isActive: props.isActive,
     getSelections: () => {
-      output('spreadsheet.worksheet.getSelections has been called');
+      output('worksheet.getSelections has been called');
       return [mockedSelection];
     },
-    getPhysicalPosition: (range: SpreadsheetRange) => {
-      output('spreadsheet.worksheet.getPhysicalPosition has been called');
+    getPhysicalPosition: (range: SpreadsheetRangeValue) => {
+      output(`worksheet.getPhysicalPosition has been called with range: ${JSON.stringify(range)}`);
       return { left: 0, top: 0, width: 100, height: 30 };
     },
     addRangeListener: (listener: (range: { sheet: string; ranges: SpreadsheetRangeValue[] }) => void) => {
-      output('spreadsheet.worksheet.addRangeListener has been called');
+      output('worksheet.addRangeListener has been called');
       setTimeout(() => {
         listener({
           sheet: 'mock-sheet-1',

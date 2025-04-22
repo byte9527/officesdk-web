@@ -1,10 +1,10 @@
 /**
- * 将对象的 path 上的属性值替换为指定值，
- * 并返回原来的值。
- * @param obj - 要替换的对象
- * @param path - 属性路径，使用点分隔符表示
- * @param value - 要替换的值
- * @returns - 原来的值
+ * Replaces the property value at the specified path in the object
+ * and returns the original value.
+ * @param obj - The object to modify
+ * @param path - The property path, represented using dot notation
+ * @param value - The value to set
+ * @returns - The original value
  */
 export function swap(obj: any, path: string, value: any): any {
   let current = obj;
@@ -24,7 +24,7 @@ export function swap(obj: any, path: string, value: any): any {
 }
 
 /**
- * chrome 69以下不支持object.fromEntries
+ * Chrome below version 69 doesn't support Object.fromEntries
  * @param entries
  * @returns
  */

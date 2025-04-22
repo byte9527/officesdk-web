@@ -1801,10 +1801,10 @@ __metadata:
 
 "@shimo/officesdk-rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@shimo/officesdk-rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=e5f567&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@shimo/officesdk-rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=81a341&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     penpal: ^7.0.4
-  checksum: 444283f4e380e7949e754a8a733e37e6aa54f7bc113d0edfeb3bbb55083702cd223aa49fd60594d554e7119e63630653fdd961715c34430acc7f8393cb7fbe4b
+  checksum: d024c3ed51d15ed0578a89f7b92bfd692bcd60a1d2442208aa89e82acaa4ea4aa43a4fc79678174db412fac233feae808bf4c47a45e37676520e35c2d0673730
   languageName: node
   linkType: hard
 
@@ -1818,10 +1818,10 @@ __metadata:
 
 "@shimo/officesdk-web@file:../packages/officesdk-web::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@shimo/officesdk-web@file:../packages/officesdk-web#../packages/officesdk-web::hash=50ee1f&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@shimo/officesdk-web@file:../packages/officesdk-web#../packages/officesdk-web::hash=5a2206&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     "@shimo/officesdk-rpc": "workspace:*"
-  checksum: 1758159d3a9a7f99a96d9e220793d5b25df5ce726da97942b92847f6ca2b119bbab75620d498e404aa2fb515fdd3d3a8d22579cd3b3db3dd1690515d60ecd4f5
+  checksum: 479c36ad2cd7221331ee17386bb84ec2ee554bedf13fe9e694cf5b94700a64a3d2dd01b7bae626b844c3465a6600766b636e58d4ab28d806a4a44b2274c9748c
   languageName: node
   linkType: hard
 

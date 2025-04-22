@@ -21,6 +21,14 @@ export function createDocumentProxy(): RPCClientProxy<DocumentMethods> {
       getZoom: async () => {
         return invoke('getZoom', []);
       },
+
+      getTOCs: async () => {
+        return invoke('getTOCs', []);
+      },
+
+      getOutline: async () => {
+        return invoke('getOutline', []);
+      },
     };
   };
 }

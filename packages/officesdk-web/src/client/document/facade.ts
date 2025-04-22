@@ -1,8 +1,13 @@
 import type { Client, RPCReturnMapProxy } from '@shimo/officesdk-rpc';
-import type { DocumentMethods, DocumentSelection, EditorContent, DocumentZoom } from '../../shared';
+import type { DocumentMethods, DocumentSelection, EditorContent, DocumentZoom,
+  DocumentTOCs,
+  DocumentOutline } from '../../shared';
 import { createSelectionFacade } from './selection';
 import { createContentFacade } from '../editor/content';
 import { createZoomFacade } from './zoom';
+import { createTOCsFacade } from './tocs';
+import { createOutlineFacade } from '../editor/outline';
+
 export interface DocumentFacade {
   /**
    * 选区实例
@@ -19,6 +24,16 @@ export interface DocumentFacade {
    */
   readonly zoom: RPCReturnMapProxy<DocumentZoom>;
 
+  /**
+   * 目录实例
+   */
+  readonly TOCs: RPCReturnMapProxy<DocumentTOCs>;
+
+  /**
+   * 目录实例
+   */
+  readonly outline: RPCReturnMapProxy<DocumentOutline>;
+
   // TODO: 初始化流程控制，初始化各类异常
 }
 
@@ -27,6 +42,8 @@ export function createDocumentFacade(client: Client<DocumentMethods>): DocumentF
   const selection = createSelectionFacade(methods);
   const content = createContentFacade(methods);
   const zoom = createZoomFacade(methods);
+  const TOCs = createTOCsFacade(methods);
+  const outline = createOutlineFacade<{ text: string }>(methods);
   return {
     get selection() {
       return selection;
@@ -36,6 +53,12 @@ export function createDocumentFacade(client: Client<DocumentMethods>): DocumentF
     },
     get zoom() {
       return zoom;
+    },
+    get TOCs() {
+      return TOCs;
+    },
+    get outline() {
+      return outline;
     },
   };
 }

@@ -1,4 +1,4 @@
-import type { EditorContent } from './editor';
+import type { EditorContent, EditorOutline, EditorOutlineItem } from './editor';
 /**
  * Document 远程调用的方法定义，
  * 作为契约，用于统一约束客户端和服务端的接口。
@@ -20,8 +20,33 @@ export type DocumentMethods = {
    * 获取当前文档的缩放接口
    */
   getZoom: () => DocumentZoom;
+
+  /**
+   * 文档目录集合接口，
+   * 一个文档中可以存在多个目录，这个接口是用来管理文档中的所有目录的。
+   */
+  getTOCs: () => DocumentTOCs;
+
+  /**
+   *  传统文档目录大纲接口
+   */
+  getOutline: () => DocumentOutline;
   // TODO: 初始化流程控制，初始化各类异常
 };
+
+/**
+ * 传统文档目录大纲项接口
+ */
+export type DocumentOutline = EditorOutline<{
+  text: string;
+}>;
+
+/**
+ * 传统文档目录大纲项信息，用于描述传统文档中的目录项信息。
+ */
+export type DocumentOutlineItem = EditorOutlineItem<{
+  text: string;
+}>;
 
 /**
  * 文档编辑器实例接口
@@ -30,6 +55,8 @@ export interface DocumentEditor {
   readonly selection: DocumentSelection;
   readonly content: EditorContent;
   readonly zoom: DocumentZoom;
+  readonly TOCs: DocumentTOCs;
+  readonly outline: DocumentOutline;
 }
 
 export type DocumentSelection = {
@@ -150,3 +177,117 @@ export type DocumentZoom = {
    */
   zoomOut: () => void;
 };
+
+/**
+ * 传统文档目录接口，
+ * 表示文档中的所有目录，
+ * 需要注意的是，DocumentTOCs 和 DocumentTocItem 是两个不同的对象，前者代表代表目录集合（一个文档可以插入多个目录），后者单个目录。
+ */
+export interface DocumentTOCs {
+  /**
+   * 获取所有目录列表
+   * @returns 目录列表
+   */
+  getAll: () => Promise<DocumentTocItem[]>;
+  /**
+   * 获取某个目录
+   * @param index 目录索引
+   * @returns 目录
+   */
+  getOne: (index: number) => Promise<DocumentTocItem | null>;
+
+  /**
+   * 删除所有目录
+   * @returns 删除结果
+   */
+  deleteAll: () => Promise<boolean>;
+
+  /**
+   * 删除某个目录
+   * @param index
+   * @returns 删除结果
+   */
+  deleteOne: (index: number) => Promise<boolean>;
+
+  /**
+   * 添加目录
+   * @param options 目录选项
+   * @returns 添加结果
+   */
+  add: (options: {
+    /**
+     * 添加目录的位置，
+     * 默认为当前选区位置。
+     * 如果添加失败，如：当前选区信息不正确，会返回 false。
+     * 如果添加成功，会返回 true。
+     */
+    range?: string;
+  }) => Promise<boolean>;
+}
+
+/**
+ * 传统文档目录操作接口，
+ * 可以调用接口更新目录和页码，
+ * 也可以设置目录级别、页码等样式。
+ */
+export interface DocumentTocItem {
+  /**
+   * 获取目录信息
+   * @returns 目录信息
+   */
+  getContent: () => Promise<DocumentTocContentItem[]>;
+  /**
+   * 添加目录信息改变时的监听器
+   * @param listener 监听器
+   * @returns 取消监听器的函数
+   */
+  addContentChangedListener: (listener: (content: DocumentTocContentItem[]) => void) => () => void;
+  /**
+   * 跳转到指定条目对应的正文位置
+   * @param id 条目id
+   * @returns 跳转是否成功
+   */
+  goto: (id: string) => Promise<boolean>;
+  /**
+   * 更新整个目录
+   * @returns 是否更新成功
+   */
+  update: () => Promise<boolean>;
+  /**
+   * 仅更新页码
+   * @returns 是否更新成功
+   */
+  updatePageNumbers: () => Promise<boolean>;
+  /**
+   * 设置目录层级
+   * @param level 目录层级
+   * @returns 是否设置成功
+   */
+  setLevel: (level: number) => Promise<boolean>;
+}
+
+/**
+ * 通用目录项条目
+ * @field id 目录项 ID
+ * @field level 目录项层级
+ * @field content 目录项内容
+ */
+export interface DocumentTocContentItem {
+  /**
+   * 目录项 ID
+   */
+  id: string;
+  /**
+   * 目录项层级
+   */
+  level: number;
+  /**
+   * 目录项内容
+   */
+  content: {
+    /**
+     * 目录项内容
+     */
+    text: string;
+  };
+}
