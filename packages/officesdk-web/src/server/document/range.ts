@@ -17,5 +17,8 @@ export function createDocumentRangeProxy(range: DocumentRange): DocumentRange {
     setHtml: (html) => {
       return range.setHtml(html);
     },
+    getBounding: () => {
+      return range.getBounding();
+    },
   };
 }

@@ -130,6 +130,52 @@ export interface DocumentRange {
    * @param html 指定的 HTML 内容
    */
   setHtml: (html: string) => void;
+  /**
+   * 获取选区在当前屏幕上的位置信息
+   * @returns
+   */
+  getBounding: () => DocumentRangeBounding | null;
+}
+
+/**
+ * 记录区域在屏幕上的位置信息，
+ * 包含了区域的四个边界值，以及开始和结束位置。
+ * 因为选区是由多个矩形区域组成的，
+ * 所以这里的位置信息是一个矩形区域的边界值。
+ */
+export interface DocumentRangeBounding {
+  /**
+   * 区域的左边界值，
+   * 代表区域的最左边的 X 坐标，
+   * 也就是区域的最左边的矩形区域的左边界值。
+   */
+  top: number;
+  /**
+   * 区域的上边界值，
+   * 代表区域的最上边的 Y 坐标，
+   * 也就是区域的最上边的矩形区域的上边界值。
+   */
+  right: number;
+  /**
+   * 区域的右边界值，
+   * 代表区域的最右边的 X 坐标，
+   * 也就是区域的最右边的矩形区域的右边界值。
+   */
+  bottom: number;
+  /**
+   * 区域的下边界值，
+   * 代表区域的最下边的 Y 坐标，
+   * 也就是区域的最下边的矩形区域的下边界值。
+   */
+  left: number;
+  /**
+   * 第一行的开始 X 坐标，
+   */
+  start: number;
+  /**
+   * 最后一行的结束 X 坐标，
+   */
+  end: number;
 }
 
 /**
