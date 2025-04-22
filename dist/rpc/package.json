@@ -1,6 +1,6 @@
 {
   "name": "@shimo/officesdk-rpc",
-  "version": "1.0.0-17",
+  "version": "1.0.0-18",
   "description": "RPC library for the Office SDK",
   "main": "dist/index.js",
   "types": "./index.d.ts",
