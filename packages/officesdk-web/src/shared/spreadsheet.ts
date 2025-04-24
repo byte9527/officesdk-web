@@ -108,7 +108,9 @@ export type SpreadsheetWorksheet = {
    * 添加选区变化监听器
    * @param listener 监听函数
    */
-  addRangeListener: (listener: (range: { sheet: string; ranges: SpreadsheetRangeValue[] }) => void) => () => void;
+  addRangeListener: (
+    listener: (range: { sheet: string; ranges: SpreadsheetRangeValue[] | null }) => void,
+  ) => () => void;
 
   /**
    * 获取工作表中指定区域的单元格对象
