@@ -140,6 +140,9 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
     callback: transportableRemoteCallback,
   });
 
+  // Get the methods implementation
+  const methods = proxy();
+
   // Initialize the connection to the client
   const connection = connect<ConnectionClientProtocol>({
     messenger,
@@ -161,9 +164,6 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
           // TODO: Use custom error type
           throw new Error(`Client ${clientId} not found`);
         }
-
-        // Get the methods implementation
-        const methods = proxy();
 
         // Deserialize the arguments
         const args = schemas.map((schema) => transportable.parseSchemaEntity(schema));

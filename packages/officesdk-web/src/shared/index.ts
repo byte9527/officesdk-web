@@ -18,6 +18,7 @@ export type {
   DocumentEditor,
   DocumentRange,
   DocumentRangeValue,
+  DocumentRangeBounding,
   DocumentSelection,
   DocumentZoom,
   DocumentTOCs,
@@ -25,6 +26,11 @@ export type {
   DocumentTocContentItem,
   DocumentOutline,
   DocumentOutlineItem,
+  DocumentMenuEntryConfig,
+  DocumentMenuFeatureButtonConfig,
+  DocumentMenuFeatureButtonName,
+  DocumentMenuOptions,
+  DocumentSDKOptions,
 } from './document';
 export type { DatabaseTableMethods, DatabaseTableEditor } from './dbtable';
 export type { LiteDocMethods, LiteDocEditor } from './ltdoc';
@@ -58,6 +64,8 @@ export type {
   PdfSelection,
   PdfRange,
   PdfRangeValue,
+  PdfRangeBounding,
   PdfOutline,
   PdfOutlineItem,
 } from './pdf';
+export { UrlParamKey, hasInitOptions } from './url';

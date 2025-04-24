@@ -1,3 +1,4 @@
+import type { EditorMenuOptions, EditorMenuFeatureButtonConfig, EditorMenuEntryConfig } from '../shared';
 import type { EditorContent, EditorOutline, EditorOutlineItem } from './editor';
 /**
  * Document 远程调用的方法定义，
@@ -6,6 +7,16 @@ import type { EditorContent, EditorOutline, EditorOutlineItem } from './editor';
  */
 
 export type DocumentMethods = {
+  /**
+   * 初始化编辑器的接口，
+   * 如果在通过 createSDK 创建 SDK 实例时传入了 options，
+   * 则会自动调用该接口传入初始化信息，
+   * 服务端在拿到传入的信息后才会开始加载编辑器的环境。
+   * @param clientId
+   * @param options
+   * @returns
+   */
+  initialize: (clientId: string, options: DocumentSDKOptions) => void;
   /**
    * 获取选区接口
    */
@@ -335,4 +346,28 @@ export interface DocumentTocContentItem {
      */
     text: string;
   };
+}
+
+export type DocumentMenuOptions = EditorMenuOptions<DocumentMenuFeatureButtonName>;
+
+/**
+ * 传统文档工具栏内置功能按钮
+ */
+export type DocumentMenuFeatureButtonName = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll';
+
+/**
+ * 传统文档工具栏一级菜单
+ */
+export type DocumentMenuEntryConfig = EditorMenuEntryConfig<DocumentMenuFeatureButtonName>;
+
+/**
+ * 传统文档工具栏功能按钮
+ */
+export type DocumentMenuFeatureButtonConfig = EditorMenuFeatureButtonConfig<DocumentMenuFeatureButtonName>;
+
+export interface DocumentSDKOptions {
+  /**
+   * 菜单栏相关设置
+   */
+  menu?: DocumentMenuOptions;
 }

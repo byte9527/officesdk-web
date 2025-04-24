@@ -8,7 +8,7 @@ import { createLiteDocProxy } from './ltdoc';
 import { createDatabaseTableProxy } from './dbtable';
 import { createPdfProxy } from './pdf';
 import type { EditorContext } from './editor';
-import { FileType, assertFileType } from '../shared';
+import { FileType, assertFileType, hasInitOptions } from '../shared';
 import type {
   DocumentEditor,
   LiteDocEditor,
