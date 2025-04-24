@@ -115,7 +115,7 @@ export interface OfficeSDK<T extends FileType> {
  * 创建 Office SDK 实例
  */
 export function createSDK<T extends FileType>(options: CreateOptions<T>): OfficeSDK<T> {
-  const { fileType, endpoint, token, fileId, path, root, iframe, mode, role } = options;
+  const { fileType, endpoint, token, fileId, path, root, iframe, mode, role, lang } = options;
 
   assertFileType(fileType);
 
@@ -126,7 +126,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
     url = new URL(iframe.src);
     container = connectContainer({ iframe, root });
   } else {
-    url = generateUrl({ endpoint, token, fileId, path, mode, role, fileType: mapToPreviewType(fileType) });
+    url = generateUrl({ endpoint, token, fileId, path, mode, role, lang, fileType: mapToPreviewType(fileType) });
     container = createContainer({ source: url.toString(), root });
   }
 
