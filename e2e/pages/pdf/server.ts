@@ -5,7 +5,6 @@ import { createOutput } from '../shared/output';
 import { createRenderContent } from '../shared/renderer';
 import { createContainerFrame } from '../shared/frames';
 import { mockPdfEditor } from './mocks/editor';
-import { mockEditorContent } from '../editor/mocks/content';
 
 async function main() {
   const root = document.getElementById('root');
@@ -27,9 +26,6 @@ async function main() {
   const server = await serveSDK({
     fileType: FileType.Pdf,
     editor: mockPdfEditor(output),
-    context: {
-      content: mockEditorContent(output),
-    },
   });
 
   output(

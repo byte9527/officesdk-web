@@ -14,7 +14,7 @@ import { createEditorContentProxy } from '../editor/content';
  */
 export function createSpreadsheetProxy(
   editor: SpreadsheetEditor,
-  context: EditorContext,
+  context?: EditorContext,
 ): RPCServerProxy<SpreadsheetMethods> {
   return () => {
     return {
@@ -58,6 +58,10 @@ export function createSpreadsheetProxy(
        * 获取内容接口
        */
       getContent: () => {
+        if (!context?.content) {
+          throw new Error('Context content is not provided');
+        }
+
         return createEditorContentProxy(context.content);
       },
     };

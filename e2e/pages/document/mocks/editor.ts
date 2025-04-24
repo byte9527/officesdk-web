@@ -22,6 +22,17 @@ export function mockDocumentEditor(output: (message: string) => void): DocumentE
           setHtml: (html: string) => {
             output(`document.selection.setHtml has been called with html: ${html}`);
           },
+          getBounding: () => {
+            output('document.selection.getBounding has been called');
+            return {
+              left: 0,
+              top: 0,
+              right: 100,
+              bottom: 100,
+              start: 20,
+              end: 80,
+            };
+          },
         };
       },
       setRange: () => {
@@ -35,16 +46,6 @@ export function mockDocumentEditor(output: (message: string) => void): DocumentE
             end: 'changed-end',
           });
         });
-      },
-    },
-    content: {
-      save: () => {
-        output('document.content.save has been called');
-        return Promise.resolve();
-      },
-      addContentListener: () => {
-        output('document.content.addContentListener has been called');
-        return Promise.resolve();
       },
     },
     zoom: {

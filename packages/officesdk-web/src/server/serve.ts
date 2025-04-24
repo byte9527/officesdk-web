@@ -33,7 +33,7 @@ export interface ServeOptions<T extends FileType> {
    * 编辑器上下文
    * TODO: 编辑器上下文可能需要按套件类型区分
    */
-  context: EditorContext;
+  context?: EditorContext;
 }
 
 export type EditorMap = {
@@ -88,7 +88,7 @@ export function serveSDK<T extends FileType>(options: ServeOptions<T>): Promise<
 
   if (isPresentationEditor(editor, fileType)) {
     return serve({
-      proxy: createPresentationProxy(editor),
+      proxy: createPresentationProxy(editor, context),
     });
   }
 

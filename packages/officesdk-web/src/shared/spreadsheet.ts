@@ -40,7 +40,6 @@ export interface SpreadsheetEditor {
   readonly activeSheet: SpreadsheetWorksheet;
   readonly activeCell: SpreadsheetCell | null;
   readonly selections: SpreadsheetSelection[] | null;
-  readonly content: EditorContent;
 }
 
 /**

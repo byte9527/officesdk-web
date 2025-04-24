@@ -40,6 +40,17 @@ export function mockPdfEditor(output: (message: string) => void): PdfEditor {
                 output('pdf.selection.range.getHtml has been called');
                 return '<p>mocked-html</p>';
               },
+              getBounding: () => {
+                output('pdf.selection.range.getBounding has been called');
+                return {
+                  left: 0,
+                  top: 0,
+                  right: 100,
+                  bottom: 100,
+                  start: 20,
+                  end: 80,
+                };
+              },
             }
           : null;
       },

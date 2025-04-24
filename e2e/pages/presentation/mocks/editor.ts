@@ -133,19 +133,5 @@ export function mockPresentationEditor(output: (message: string) => void): Prese
         output('presentation.zoom.zoomOut has been called');
       },
     },
-    content: {
-      save: () => {
-        output('presentation.content.save has been called');
-      },
-      addContentListener: (listener) => {
-        output('presentation.content.addContentListener has been called');
-        setTimeout(() => {
-          listener({
-            timestamp: Date.now(),
-            id: 'content-change-1',
-          });
-        });
-      },
-    },
   };
 }

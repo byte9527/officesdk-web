@@ -24,7 +24,7 @@ export function createSelectionFacade(
       const selection = await getSelection();
       return selection.setRange(range);
     },
-    addRangeListener: async (listener: (range: DocumentRangeValue) => void): Promise<void> => {
+    addRangeListener: async (listener: (range: DocumentRangeValue | null) => void): Promise<void> => {
       const selection = await getSelection();
       return selection.addRangeListener(listener);
     },

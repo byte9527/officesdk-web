@@ -12,7 +12,7 @@ import { createDocumentOutlineProxy } from './outline';
  * 定义 Document 的 RPC 代理的客户端调用接口
  * @returns
  */
-export function createDocumentProxy(editor: DocumentEditor, context: EditorContext): RPCServerProxy<DocumentMethods> {
+export function createDocumentProxy(editor: DocumentEditor, context?: EditorContext): RPCServerProxy<DocumentMethods> {
   return () => {
     return {
       getSelection: () => {
@@ -20,6 +20,10 @@ export function createDocumentProxy(editor: DocumentEditor, context: EditorConte
       },
 
       getContent: () => {
+        if (!context?.content) {
+          throw new Error('Context content is not provided');
+        }
+
         return createEditorContentProxy(context.content);
       },
 

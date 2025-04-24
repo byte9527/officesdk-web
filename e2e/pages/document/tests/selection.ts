@@ -66,7 +66,9 @@ async function testAddRangeListener(content: HTMLElement): Promise<void> {
   const selection = editor.selection;
 
   selection.addRangeListener((range) => {
-    output(`Range changed: ${range.start} - ${range.end}`);
+    if (range) {
+      output(`Range changed: ${range.start} - ${range.end}`);
+    }
   });
 }
 

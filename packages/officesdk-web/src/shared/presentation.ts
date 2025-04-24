@@ -32,7 +32,6 @@ export type PresentationMethods = {
  */
 export interface PresentationEditor {
   readonly selection: PresentationSelection;
-  readonly content: EditorContent;
   readonly zoom: PresentationZoom;
   readonly slides: PresentationSlides;
 }
@@ -74,7 +73,7 @@ export type PresentationSelection = {
    * @param listener
    * @returns
    */
-  addRangeListener: (listener: (range: PresentationTextRangeValue) => void) => void;
+  addRangeListener: (listener: (range: PresentationTextRangeValue | null) => void) => void;
 };
 
 /**

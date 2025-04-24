@@ -38,7 +38,7 @@ export function createSelectionFacade(
       const selection = await getSelection();
       return selection.setSelectedShapes(ids);
     },
-    addRangeListener: async (listener: (range: PresentationTextRangeValue) => void): Promise<void> => {
+    addRangeListener: async (listener: (range: PresentationTextRangeValue | null) => void): Promise<void> => {
       const selection = await getSelection();
       return selection.addRangeListener(listener);
     },

@@ -1,10 +1,22 @@
 export { FileType, assertFileType } from './file';
 export { EditorModeType, EditorStandardRole } from './editor';
 
-export type { EditorContent, EditorContentRecord, EditorContentMethods, EditorOutline, EditorOutlineItem, EditorOutlineMethods } from './editor';
-
 export type { LiteDocMethods, LiteDocEditor } from './ltdoc';
 
+export type {
+  EditorContent,
+  EditorContentRecord,
+  EditorContentMethods,
+  EditorOutline,
+  EditorOutlineItem,
+  EditorOutlineMethods,
+  EditorMenuCustomButton,
+  EditorMenuEntryButton,
+  EditorMenuEntryConfig,
+  EditorMenuFeatureButton,
+  EditorMenuFeatureButtonConfig,
+  EditorMenuOptions,
+} from './editor';
 export type {
   DocumentMethods,
   DocumentEditor,
