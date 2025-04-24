@@ -1,6 +1,6 @@
 {
   "name": "@shimo/officesdk-web",
-  "version": "1.0.0-25",
+  "version": "1.0.0-26",
   "description": "Web JS SDK for the Office SDK",
   "main": "dist/index.js",
   "types": "./index.d.ts",
@@ -20,7 +20,7 @@
     }
   },
   "dependencies": {
-    "@shimo/officesdk-rpc": "^1.0.0-18"
+    "@shimo/officesdk-rpc": "^1.0.0-19"
   },
   "files": [
     "index.d.ts",
