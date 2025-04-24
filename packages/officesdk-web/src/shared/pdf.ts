@@ -118,7 +118,7 @@ export interface PdfSelection {
    * @param listener
    * @returns
    */
-  addRangeListener: (listener: (value: PdfRangeValue) => void) => void;
+  addRangeListener: (listener: (value: PdfRangeValue | null) => void) => void;
 }
 
 /**

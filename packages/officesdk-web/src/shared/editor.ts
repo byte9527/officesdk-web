@@ -83,3 +83,148 @@ export declare interface EditorOutlineItem<Content = unknown> {
    */
   content: Content;
 }
+
+/**
+ * 菜单栏相关配置，目前菜单栏不是所有套件都支持，
+ * 菜单栏是指的编辑器最上放可以展开二级菜单的那一栏。
+ */
+export interface EditorMenuOptions<TName extends string> {
+  /**
+   * 菜单栏是否显示
+   */
+  visible?: boolean;
+
+  /**
+   * 是否禁用菜单栏所有功能
+   */
+  disabled?: boolean;
+
+  /**
+   * 菜单栏一级菜单配置
+   */
+  entries?: EditorMenuEntryConfig<TName>[];
+
+  /**
+   * 菜单栏功能按钮配置
+   */
+  features?: Partial<EditorMenuFeatureButtonConfig<TName>>;
+
+  /**
+   * 自定义按钮配置
+   */
+  custom?: EditorMenuCustomButton[];
+}
+
+/**
+ * 菜单栏按钮配置
+ */
+export type EditorMenuFeatureButtonConfig<TName extends string> = Record<TName, EditorMenuFeatureButton<TName>>;
+
+/**
+ * 菜单栏一级菜单配置，此处用于定义一级菜单的操作入口，
+ * 一级菜单在鼠标悬停时展示二级列表
+ */
+export interface EditorMenuEntryConfig<TName extends string> {
+  /**
+   * 一级菜单名称
+   */
+  name: string;
+  /**
+   * 二级菜单定义，定一个二维数组，用于定义二级菜单的结构，
+   * 将第一层数组中的所有按钮放到一个区域内用分隔符隔开，
+   * 第二层数组为按钮的定义，可以是功能按钮也可以是一个下拉入口。
+   */
+  children: Array<EditorMenuFeatureButton<TName> | EditorMenuEntryButton>[];
+}
+
+/**
+ * 菜单栏功能按钮配置
+ */
+export type EditorMenuFeatureButton<TName extends string> =
+  | {
+      /**
+       * 隐藏按钮，用作在需要隐藏菜单栏时定义
+       */
+      type: 'hidden';
+      /**
+       * 按钮名称
+       */
+      name: TName;
+    }
+  | {
+      type: 'button';
+      /**
+       * 按钮名称
+       */
+      name: TName;
+      /**
+       * 按钮标签（显示文本）
+       */
+      label: string;
+      /**
+       * 按钮图标，可以是 base64 的图片信息，也可以是图片 url
+       */
+      icon?: string;
+    };
+
+/**
+ * 菜单栏二级以下的菜单入口
+ */
+export interface EditorMenuEntryButton {
+  type: 'entry';
+
+  /**
+   * 菜单名称
+   */
+  name: string;
+
+  /**
+   * 菜单图标
+   */
+  icon?: string;
+}
+
+/**
+ * 菜单栏自定义按钮配置
+ */
+export type EditorMenuCustomButton =
+  | {
+      /**
+       * 按钮名称
+       */
+      name: string;
+      /**
+       * 链接
+       */
+      type: 'link';
+      /**
+       * 按钮文本
+       */
+      text: string;
+      /**
+       * 链接地址
+       */
+      url: string;
+    }
+  | {
+      /**
+       * 按钮名称
+       */
+      name: string;
+      /**
+       * 按钮，点击后触发 callback 回调
+       */
+      type: 'button';
+      /**
+       * 按钮文本
+       */
+      label: string;
+      /**
+       * 按钮图标，可以是 base64 的图片信息，也可以是图片 url
+       */
+      icon?: string;
+      /**
+       * 按钮点击事件
+       */
+      callback: () => void;
+    };

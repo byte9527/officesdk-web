@@ -53,7 +53,6 @@ export type DocumentOutlineItem = EditorOutlineItem<{
  */
 export interface DocumentEditor {
   readonly selection: DocumentSelection;
-  readonly content: EditorContent;
   readonly zoom: DocumentZoom;
   readonly TOCs: DocumentTOCs;
   readonly outline: DocumentOutline;
@@ -80,7 +79,7 @@ export type DocumentSelection = {
    * @param listener
    * @returns
    */
-  addRangeListener: (listener: (range: DocumentRangeValue) => void) => void;
+  addRangeListener: (listener: (range: DocumentRangeValue | null) => void) => void;
 };
 
 /**

@@ -1,6 +1,4 @@
 import type {
-  EditorContent,
-  EditorContentRecord,
   SpreadsheetEditor,
   SpreadsheetWorkbook,
   SpreadsheetWorksheet,
@@ -246,26 +244,10 @@ export function mockSpreadsheetEditor(output: (message: string) => void): Spread
     },
   };
 
-  const mockContent: EditorContent = {
-    save: () => {
-      output('spreadsheet.content.save has been called');
-    },
-    addContentListener: (listener: (record: EditorContentRecord) => void) => {
-      output('spreadsheet.content.addContentListener has been called');
-      setTimeout(() => {
-        listener({
-          id: 'mock-content-1',
-          timestamp: Date.now(),
-        });
-      });
-    },
-  };
-
   return {
     workbook: mockWorkbook,
     activeSheet: mockWorksheet1,
     activeCell: mockedCell1,
     selections: [mockedSelection],
-    content: mockContent,
   };
 }

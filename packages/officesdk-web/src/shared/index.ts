@@ -6,6 +6,12 @@ export type {
   EditorOutline,
   EditorOutlineItem,
   EditorOutlineMethods,
+  EditorMenuCustomButton,
+  EditorMenuEntryButton,
+  EditorMenuEntryConfig,
+  EditorMenuFeatureButton,
+  EditorMenuFeatureButtonConfig,
+  EditorMenuOptions,
 } from './editor';
 export type {
   DocumentMethods,
