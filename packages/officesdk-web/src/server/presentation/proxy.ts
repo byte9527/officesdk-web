@@ -1,4 +1,6 @@
 import type { RPCServerProxy } from '@officesdk/rpc';
+
+import type { EditorContext } from '../editor';
 import type { PresentationMethods, PresentationEditor } from '../../shared';
 import { createEditorContentProxy } from '../editor/content';
 import { createPresentationZoomProxy } from './zoom';
@@ -9,7 +11,10 @@ import { createPresentationSlidesProxy } from './slides';
  * 定义幻灯片的 RPC 代理的服务端调用接口
  * @returns
  */
-export function createPresentationProxy(editor: PresentationEditor): RPCServerProxy<PresentationMethods> {
+export function createPresentationProxy(
+  editor: PresentationEditor,
+  context?: EditorContext,
+): RPCServerProxy<PresentationMethods> {
   return () => {
     return {
       /**
@@ -23,7 +28,11 @@ export function createPresentationProxy(editor: PresentationEditor): RPCServerPr
        * 获取内容接口
        */
       getContent: () => {
-        return createEditorContentProxy(editor.content);
+        if (!context?.content) {
+          throw new Error('Context content is not provided');
+        }
+
+        return createEditorContentProxy(context.content);
       },
 
       /**

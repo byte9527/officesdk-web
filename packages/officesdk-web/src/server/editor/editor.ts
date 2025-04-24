@@ -7,5 +7,5 @@ export interface EditorContext {
   /**
    * 编辑器内容接口
    */
-  content: EditorContent;
+  content?: EditorContent;
 }

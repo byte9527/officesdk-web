@@ -23,7 +23,7 @@ export function createSelectionFacade(methods: RPCReturnMethods<PdfMethods>): RP
       const selection = await getSelection();
       return selection.setRange(range);
     },
-    addRangeListener: async (listener: (range: PdfRangeValue) => void): Promise<void> => {
+    addRangeListener: async (listener: (range: PdfRangeValue | null) => void): Promise<void> => {
       const selection = await getSelection();
       return selection.addRangeListener(listener);
     },
