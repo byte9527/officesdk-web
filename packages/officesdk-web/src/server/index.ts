@@ -1,5 +1,5 @@
 export { serveSDK } from './serve';
-export type { ServeOptions, EditorMap } from './serve';
+export type { ServeOptions, EditorFactoryMap, EditorContextFactoryMap } from './serve';
 export type { EditorContext } from './editor';
 
 export type { DocumentEditorFactory, DocumentContextFactory } from './document';
@@ -10,6 +10,7 @@ export type { DatabaseTableEditorFactory, DatabaseTableContextFactory } from './
 export type { PdfEditorFactory, PdfContextFactory } from './pdf';
 export type {
   DatabaseTableEditor,
+  DatabaseTableSDKOptions,
   DocumentEditor,
   DocumentOutline,
   DocumentRange,
@@ -22,9 +23,19 @@ export type {
   DocumentZoom,
   EditorContent,
   EditorContentRecord,
+  EditorMenuEntryConfig,
+  EditorMenuOptions,
+  EditorMenuCustomButton,
+  EditorContentMethods,
+  EditorMenuEntryButton,
+  EditorMenuFeatureButtonConfig,
+  DocumentMenuFeatureButtonName,
+  EditorMenuFeatureButton,
   EditorOutline,
   EditorOutlineItem,
   LiteDocEditor,
+  LiteDocSDKOptions,
+  DocumentMenuOptions,
   DocumentSDKOptions,
   DocumentOutlineItem,
   PdfEditor,
@@ -35,8 +46,10 @@ export type {
   PdfRange,
   PdfRangeBounding,
   PdfRangeValue,
+  PdfSDKOptions,
   PdfSelection,
   PresentationEditor,
+  PresentationSDKOptions,
   PresentationSelection,
   PresentationShape,
   PresentationSlide,
@@ -49,11 +62,10 @@ export type {
   SpreadsheetRange,
   SpreadsheetRangeType,
   SpreadsheetRangeValue,
+  SpreadsheetSDKOptions,
   SpreadsheetSelection,
   SpreadsheetWorkbook,
   SpreadsheetWorksheet,
 } from '../shared';
 
-
 export { FileType } from '../shared';
-

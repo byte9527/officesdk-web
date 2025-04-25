@@ -32,7 +32,7 @@ export interface ServeOptions<T extends FileType> {
   createContext?: EditorContextFactoryMap[T];
 }
 
-type EditorContextFactoryMap = {
+export type EditorContextFactoryMap = {
   [FileType.Document]: DocumentContextFactory;
   [FileType.Spreadsheet]: SpreadsheetContextFactory;
   [FileType.Presentation]: PresentationContextFactory;
@@ -41,7 +41,7 @@ type EditorContextFactoryMap = {
   [FileType.Pdf]: PdfContextFactory;
 };
 
-type EditorFactoryMap = {
+export type EditorFactoryMap = {
   [FileType.Document]: DocumentEditorFactory;
   [FileType.Spreadsheet]: SpreadsheetEditorFactory;
   [FileType.Presentation]: PresentationEditorFactory;
