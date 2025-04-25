@@ -17,10 +17,6 @@ export type { Server, ServerOptions } from './server';
 export { createConnectionClientProtocol, createConnectionServerProtocol, OfficeSdkRpcChannel } from './connection';
 export type { ConnectionCallback, ConnectionClientProtocol, ConnectionServerProtocol } from './connection';
 
-// Export protocol types and functions
-export { createClientProtocol, createServerProtocol } from './protocol';
-export type { ClientProtocol, ServerProtocol } from './protocol';
-
 // Export connection pool
 export { ServerConnectionPool } from './pool';
 

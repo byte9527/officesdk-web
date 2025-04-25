@@ -27,6 +27,17 @@ export type TestMethods = {
   }) => void;
 };
 
+export type TestSettings = {
+  a: number;
+  b: string;
+  c: boolean;
+  d: {
+    e: number;
+    f: string;
+  };
+  g: string[];
+};
+
 /**
  * 这部分代码会在客户端环境中执行
  * @param context

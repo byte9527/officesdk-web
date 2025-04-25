@@ -8,16 +8,6 @@ import type { EditorContent, EditorOutline, EditorOutlineItem } from './editor';
 
 export type DocumentMethods = {
   /**
-   * 初始化编辑器的接口，
-   * 如果在通过 createSDK 创建 SDK 实例时传入了 options，
-   * 则会自动调用该接口传入初始化信息，
-   * 服务端在拿到传入的信息后才会开始加载编辑器的环境。
-   * @param clientId
-   * @param options
-   * @returns
-   */
-  initialize: (clientId: string, options: DocumentSDKOptions) => void;
-  /**
    * 获取选区接口
    */
   getSelection: () => DocumentSelection;

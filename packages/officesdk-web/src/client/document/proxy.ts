@@ -1,5 +1,5 @@
 import type { RPCClientProxy } from '@officesdk/rpc';
-import type { DocumentMethods, DocumentSDKOptions } from '../../shared';
+import type { DocumentMethods } from '../../shared';
 
 /**
  * 定义 Document 的 RPC 代理的客户端调用接口
@@ -10,10 +10,6 @@ export function createDocumentProxy(): RPCClientProxy<DocumentMethods> {
     const { invoke } = context;
 
     return {
-      initialize: async (clientId: string, options: DocumentSDKOptions) => {
-        return invoke('initialize', [clientId, options]);
-      },
-
       getSelection: async () => {
         return invoke('getSelection', []);
       },

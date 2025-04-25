@@ -33,7 +33,7 @@
  * This scenario requires no special handling as the server automatically deduplicates.
  */
 import type { SchemaEntity, SchemaValueCallback } from '../core';
-import type { RPCMethods } from '../transport';
+import type { RPCMethods, RPCSettings } from '../transport';
 
 /**
  * Represents a callback function that can be invoked across window boundaries
@@ -54,14 +54,14 @@ export type ConnectionCallback = (callback: SchemaValueCallback, args: SchemaEnt
  * They provide the core functionality for connection management, method invocation,
  * and callback execution.
  */
-export type ConnectionServerProtocol = {
+export type ConnectionServerProtocol<TSettings extends RPCSettings> = {
   /**
    * Client registers its identity with the server
    * All subsequent calls must include this clientId as identity token
    * @param clientId Client identity token
    * @returns Whether the connection was established successfully
    */
-  open: (clientId: string) => boolean;
+  open: (clientId: string, settings: TSettings) => boolean;
 
   /**
    * Server actively closes the client connection
@@ -96,7 +96,7 @@ export type ConnectionServerProtocol = {
  * Provides methods for client management, method invocation, and callback resolution
  * that the server protocol implementation will use.
  */
-interface ConnectionServerContext<TMethods extends RPCMethods> {
+interface ConnectionServerContext<TMethods extends RPCMethods, TSettings extends RPCSettings> {
   /**
    * Client management interface
    */
@@ -105,7 +105,7 @@ interface ConnectionServerContext<TMethods extends RPCMethods> {
      * Register a new client
      * @param clientId - The client's unique identifier
      */
-    add: (clientId: string) => void;
+    add: (clientId: string, settings: TSettings) => void;
 
     /**
      * Remove a client
@@ -153,13 +153,15 @@ interface ConnectionServerContext<TMethods extends RPCMethods> {
  * @param context - The server context with client management methods
  * @returns An implementation of the ConnectionServerProtocol interface
  */
-export function createConnectionServerProtocol<TMethods extends RPCMethods>(
-  context: ConnectionServerContext<TMethods>,
-): ConnectionServerProtocol {
+export function createConnectionServerProtocol<TMethods extends RPCMethods, TSettings extends RPCSettings>(
+  context: ConnectionServerContext<TMethods, TSettings>,
+): ConnectionServerProtocol<TSettings> {
   return {
-    open: (clientId: string): boolean => {
+    open: (clientId: string, settings: TSettings): boolean => {
+      // Settings only can be set once
+
       // TODO: Should throw error on duplicate registration
-      context.clients.add(clientId);
+      context.clients.add(clientId, settings);
 
       return true;
     },
@@ -185,18 +187,23 @@ export function createConnectionServerProtocol<TMethods extends RPCMethods>(
   };
 }
 
+export interface ConnectionClientRecord<TSettings extends RPCSettings> {
+  clientId: string;
+  settings?: TSettings;
+}
+
 /**
  * Client protocol interface for cross-window communication
  *
  * These interfaces are for remote invocation by the server, not for client's own use.
  * They provide the core functionality for connection management and callback execution.
  */
-export type ConnectionClientProtocol = {
+export type ConnectionClientProtocol<TSettings extends RPCSettings> = {
   /**
    * Server requests the client's identity information
    * @returns Array of client IDs associated with this client
    */
-  open: () => string[];
+  open: () => ConnectionClientRecord<TSettings>[];
 
   /**
    * Server notifies the client that a connection is being closed
@@ -220,12 +227,12 @@ export type ConnectionClientProtocol = {
  * Provides methods for client information and callback resolution
  * that the client protocol implementation will use.
  */
-interface ConnectionClientContext {
+interface ConnectionClientContext<TSettings extends RPCSettings> {
   /**
    * Get identity information of connected clients
    * @returns A set of client IDs currently registered
    */
-  getClients: () => Set<string>;
+  getClients: () => Set<ConnectionClientRecord<TSettings>>;
 
   /**
    * Resolve a callback schema to an executable function
@@ -245,9 +252,11 @@ interface ConnectionClientContext {
  * @param context - The client context with client information methods
  * @returns An implementation of the ConnectionClientProtocol interface
  */
-export function createConnectionClientProtocol(context: ConnectionClientContext): ConnectionClientProtocol {
+export function createConnectionClientProtocol<TSettings extends RPCSettings>(
+  context: ConnectionClientContext<TSettings>,
+): ConnectionClientProtocol<TSettings> {
   return {
-    open: (): string[] => {
+    open: (): ConnectionClientRecord<TSettings>[] => {
       return Array.from(context.getClients());
     },
     close: (clientId: string): void => {

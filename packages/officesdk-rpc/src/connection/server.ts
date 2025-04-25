@@ -34,9 +34,9 @@ import type { ConnectionClientProtocol } from './connection';
 import { isClientNotAccessible } from '../errors';
 import { ServerConnectionPool } from './pool';
 import { Transportable } from '../transport';
-import type { TransportableRemoteCallback, RPCServerProxy, RPCMethods } from '../transport';
+import type { TransportableRemoteCallback, RPCServerProxy, RPCMethods, RPCSettings } from '../transport';
 
-export interface ServerOptions<TMethods extends RPCMethods> {
+export interface ServerOptions<TMethods extends RPCMethods, TSettings extends RPCSettings> {
   /**
    * Subset of the allowedOrigins option in WindowMessenger.
    * ----
@@ -54,7 +54,7 @@ export interface ServerOptions<TMethods extends RPCMethods> {
    * Generates methods for clients to remotely call server functions.
    * The server must implement methods according to the same RPCMethods protocol.
    */
-  proxy: RPCServerProxy<TMethods>;
+  proxy: RPCServerProxy<TMethods, TSettings>;
 }
 
 /**
@@ -83,7 +83,9 @@ export interface Server {
  *
  * TODO: Refactor to properly return Server instance with onOpen and onClose methods
  */
-export async function serve<TMethods extends RPCMethods>(options: ServerOptions<TMethods>): Promise<Server> {
+export async function serve<TMethods extends RPCMethods, TSettings extends RPCSettings>(
+  options: ServerOptions<TMethods, TSettings>,
+): Promise<Server> {
   const { allowedOrigins, proxy } = options;
 
   let messenger: WindowMessenger;
@@ -103,21 +105,29 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
   }
 
   // Pool to track connected clients
-  const clientIdPool = new ServerConnectionPool();
+  const connectionPool = new ServerConnectionPool<TSettings>();
 
-  let client: RemoteProxy<ConnectionClientProtocol> | undefined;
+  let client: RemoteProxy<ConnectionClientProtocol<TSettings>> | undefined;
 
   /**
    * Helper function to ensure client proxy is available before using it
    * Throws an error if client is not yet connected
    */
-  const ensureClientProxy = (): RemoteProxy<ConnectionClientProtocol> => {
+  const ensureClientProxy = (): RemoteProxy<ConnectionClientProtocol<TSettings>> => {
     if (!client) {
       // TODO: Improve error message
       throw new Error('Unexpected invoke before client connected');
     }
 
     return client;
+  };
+
+  const ensureClientMethods = (): typeof methods => {
+    if (!methods) {
+      throw new Error('Methods not initialized');
+    }
+
+    return methods;
   };
 
   /**
@@ -140,15 +150,12 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
     callback: transportableRemoteCallback,
   });
 
-  // Get the methods implementation
-  const methods = proxy();
-
   // Initialize the connection to the client
-  const connection = connect<ConnectionClientProtocol>({
+  const connection = connect<ConnectionClientProtocol<TSettings>>({
     messenger,
     channel: OfficeSdkRpcChannel,
     methods: createConnectionServerProtocol({
-      clients: clientIdPool,
+      clients: connectionPool,
       /**
        * Handles method invocations from clients
        *
@@ -158,9 +165,9 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
        * @returns A Promise resolving to the serialized result
        */
       onInvoke: (clientId, method, schemas) => {
-        ensureClientProxy();
+        const methods = ensureClientMethods();
 
-        if (!clientIdPool.has(clientId)) {
+        if (!connectionPool.has(clientId)) {
           // TODO: Use custom error type
           throw new Error(`Client ${clientId} not found`);
         }
@@ -189,20 +196,24 @@ export async function serve<TMethods extends RPCMethods>(options: ServerOptions<
   client = await connection.promise;
 
   // Retrieve existing client IDs from the client
-  const pulledIds = await client.open();
+  const connectedClients = await client.open();
+
+  const firstClientId = connectedClients[0];
+  // Get the methods implementation
+  const methods = proxy(firstClientId ? connectionPool.getSettings(firstClientId.clientId) : null);
 
   // Register all client IDs in our pool
-  pulledIds.forEach((id) => {
-    if (clientIdPool.has(id)) {
+  connectedClients.forEach((client) => {
+    if (connectionPool.has(client.clientId)) {
       return;
     }
 
-    clientIdPool.add(id);
+    connectionPool.add(client.clientId, client.settings);
   });
 
   // Return a Server interface for managing client connections
   return {
-    getClientIds: () => clientIdPool.toArray(),
-    addClientListener: (listener) => clientIdPool.addListener(listener),
+    getClientIds: () => connectionPool.toArray(),
+    addClientListener: (listener) => connectionPool.addListener(listener),
   };
 }

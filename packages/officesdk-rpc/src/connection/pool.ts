@@ -13,22 +13,34 @@
  * 3. Connection querying - Checking connection status and listing connected clients
  */
 
+import type { RPCSettings } from '../transport';
+
+interface ServerConnectionRecord<TSettings extends RPCSettings> {
+  clientId: string;
+  settings?: TSettings;
+}
+
 /**
  * Manages the pool of client connections on the server side
  *
  * This class tracks connected clients, notifies listeners when clients connect or disconnect,
  * and provides methods to query the current connection state.
  */
-export class ServerConnectionPool {
+export class ServerConnectionPool<TSettings extends RPCSettings> {
   /**
    * Set of connected client IDs
    */
-  private pool: Set<string> = new Set();
+  private pool: Map<string, ServerConnectionRecord<TSettings>> = new Map();
 
   /**
    * Set of event listeners for connection events
    */
-  private listeners: Set<(type: 'add' | 'delete', payload: { clientId: string }) => void> = new Set();
+  private listeners: Set<
+    <TType extends 'add' | 'delete'>(
+      type: TType,
+      payload: TType extends 'add' ? ServerConnectionRecord<TSettings> : { clientId: string },
+    ) => void
+  > = new Set();
 
   /**
    * Adds a client to the connection pool
@@ -37,11 +49,14 @@ export class ServerConnectionPool {
    *
    * @param clientId - The unique identifier of the client to add
    */
-  public add(clientId: string): void {
-    this.pool.add(clientId);
+  public add(clientId: string, settings?: TSettings): void {
+    this.pool.set(clientId, {
+      clientId,
+      settings,
+    });
 
     this.listeners.forEach((listener) => {
-      listener('add', { clientId });
+      listener('add', { clientId, settings });
     });
   }
 
@@ -87,11 +102,25 @@ export class ServerConnectionPool {
   }
 
   /**
+   * Retrieves the settings for a specific client
+   *
+   * @param clientId - The unique identifier of the client
+   * @returns The settings object for the client, or null if not found
+   */
+  public getSettings(clientId: string): TSettings | null {
+    const record = this.pool.get(clientId);
+    if (record) {
+      return record.settings ?? null;
+    }
+    return null;
+  }
+
+  /**
    * Converts the connection pool to an array of client IDs
    *
    * @returns An array containing all connected client IDs
    */
   public toArray(): string[] {
-    return Array.from(this.pool);
+    return Array.from(this.pool.keys());
   }
 }

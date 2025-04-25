@@ -8,7 +8,7 @@ import { createLiteDocProxy } from './ltdoc';
 import { createDatabaseTableProxy } from './dbtable';
 import { createPdfProxy } from './pdf';
 import type { EditorContext } from './editor';
-import { FileType, assertFileType, hasInitOptions } from '../shared';
+import { FileType, assertFileType } from '../shared';
 import type {
   DocumentEditor,
   LiteDocEditor,
@@ -73,6 +73,8 @@ export function serveSDK<T extends FileType>(options: ServeOptions<T>): Promise<
   const { fileType, editor, context } = options;
 
   assertFileType(fileType);
+
+  // TODO: hasInitOptions
 
   if (isDocumentEditor(editor, fileType)) {
     return serve({
