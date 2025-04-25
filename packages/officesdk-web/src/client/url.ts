@@ -27,12 +27,6 @@ export interface UrlOptions {
    * 语言
    */
   lang?: string;
-
-  /**
-   * 是否携带了初始化信息，
-   * 如果带了初始化信息，编辑器初始化需要等待收到初始化信息后才能开始。
-   */
-  withInitOptions?: boolean;
 }
 
 /**
@@ -64,7 +58,7 @@ function getLang(lang?: string): string | null {
 export function generateUrl(options: UrlOptions): URL {
   const defaultPath = '/v1/file/page';
 
-  const { endpoint, token, fileId, withInitOptions, path = defaultPath } = options;
+  const { endpoint, token, fileId, path = defaultPath } = options;
 
   let url: URL;
 
@@ -87,10 +81,6 @@ export function generateUrl(options: UrlOptions): URL {
     const lang = getLang(options.lang);
     if (lang) {
       url.searchParams.set(UrlParamKey.Language, lang);
-    }
-
-    if (withInitOptions) {
-      url.searchParams.set(UrlParamKey.WithInitOptions, '1');
     }
   } catch (error) {
     // TODO: 抛出自定义错误

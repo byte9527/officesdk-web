@@ -69,6 +69,7 @@ export interface CreateOptions<T extends FileType> {
 
   /**
    * 初始化设置
+   * TODO: settings 只有在没有传入 iframe 的时候才会生效，需要在类型上做区分
    */
   settings?: T extends keyof SDKSettings ? SDKSettings[T] : never;
 }
@@ -166,10 +167,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
   throw new Error(`Unsupported file type: ${fileType}`);
 }
 
-function connectIframe(
-  options: CreateOptions<any>,
-  withInitOptions?: boolean,
-): { url: string; container: HTMLIFrameElement } {
+function connectIframe(options: CreateOptions<any>): { url: string; container: HTMLIFrameElement } {
   const { endpoint, token, fileId, path, root, iframe } = options;
 
   let url: URL;
@@ -179,7 +177,7 @@ function connectIframe(
     url = new URL(iframe.src);
     container = connectContainer({ iframe, root });
   } else {
-    url = generateUrl({ endpoint, token, fileId, path, withInitOptions });
+    url = generateUrl({ endpoint, token, fileId, path });
     container = createContainer({ source: url.toString(), root });
   }
 
@@ -194,7 +192,7 @@ function createDocumentSDK(options: CreateOptions<FileType.Document>): OfficeSDK
 
   const initOptions = createDocumentOptions(settings);
 
-  const { url, container } = connectIframe(options, !!initOptions);
+  const { url, container } = connectIframe(options);
 
   return {
     url: url,

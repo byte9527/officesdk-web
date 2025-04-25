@@ -198,3 +198,7 @@ export interface PdfRangeValue {
   start: string;
   end: string;
 }
+
+export interface PdfSDKOptions {
+  // TODO:
+}

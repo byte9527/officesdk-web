@@ -26,9 +26,13 @@ async function main() {
 
   const server = await serveSDK({
     fileType: FileType.Presentation,
-    editor: mockPresentationEditor(output),
-    context: {
-      content: mockEditorContent(output),
+    createEditor: async () => {
+      return mockPresentationEditor(output);
+    },
+    createContext: async () => {
+      return {
+        content: mockEditorContent(output),
+      };
     },
   });
 

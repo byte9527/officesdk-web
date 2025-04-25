@@ -32,8 +32,8 @@ export type {
   DocumentMenuOptions,
   DocumentSDKOptions,
 } from './document';
-export type { DatabaseTableMethods, DatabaseTableEditor } from './dbtable';
-export type { LiteDocMethods, LiteDocEditor } from './ltdoc';
+export type { DatabaseTableMethods, DatabaseTableEditor, DatabaseTableSDKOptions } from './dbtable';
+export type { LiteDocMethods, LiteDocEditor, LiteDocSDKOptions } from './ltdoc';
 export type {
   PresentationMethods,
   PresentationEditor,
@@ -44,6 +44,7 @@ export type {
   PresentationZoom,
   PresentationSlide,
   PresentationSlides,
+  PresentationSDKOptions,
 } from './presentation';
 export type {
   SpreadsheetMethods,
@@ -55,6 +56,7 @@ export type {
   SpreadsheetWorkbook,
   SpreadsheetSelection,
   SpreadsheetWorksheet,
+  SpreadsheetSDKOptions,
 } from './spreadsheet';
 export type {
   PdfMethods,
@@ -67,5 +69,6 @@ export type {
   PdfRangeBounding,
   PdfOutline,
   PdfOutlineItem,
+  PdfSDKOptions,
 } from './pdf';
-export { UrlParamKey, hasInitOptions } from './url';
+export { UrlParamKey } from './url';

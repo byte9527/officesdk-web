@@ -25,7 +25,9 @@ async function main() {
 
   const server = await serveSDK({
     fileType: FileType.Pdf,
-    editor: mockPdfEditor(output),
+    createEditor: async () => {
+      return mockPdfEditor(output);
+    },
   });
 
   output(

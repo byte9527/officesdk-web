@@ -1,6 +1,6 @@
 import type { RPCServerProxy } from '@officesdk/rpc';
 
-import type { SpreadsheetMethods, SpreadsheetEditor } from '../../shared';
+import type { SpreadsheetMethods, SpreadsheetEditor, SpreadsheetSDKOptions } from '../../shared';
 import type { EditorContext } from '../editor';
 import { createSpreadsheetWorkbookProxy } from './workbook';
 import { createSpreadsheetWorksheetProxy } from './worksheet';
@@ -8,15 +8,24 @@ import { createSpreadsheetCellProxy } from './cell';
 import { createSpreadsheetSelectionProxy } from './selection';
 import { createEditorContentProxy } from '../editor/content';
 
+export type SpreadsheetEditorFactory = (options: SpreadsheetSDKOptions | null) => Promise<SpreadsheetEditor>;
+
+export type SpreadsheetContextFactory = (editor: SpreadsheetEditor) => Promise<EditorContext>;
+
 /**
  * 定义电子表格的 RPC 代理的服务端调用接口
  * @returns
  */
 export function createSpreadsheetProxy(
-  editor: SpreadsheetEditor,
-  context?: EditorContext,
-): RPCServerProxy<SpreadsheetMethods> {
-  return () => {
+  createEditor: SpreadsheetEditorFactory,
+  createContext?: SpreadsheetContextFactory,
+): RPCServerProxy<SpreadsheetMethods, SpreadsheetSDKOptions> {
+  return async (options) => {
+    const editor = await createEditor(options);
+    const context = await createContext?.(editor);
+
+    console.log('context', context);
+
     return {
       /**
        * 获取工作簿接口

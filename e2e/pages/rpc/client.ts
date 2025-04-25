@@ -2,7 +2,7 @@ import { create } from '@officesdk/rpc';
 import type { RPCReturnMethods } from '@officesdk/rpc';
 
 import { createClientProxy } from './proxies';
-import type { TestMethods, TestSettings } from './proxies';
+import type { TestMethods, TestOptions } from './proxies';
 
 interface ClientOptions {
   output?: (message: string) => void;
@@ -49,7 +49,7 @@ export async function createClient(options: ClientOptions): Promise<RPCReturnMet
 
   output?.('Creating client...');
 
-  const { id, methods } = await create<TestMethods, TestSettings>({
+  const { id, methods } = await create<TestMethods, TestOptions>({
     remoteWindow,
     proxy: createClientProxy(output),
     settings: {
@@ -61,6 +61,9 @@ export async function createClient(options: ClientOptions): Promise<RPCReturnMet
         f: '4',
       },
       g: ['5'],
+      h: (i) => {
+        output?.(`Client options callback has been invoked with: ${i}`);
+      },
     },
   });
 

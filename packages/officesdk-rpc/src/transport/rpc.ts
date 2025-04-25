@@ -168,6 +168,8 @@ export type RPCClientProxy<TMethods extends RPCMethods> = (
  *
  * The server is responsible for implementing these methods according to the TMethods protocol.
  */
-export type RPCServerProxy<TMethods extends RPCMethods, TSettings = undefined> = (settings: TSettings | null) => {
+export type RPCServerProxy<TMethods extends RPCMethods, TSettings = undefined> = (
+  settings: TSettings | null,
+) => Promise<{
   [K in keyof TMethods]: TMethods[K] extends (...args: infer A) => infer R ? (...args: [...A]) => R | Token : never;
-};
+}>;

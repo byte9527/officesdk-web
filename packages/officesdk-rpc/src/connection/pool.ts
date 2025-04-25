@@ -48,6 +48,10 @@ export class ServerConnectionPool<TSettings> {
    * @param clientId - The unique identifier of the client to add
    */
   public add(clientId: string, settings?: TSettings): void {
+    if (this.pool.has(clientId)) {
+      return;
+    }
+
     this.pool.set(clientId, {
       clientId,
       settings,

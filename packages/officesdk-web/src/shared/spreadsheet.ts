@@ -322,3 +322,7 @@ export type SpreadsheetSelection = {
    */
   setRange: (value: SpreadsheetRangeValue | null) => void;
 };
+
+export interface SpreadsheetSDKOptions {
+  // TODO:
+}

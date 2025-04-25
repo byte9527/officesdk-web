@@ -26,9 +26,13 @@ async function main() {
 
   const server = await serveSDK({
     fileType: FileType.Document,
-    editor: mockDocumentEditor(output),
-    context: {
-      content: mockEditorContent(output),
+    createEditor: async () => {
+      return mockDocumentEditor(output);
+    },
+    createContext: async () => {
+      return {
+        content: mockEditorContent(output),
+      };
     },
   });
 
