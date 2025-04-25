@@ -27,8 +27,9 @@ export function createPagesFacade(methods: RPCReturnMethods<PdfMethods>): RPCRet
       const pages = await getPages();
       return pages.getPagesCount();
     },
-    getPage: async (page: number): Promise<RPCReturnMapProxy<PdfPage>> => {
+    getPage: async (page: number): Promise<RPCReturnMapProxy<PdfPage> | null> => {
       const pages = await getPages();
+
       return pages.getPage(page);
     },
   };
