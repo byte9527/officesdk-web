@@ -87,7 +87,7 @@ export declare interface EditorOutlineItem<Content = unknown> {
  * 菜单栏相关配置，目前菜单栏不是所有套件都支持，
  * 菜单栏是指的编辑器最上放可以展开二级菜单的那一栏。
  */
-export interface EditorMenuOptions<TName extends string> {
+export type EditorMenuOptions<TName extends string> = {
   /**
    * 菜单栏是否显示
    */
@@ -112,7 +112,7 @@ export interface EditorMenuOptions<TName extends string> {
    * 自定义按钮配置
    */
   custom?: EditorMenuCustomButton[];
-}
+};
 
 /**
  * 菜单栏按钮配置
@@ -123,7 +123,7 @@ export type EditorMenuFeatureButtonConfig<TName extends string> = Record<TName, 
  * 菜单栏一级菜单配置，此处用于定义一级菜单的操作入口，
  * 一级菜单在鼠标悬停时展示二级列表
  */
-export interface EditorMenuEntryConfig<TName extends string> {
+export type EditorMenuEntryConfig<TName extends string> = {
   /**
    * 一级菜单名称
    */
@@ -134,7 +134,7 @@ export interface EditorMenuEntryConfig<TName extends string> {
    * 第二层数组为按钮的定义，可以是功能按钮也可以是一个下拉入口。
    */
   children: Array<EditorMenuFeatureButton<TName> | EditorMenuEntryButton>[];
-}
+};
 
 /**
  * 菜单栏功能按钮配置
@@ -169,7 +169,7 @@ export type EditorMenuFeatureButton<TName extends string> =
 /**
  * 菜单栏二级以下的菜单入口
  */
-export interface EditorMenuEntryButton {
+export type EditorMenuEntryButton = {
   type: 'entry';
 
   /**
@@ -181,7 +181,7 @@ export interface EditorMenuEntryButton {
    * 菜单图标
    */
   icon?: string;
-}
+};
 
 /**
  * 菜单栏自定义按钮配置

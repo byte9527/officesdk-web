@@ -36,13 +36,12 @@ import type {
   RPCMethods,
   RPCReturnMethods,
   RPCClientInvokeArgs,
-  RPCSettings,
 } from '../transport';
 
 /**
  * Configuration options for creating a client instance
  */
-export interface ClientOptions<TMethods extends RPCMethods, TSettings extends RPCSettings> {
+export interface ClientOptions<TMethods extends RPCMethods, TSettings> {
   /**
    * The remote window to connect to, typically an iframe.contentWindow
    */
@@ -83,7 +82,7 @@ export interface ClientOptions<TMethods extends RPCMethods, TSettings extends RP
  * Internal record of a server connection
  * Used to associate server Windows with client information and reuse connections
  */
-interface ServerRecord<TMethods extends RPCMethods, TSettings extends RPCSettings> {
+interface ServerRecord<TMethods extends RPCMethods, TSettings> {
   /**
    * The Penpal connection to the server
    */
@@ -130,7 +129,7 @@ export interface Client<TMethods extends RPCMethods> {
  * @param options - Configuration options for the client
  * @returns A Promise resolving to a Client instance
  */
-export async function create<TMethods extends RPCMethods, TSettings extends RPCSettings>(
+export async function create<TMethods extends RPCMethods, TSettings>(
   options: ClientOptions<TMethods, TSettings>,
 ): Promise<Client<TMethods>> {
   const { remoteWindow, allowedOrigins, timeout, settings } = options;
@@ -194,7 +193,7 @@ export async function create<TMethods extends RPCMethods, TSettings extends RPCS
   });
 
   // Initialize the connection to the server
-  const connection = connect<ConnectionServerProtocol<RPCSettings>>({
+  const connection = connect<ConnectionServerProtocol<TSettings>>({
     channel: OfficeSdkRpcChannel,
     messenger,
     methods: createConnectionClientProtocol({
@@ -292,10 +291,10 @@ export async function create<TMethods extends RPCMethods, TSettings extends RPCS
  * @param clientId - The client ID to register
  * @returns A Promise resolving to the server proxy
  */
-async function connectServer<TSettings extends RPCSettings>(
+async function connectServer<TSettings>(
   connection: Connection<ConnectionServerProtocol<TSettings>>,
   clientId: string,
-  settings: TSettings,
+  settings?: TSettings,
 ): Promise<RemoteProxy<ConnectionServerProtocol<TSettings>>> {
   try {
     // Wait for the connection to be established

@@ -13,9 +13,7 @@
  * 3. Connection querying - Checking connection status and listing connected clients
  */
 
-import type { RPCSettings } from '../transport';
-
-interface ServerConnectionRecord<TSettings extends RPCSettings> {
+interface ServerConnectionRecord<TSettings> {
   clientId: string;
   settings?: TSettings;
 }
@@ -26,7 +24,7 @@ interface ServerConnectionRecord<TSettings extends RPCSettings> {
  * This class tracks connected clients, notifies listeners when clients connect or disconnect,
  * and provides methods to query the current connection state.
  */
-export class ServerConnectionPool<TSettings extends RPCSettings> {
+export class ServerConnectionPool<TSettings> {
   /**
    * Set of connected client IDs
    */

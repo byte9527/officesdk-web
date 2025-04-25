@@ -209,11 +209,8 @@ function createDocumentSDK(options: CreateOptions<FileType.Document>): OfficeSDK
       const client = await create({
         remoteWindow,
         proxy: createDocumentProxy(),
+        settings: initOptions,
       });
-
-      if (initOptions) {
-        await client.methods.initialize(client.id, initOptions);
-      }
 
       return createDocumentFacade(client);
     },

@@ -34,9 +34,9 @@ import type { ConnectionClientProtocol } from './connection';
 import { isClientNotAccessible } from '../errors';
 import { ServerConnectionPool } from './pool';
 import { Transportable } from '../transport';
-import type { TransportableRemoteCallback, RPCServerProxy, RPCMethods, RPCSettings } from '../transport';
+import type { TransportableRemoteCallback, RPCServerProxy, RPCMethods } from '../transport';
 
-export interface ServerOptions<TMethods extends RPCMethods, TSettings extends RPCSettings> {
+export interface ServerOptions<TMethods extends RPCMethods, TSettings> {
   /**
    * Subset of the allowedOrigins option in WindowMessenger.
    * ----
@@ -83,7 +83,7 @@ export interface Server {
  *
  * TODO: Refactor to properly return Server instance with onOpen and onClose methods
  */
-export async function serve<TMethods extends RPCMethods, TSettings extends RPCSettings>(
+export async function serve<TMethods extends RPCMethods, TSettings>(
   options: ServerOptions<TMethods, TSettings>,
 ): Promise<Server> {
   const { allowedOrigins, proxy } = options;
