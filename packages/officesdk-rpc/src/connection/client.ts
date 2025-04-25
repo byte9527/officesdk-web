@@ -36,13 +36,13 @@ import type {
   RPCMethods,
   RPCReturnMethods,
   RPCClientInvokeArgs,
-  RPCSettings,
 } from '../transport';
+import type { SchemaEntity } from '../core';
 
 /**
  * Configuration options for creating a client instance
  */
-export interface ClientOptions<TMethods extends RPCMethods, TSettings extends RPCSettings> {
+export interface ClientOptions<TMethods extends RPCMethods, TSettings> {
   /**
    * The remote window to connect to, typically an iframe.contentWindow
    */
@@ -83,16 +83,16 @@ export interface ClientOptions<TMethods extends RPCMethods, TSettings extends RP
  * Internal record of a server connection
  * Used to associate server Windows with client information and reuse connections
  */
-interface ServerRecord<TMethods extends RPCMethods, TSettings extends RPCSettings> {
+interface ServerRecord<TMethods extends RPCMethods, TSettings> {
   /**
    * The Penpal connection to the server
    */
-  connection: Connection<ConnectionServerProtocol<TSettings>>;
+  connection: Connection<ConnectionServerProtocol>;
 
   /**
    * Set of client IDs registered with this server
    */
-  clients: Set<ConnectionClientRecord<TSettings>>;
+  clients: Set<ConnectionClientRecord>;
 
   /**
    * Generated proxy methods for calling server functions
@@ -130,7 +130,7 @@ export interface Client<TMethods extends RPCMethods> {
  * @param options - Configuration options for the client
  * @returns A Promise resolving to a Client instance
  */
-export async function create<TMethods extends RPCMethods, TSettings extends RPCSettings>(
+export async function create<TMethods extends RPCMethods, TSettings>(
   options: ClientOptions<TMethods, TSettings>,
 ): Promise<Client<TMethods>> {
   const { remoteWindow, allowedOrigins = ['*'], timeout, settings } = options;
@@ -143,7 +143,8 @@ export async function create<TMethods extends RPCMethods, TSettings extends RPCS
   // If we already have a connection to this server, reuse it
   // This allows multiple clients to share a single connection
   if (serverRecordCache) {
-    await connectServer(serverRecordCache.connection, clientId, settings);
+    // Do not pass settings, as they are only needed for the initial connection
+    await connectServer(serverRecordCache.connection, clientId);
 
     return {
       id: clientId,
@@ -158,13 +159,13 @@ export async function create<TMethods extends RPCMethods, TSettings extends RPCS
   });
 
   // Track client IDs registered with this server
-  const clients = new Set<ConnectionClientRecord<TSettings>>([]);
+  const clients = new Set<ConnectionClientRecord>([]);
 
   /**
    * Helper function to ensure server proxy is available before using it
    * Throws an error if server is not yet connected
    */
-  const ensureServerProxy = (): RemoteProxy<ConnectionServerProtocol<TSettings>> => {
+  const ensureServerProxy = (): RemoteProxy<ConnectionServerProtocol> => {
     if (!server) {
       throw new Error('Unexpected invoke before server connected');
     }
@@ -194,7 +195,7 @@ export async function create<TMethods extends RPCMethods, TSettings extends RPCS
   });
 
   // Initialize the connection to the server
-  const connection = connect<ConnectionServerProtocol<RPCSettings>>({
+  const connection = connect<ConnectionServerProtocol>({
     channel: OfficeSdkRpcChannel,
     messenger,
     methods: createConnectionClientProtocol({
@@ -223,14 +224,16 @@ export async function create<TMethods extends RPCMethods, TSettings extends RPCS
     timeout,
   });
 
+  const settingsSchema = settings ? await transportable.createSchemaEntity(settings) : undefined;
+
   // Register this client ID with the connection
   clients.add({
     clientId,
-    settings,
+    settings: settingsSchema,
   });
 
   // Connect to the server and register this client
-  const serverPromise = connectServer(connection, clientId, settings);
+  const serverPromise = connectServer(connection, clientId, settingsSchema);
 
   const { proxy } = options;
 
@@ -292,14 +295,15 @@ export async function create<TMethods extends RPCMethods, TSettings extends RPCS
  * @param clientId - The client ID to register
  * @returns A Promise resolving to the server proxy
  */
-async function connectServer<TSettings extends RPCSettings>(
-  connection: Connection<ConnectionServerProtocol<TSettings>>,
+async function connectServer(
+  connection: Connection<ConnectionServerProtocol>,
   clientId: string,
-  settings: TSettings,
-): Promise<RemoteProxy<ConnectionServerProtocol<TSettings>>> {
+  settings?: SchemaEntity,
+): Promise<RemoteProxy<ConnectionServerProtocol>> {
   try {
     // Wait for the connection to be established
     const server = await connection.promise;
+
     // Register this client ID with the server
     await server.open(clientId, settings);
 

@@ -34,9 +34,9 @@ import type { ConnectionClientProtocol } from './connection';
 import { isClientNotAccessible } from '../errors';
 import { ServerConnectionPool } from './pool';
 import { Transportable } from '../transport';
-import type { TransportableRemoteCallback, RPCServerProxy, RPCMethods, RPCSettings } from '../transport';
+import type { TransportableRemoteCallback, RPCServerProxy, RPCMethods } from '../transport';
 
-export interface ServerOptions<TMethods extends RPCMethods, TSettings extends RPCSettings> {
+export interface ServerOptions<TMethods extends RPCMethods, TSettings> {
   /**
    * Subset of the allowedOrigins option in WindowMessenger.
    * ----
@@ -83,7 +83,7 @@ export interface Server {
  *
  * TODO: Refactor to properly return Server instance with onOpen and onClose methods
  */
-export async function serve<TMethods extends RPCMethods, TSettings extends RPCSettings>(
+export async function serve<TMethods extends RPCMethods, TSettings>(
   options: ServerOptions<TMethods, TSettings>,
 ): Promise<Server> {
   const { allowedOrigins = ['*'], proxy } = options;
@@ -107,13 +107,13 @@ export async function serve<TMethods extends RPCMethods, TSettings extends RPCSe
   // Pool to track connected clients
   const connectionPool = new ServerConnectionPool<TSettings>();
 
-  let client: RemoteProxy<ConnectionClientProtocol<TSettings>> | undefined;
+  let client: RemoteProxy<ConnectionClientProtocol> | undefined;
 
   /**
    * Helper function to ensure client proxy is available before using it
    * Throws an error if client is not yet connected
    */
-  const ensureClientProxy = (): RemoteProxy<ConnectionClientProtocol<TSettings>> => {
+  const ensureClientProxy = (): RemoteProxy<ConnectionClientProtocol> => {
     if (!client) {
       // TODO: Improve error message
       throw new Error('Unexpected invoke before client connected');
@@ -151,19 +151,11 @@ export async function serve<TMethods extends RPCMethods, TSettings extends RPCSe
   });
 
   // Initialize the connection to the client
-  const connection = connect<ConnectionClientProtocol<TSettings>>({
+  const connection = connect<ConnectionClientProtocol>({
     messenger,
     channel: OfficeSdkRpcChannel,
     methods: createConnectionServerProtocol({
       clients: connectionPool,
-      /**
-       * Handles method invocations from clients
-       *
-       * @param clientId - The ID of the client making the request
-       * @param method - The method name to invoke
-       * @param schemas - Serialized arguments as schema entities
-       * @returns A Promise resolving to the serialized result
-       */
       onInvoke: (clientId, method, schemas) => {
         const methods = ensureClientMethods();
 
@@ -180,14 +172,11 @@ export async function serve<TMethods extends RPCMethods, TSettings extends RPCSe
         // Serialize the result for transmission
         return transportable.createSchemaEntity(result);
       },
-      /**
-       * Resolves a callback schema for remote execution
-       *
-       * @param schema - The callback schema to resolve
-       * @returns A function that can be called to execute the callback remotely
-       */
-      resolveCallback: (schema) => {
+      resolveSchemaCallback: (schema) => {
         return transportable.resolveSchemaCallback(schema);
+      },
+      parseSchemaEntity: (schema) => {
+        return transportable.parseSchemaEntity(schema);
       },
     }),
   });
@@ -200,7 +189,7 @@ export async function serve<TMethods extends RPCMethods, TSettings extends RPCSe
 
   const firstClientId = connectedClients[0];
   // Get the methods implementation
-  const methods = proxy(firstClientId ? connectionPool.getSettings(firstClientId.clientId) : null);
+  const methods = await proxy(firstClientId ? connectionPool.getSettings(firstClientId.clientId) : null);
 
   // Register all client IDs in our pool
   connectedClients.forEach((client) => {
@@ -208,7 +197,7 @@ export async function serve<TMethods extends RPCMethods, TSettings extends RPCSe
       return;
     }
 
-    connectionPool.add(client.clientId, client.settings);
+    connectionPool.add(client.clientId);
   });
 
   // Return a Server interface for managing client connections

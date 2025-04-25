@@ -40,12 +40,6 @@ export interface UrlOptions {
    *  编辑器在 `standard` 模式下的权限模式
    */
   role?: EditorStandardRole;
-
-  /**
-   * 是否携带了初始化信息，
-   * 如果带了初始化信息，编辑器初始化需要等待收到初始化信息后才能开始。
-   */
-  withInitOptions?: boolean;
 }
 
 /**
@@ -79,7 +73,7 @@ export function generateUrl(options: UrlOptions): URL {
   const defaultMode = EditorModeType.Standard;
   const defaultRole = EditorStandardRole.Viewer
 
-  const { endpoint, token, fileId, withInitOptions,fileType, path = defaultPath,mode = defaultMode,
+  const { endpoint, token, fileId,fileType, path = defaultPath,mode = defaultMode,
     role = defaultRole } = options;
 
   let url: URL;
@@ -106,10 +100,6 @@ export function generateUrl(options: UrlOptions): URL {
     const lang = getLang(options.lang);
     if (lang) {
       url.searchParams.set(UrlParamKey.Language, lang);
-    }
-
-    if (withInitOptions) {
-      url.searchParams.set(UrlParamKey.WithInitOptions, '1');
     }
   } catch (error) {
     // TODO: 抛出自定义错误

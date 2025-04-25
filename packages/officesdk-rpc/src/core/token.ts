@@ -187,7 +187,11 @@ function createTokenValue(value: SchemaValueData): TokenValue {
  * @returns True if the value is a TokenValue object
  */
 function isTokenValue(value: unknown): value is TokenValue {
-  return typeof value === 'object' && Object.getOwnPropertyDescriptor(value, TokenValueSymbol)?.value == true;
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    Object.getOwnPropertyDescriptor(value, TokenValueSymbol)?.value == true
+  );
 }
 
 /**

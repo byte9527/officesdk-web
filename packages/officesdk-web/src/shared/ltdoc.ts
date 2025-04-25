@@ -5,3 +5,7 @@ export type LiteDocMethods = {
 export interface LiteDocEditor {
   // TODO:
 }
+
+export interface LiteDocSDKOptions {
+  // TODO:
+}

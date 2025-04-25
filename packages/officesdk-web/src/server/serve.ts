@@ -2,21 +2,18 @@ import { serve } from '@shimo/officesdk-rpc';
 import type { Server } from '@shimo/officesdk-rpc';
 
 import { createDocumentProxy } from './document';
+import type { DocumentEditorFactory, DocumentContextFactory } from './document';
 import { createSpreadsheetProxy } from './spreadsheet';
+import type { SpreadsheetEditorFactory, SpreadsheetContextFactory } from './spreadsheet';
 import { createPresentationProxy } from './presentation';
+import type { PresentationEditorFactory, PresentationContextFactory } from './presentation';
 import { createLiteDocProxy } from './ltdoc';
+import type { LiteDocEditorFactory, LiteDocContextFactory } from './ltdoc';
 import { createDatabaseTableProxy } from './dbtable';
+import type { DatabaseTableEditorFactory, DatabaseTableContextFactory } from './dbtable';
 import { createPdfProxy } from './pdf';
-import type { EditorContext } from './editor';
+import type { PdfEditorFactory, PdfContextFactory } from './pdf';
 import { FileType, assertFileType } from '../shared';
-import type {
-  DocumentEditor,
-  LiteDocEditor,
-  PresentationEditor,
-  SpreadsheetEditor,
-  PdfEditor,
-  DatabaseTableEditor,
-} from '../shared';
 
 export interface ServeOptions<T extends FileType> {
   /**
@@ -27,88 +24,100 @@ export interface ServeOptions<T extends FileType> {
   /**
    * 编辑器实例
    */
-  editor: EditorMap[T];
+  createEditor: EditorFactoryMap[T];
 
   /**
    * 编辑器上下文
-   * TODO: 编辑器上下文可能需要按套件类型区分
    */
-  context?: EditorContext;
+  createContext?: EditorContextFactoryMap[T];
 }
 
-export type EditorMap = {
-  [FileType.Document]: DocumentEditor;
-  [FileType.Spreadsheet]: SpreadsheetEditor;
-  [FileType.Presentation]: PresentationEditor;
-  [FileType.LiteDoc]: LiteDocEditor;
-  [FileType.DBTable]: DatabaseTableEditor;
-  [FileType.Pdf]: PdfEditor;
+type EditorContextFactoryMap = {
+  [FileType.Document]: DocumentContextFactory;
+  [FileType.Spreadsheet]: SpreadsheetContextFactory;
+  [FileType.Presentation]: PresentationContextFactory;
+  [FileType.LiteDoc]: LiteDocContextFactory;
+  [FileType.DBTable]: DatabaseTableContextFactory;
+  [FileType.Pdf]: PdfContextFactory;
 };
 
-function isDocumentEditor(editor: EditorMap[FileType], fileType: FileType): editor is DocumentEditor {
-  return fileType === FileType.Document;
+type EditorFactoryMap = {
+  [FileType.Document]: DocumentEditorFactory;
+  [FileType.Spreadsheet]: SpreadsheetEditorFactory;
+  [FileType.Presentation]: PresentationEditorFactory;
+  [FileType.LiteDoc]: LiteDocEditorFactory;
+  [FileType.DBTable]: DatabaseTableEditorFactory;
+  [FileType.Pdf]: PdfEditorFactory;
+};
+
+function isDocumentOptions(options: ServeOptions<FileType>): options is ServeOptions<FileType.Document> {
+  return options.fileType === FileType.Document;
 }
 
-function isSpreadsheetEditor(editor: EditorMap[FileType], fileType: FileType): editor is SpreadsheetEditor {
-  return fileType === FileType.Spreadsheet;
+function isSpreadsheetOptions(options: ServeOptions<FileType>): options is ServeOptions<FileType.Spreadsheet> {
+  return options.fileType === FileType.Spreadsheet;
 }
 
-function isPresentationEditor(editor: EditorMap[FileType], fileType: FileType): editor is PresentationEditor {
-  return fileType === FileType.Presentation;
+function isPresentationOptions(options: ServeOptions<FileType>): options is ServeOptions<FileType.Presentation> {
+  return options.fileType === FileType.Presentation;
 }
 
-function isLiteDocEditor(editor: EditorMap[FileType], fileType: FileType): editor is LiteDocEditor {
-  return fileType === FileType.LiteDoc;
+function isLiteDocOptions(options: ServeOptions<FileType>): options is ServeOptions<FileType.LiteDoc> {
+  return options.fileType === FileType.LiteDoc;
 }
 
-function isDatabaseTableEditor(editor: EditorMap[FileType], fileType: FileType): editor is DatabaseTableEditor {
-  return fileType === FileType.DBTable;
+function isDatabaseTableOptions(options: ServeOptions<FileType>): options is ServeOptions<FileType.DBTable> {
+  return options.fileType === FileType.DBTable;
 }
 
-function isPdfEditor(editor: EditorMap[FileType], fileType: FileType): editor is PdfEditor {
-  return fileType === FileType.Pdf;
+function isPdfOptions(options: ServeOptions<FileType>): options is ServeOptions<FileType.Pdf> {
+  return options.fileType === FileType.Pdf;
 }
 
 export function serveSDK<T extends FileType>(options: ServeOptions<T>): Promise<Server> {
-  const { fileType, editor, context } = options;
+  const { fileType } = options;
 
   assertFileType(fileType);
 
-  // TODO: hasInitOptions
-
-  if (isDocumentEditor(editor, fileType)) {
+  if (isDocumentOptions(options)) {
+    const { createEditor, createContext } = options;
     return serve({
-      proxy: createDocumentProxy(editor, context),
+      proxy: createDocumentProxy(createEditor, createContext),
     });
   }
 
-  if (isSpreadsheetEditor(editor, fileType)) {
+  if (isSpreadsheetOptions(options)) {
+    const { createEditor, createContext } = options;
     return serve({
-      proxy: createSpreadsheetProxy(editor, context),
+      proxy: createSpreadsheetProxy(createEditor, createContext),
     });
   }
 
-  if (isPresentationEditor(editor, fileType)) {
+  if (isPresentationOptions(options)) {
+    const { createEditor, createContext } = options;
     return serve({
-      proxy: createPresentationProxy(editor, context),
+      proxy: createPresentationProxy(createEditor, createContext),
     });
   }
 
-  if (isLiteDocEditor(editor, fileType)) {
+  if (isLiteDocOptions(options)) {
+    const { createEditor, createContext } = options;
     return serve({
-      proxy: createLiteDocProxy(editor),
+      proxy: createLiteDocProxy(createEditor, createContext),
     });
   }
 
-  if (isDatabaseTableEditor(editor, fileType)) {
+  if (isDatabaseTableOptions(options)) {
+    const { createEditor, createContext } = options;
     return serve({
-      proxy: createDatabaseTableProxy(editor),
+      proxy: createDatabaseTableProxy(createEditor, createContext),
     });
   }
 
-  if (isPdfEditor(editor, fileType)) {
+  if (isPdfOptions(options)) {
+    const { createEditor, createContext } = options;
     return serve({
-      proxy: createPdfProxy(editor),
+      proxy: createPdfProxy(createEditor, createContext),
     });
   }
 

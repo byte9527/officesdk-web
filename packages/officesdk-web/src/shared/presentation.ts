@@ -252,3 +252,7 @@ export interface PresentationSlides {
    */
   setSelectedSlides: (ids: string[]) => void;
 }
+
+export interface PresentationSDKOptions {
+  // TODO:
+}

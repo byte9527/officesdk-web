@@ -26,9 +26,13 @@ async function main() {
 
   const server = await serveSDK({
     fileType: FileType.Spreadsheet,
-    editor: mockSpreadsheetEditor(output),
-    context: {
-      content: mockEditorContent(output),
+    createEditor: async () => {
+      return mockSpreadsheetEditor(output);
+    },
+    createContext: async () => {
+      return {
+        content: mockEditorContent(output),
+      };
     },
   });
 

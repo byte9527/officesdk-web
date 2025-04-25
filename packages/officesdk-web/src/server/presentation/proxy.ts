@@ -1,21 +1,30 @@
 import type { RPCServerProxy } from '@shimo/officesdk-rpc';
 
 import type { EditorContext } from '../editor';
-import type { PresentationMethods, PresentationEditor } from '../../shared';
+import type { PresentationMethods, PresentationEditor, PresentationSDKOptions } from '../../shared';
 import { createEditorContentProxy } from '../editor/content';
 import { createPresentationZoomProxy } from './zoom';
 import { createPresentationSelectionProxy } from './selection';
 import { createPresentationSlidesProxy } from './slides';
+
+export type PresentationEditorFactory = (options: PresentationSDKOptions | null) => Promise<PresentationEditor>;
+
+export type PresentationContextFactory = (editor: PresentationEditor) => Promise<EditorContext>;
 
 /**
  * 定义幻灯片的 RPC 代理的服务端调用接口
  * @returns
  */
 export function createPresentationProxy(
-  editor: PresentationEditor,
-  context?: EditorContext,
-): RPCServerProxy<PresentationMethods> {
-  return () => {
+  createEditor: PresentationEditorFactory,
+  createContext?: PresentationContextFactory,
+): RPCServerProxy<PresentationMethods, PresentationSDKOptions> {
+  return async (options) => {
+    const editor = await createEditor(options);
+    const context = await createContext?.(editor);
+
+    console.log('context', context);
+
     return {
       /**
        * 获取选区接口

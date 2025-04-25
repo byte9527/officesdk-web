@@ -5,3 +5,5 @@ export type DatabaseTableMethods = {
 export interface DatabaseTableEditor {
   // TODO:
 }
+
+export interface DatabaseTableSDKOptions {}

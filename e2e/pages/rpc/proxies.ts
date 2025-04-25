@@ -27,7 +27,7 @@ export type TestMethods = {
   }) => void;
 };
 
-export type TestSettings = {
+export type TestOptions = {
   a: number;
   b: string;
   c: boolean;
@@ -36,6 +36,7 @@ export type TestSettings = {
     f: string;
   };
   g: string[];
+  h: (i: string) => void;
 };
 
 /**
@@ -73,8 +74,10 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
  * 这部分代码会在服务端环境中执行
  * @returns
  */
-export const createServerProxy: (output?: (message: string) => void) => RPCServerProxy<TestMethods> =
-  (output) => () => {
+export const createServerProxy: (output?: (message: string) => void) => RPCServerProxy<TestMethods, TestOptions> =
+  (output) => async (settings) => {
+    settings?.h('hello');
+
     return {
       testInvoke: () => {
         output?.('Server .testInvoke has been invoked.');
