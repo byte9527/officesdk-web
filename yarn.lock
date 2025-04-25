@@ -1481,10 +1481,10 @@ __metadata:
 
 "@officesdk/rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=996c88&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=01fadd&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     penpal: ^7.0.4
-  checksum: 99e320134849e5d76ae7c3e627553eeeecf7b6b6b55c6db90fb115109667eefd29f7ffb62f0063b65913da06b6d5a1ead9b6d9122fee3e381b171d96b2585b04
+  checksum: ec33872334ce1ae20b99d8f69a0f1693a98eb3757a6cc35888cb47f09cb18df7cb30639b52d93d16a2774f118ef6fcc82cde35dfdc2a5d7a89213188335983a2
   languageName: node
   linkType: hard
 
@@ -1498,10 +1498,10 @@ __metadata:
 
 "@officesdk/web@file:../packages/officesdk-web::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=556c23&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=c7ba52&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     "@officesdk/rpc": "workspace:*"
-  checksum: 3f405387c1907fb90049a0db77e77122eda26c2ae6f31460fb2fa50f07ef8db150e67ed7f3d207b9c35d5dbceca1aff816eeb4d3948afd46d5996cbe797e72a9
+  checksum: ddaa48345f3025c0ebd615d232c81b7666a3254a8f41d83ab7ef3c968dbd7f7f652fc6d89db7a7692ad6e6b7417befca72e81a1ab06acde616402544cadcb234
   languageName: node
   linkType: hard
 
