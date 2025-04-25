@@ -105,7 +105,6 @@ export declare interface EditorOutlineItem<Content = unknown> {
    */
   content: Content;
 }
-
 /**
  * 菜单栏相关配置，目前菜单栏不是所有套件都支持，
  * 菜单栏是指的编辑器最上放可以展开二级菜单的那一栏。

@@ -74,6 +74,8 @@ export function serveSDK<T extends FileType>(options: ServeOptions<T>): Promise<
 
   assertFileType(fileType);
 
+  // TODO: hasInitOptions
+
   if (isDocumentEditor(editor, fileType)) {
     return serve({
       proxy: createDocumentProxy(editor, context),

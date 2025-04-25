@@ -1,3 +1,4 @@
+import type { EditorMenuOptions, EditorMenuFeatureButtonConfig, EditorMenuEntryConfig } from '../shared';
 import type { EditorContent, EditorOutline, EditorOutlineItem } from './editor';
 /**
  * Document 远程调用的方法定义，
@@ -335,4 +336,28 @@ export interface DocumentTocContentItem {
      */
     text: string;
   };
+}
+
+export type DocumentMenuOptions = EditorMenuOptions<DocumentMenuFeatureButtonName>;
+
+/**
+ * 传统文档工具栏内置功能按钮
+ */
+export type DocumentMenuFeatureButtonName = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll';
+
+/**
+ * 传统文档工具栏一级菜单
+ */
+export type DocumentMenuEntryConfig = EditorMenuEntryConfig<DocumentMenuFeatureButtonName>;
+
+/**
+ * 传统文档工具栏功能按钮
+ */
+export type DocumentMenuFeatureButtonConfig = EditorMenuFeatureButtonConfig<DocumentMenuFeatureButtonName>;
+
+export interface DocumentSDKOptions {
+  /**
+   * 菜单栏相关设置
+   */
+  menu?: DocumentMenuOptions;
 }

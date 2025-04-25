@@ -30,6 +30,11 @@ export type {
   DocumentTocContentItem,
   DocumentOutline,
   DocumentOutlineItem,
+  DocumentMenuEntryConfig,
+  DocumentMenuFeatureButtonConfig,
+  DocumentMenuFeatureButtonName,
+  DocumentMenuOptions,
+  DocumentSDKOptions,
 } from './document';
 export type { DatabaseTableMethods, DatabaseTableEditor } from './dbtable';
 
@@ -64,6 +69,8 @@ export type {
   PdfRange,
   PdfRangeBounding,
   PdfRangeValue,
+  PdfRangeBounding,
   PdfOutline,
   PdfOutlineItem,
 } from './pdf';
+export { UrlParamKey, hasInitOptions } from './url';

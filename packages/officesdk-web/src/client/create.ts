@@ -1,8 +1,8 @@
 import { create } from '@shimo/officesdk-rpc';
 
 import { FileType, assertFileType } from '../shared';
-import { createDocumentProxy, createDocumentFacade } from './document';
-import type { DocumentFacade } from './document';
+import { createDocumentProxy, createDocumentFacade, createDocumentOptions } from './document';
+import type { DocumentFacade, DocumentSettings } from './document';
 import { createDatabaseTableProxy, createDatabaseTableFacade } from './dbtable';
 import type { DatabaseTableFacade } from './dbtable';
 import { createLiteDocProxy, createLTDocFacade } from './ltdoc';
@@ -17,6 +17,11 @@ import { generateUrl } from './url';
 import { createContainer, connectContainer, getContentWindow } from './container';
 import type { EditorModeType, EditorStandardRole } from '../shared';
 import { mapToPreviewType } from '../shared/file';
+
+export type SDKSettings = {
+  [FileType.Document]: DocumentSettings;
+};
+
 /**
  * 初始化 Office SDK 的配置项，
  * 需要传入 endpoint、 token、 fileId 用于连接服务端并鉴权，
@@ -71,6 +76,11 @@ export interface CreateOptions<T extends FileType> {
    *  编辑器在 `standard` 模式下的权限模式
    */
   role?: EditorStandardRole;
+
+  /**
+   * 初始化设置
+   */
+  settings?: T extends keyof SDKSettings ? SDKSettings[T] : never;
 }
 
 export type OfficeSDKMap = {
@@ -115,9 +125,62 @@ export interface OfficeSDK<T extends FileType> {
  * 创建 Office SDK 实例
  */
 export function createSDK<T extends FileType>(options: CreateOptions<T>): OfficeSDK<T> {
-  const { fileType, endpoint, token, fileId, path, root, iframe, mode, role, lang } = options;
+  const { fileType, settings, ...others } = options;
 
   assertFileType(fileType);
+
+  if (fileType === FileType.Document) {
+    return createDocumentSDK({
+      fileType,
+      settings,
+      ...others,
+    }) as OfficeSDK<T>;
+  }
+
+  if (fileType === FileType.Spreadsheet) {
+    return createSpreadsheetSDK({
+      fileType,
+      ...others,
+    }) as OfficeSDK<T>;
+  }
+
+  if (fileType === FileType.Presentation) {
+    return createPresentationSDK({
+      fileType,
+      ...others,
+    }) as OfficeSDK<T>;
+  }
+
+  if (fileType === FileType.Pdf) {
+    return createPdfSDK({
+      fileType,
+      ...others,
+    }) as OfficeSDK<T>;
+  }
+
+  if (fileType === FileType.LiteDoc) {
+    return createLiteDocSDK({
+      fileType,
+      ...others,
+    }) as OfficeSDK<T>;
+  }
+
+  if (fileType === FileType.DBTable) {
+    return createDatabaseTableSDK({
+      fileType,
+      ...others,
+    }) as OfficeSDK<T>;
+  }
+
+  // Just for type check
+  throw new Error(`Unsupported file type: ${fileType}`);
+}
+
+function connectIframe(
+  options: CreateOptions<any>,
+  withInitOptions?: boolean,
+): { url: string; container: HTMLIFrameElement } {
+  const { fileType, endpoint, token, fileId, path, root,mode, role, lang, iframe} = options;
 
   let url: URL;
   let container: HTMLIFrameElement;
@@ -126,9 +189,49 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
     url = new URL(iframe.src);
     container = connectContainer({ iframe, root });
   } else {
-    url = generateUrl({ endpoint, token, fileId, path, mode, role, lang, fileType: mapToPreviewType(fileType) });
+    url = generateUrl({ endpoint, token, fileId, path, withInitOptions, mode, role, lang, fileType: mapToPreviewType(fileType) });
     container = createContainer({ source: url.toString(), root });
   }
+
+  return {
+    url: url.toString(),
+    container,
+  };
+}
+
+function createDocumentSDK(options: CreateOptions<FileType.Document>): OfficeSDK<FileType.Document> {
+  const { settings } = options;
+
+  const initOptions = createDocumentOptions(settings);
+
+  const { url, container } = connectIframe(options, !!initOptions);
+
+  return {
+    url: url,
+    iframe: container,
+    destroy: () => {
+      container.remove();
+    },
+    connect: async () => {
+      // Get the content window of the iframe,
+      // which can use @officesdk/rpc create method.
+      const remoteWindow = await getContentWindow(container);
+      const client = await create({
+        remoteWindow,
+        proxy: createDocumentProxy(),
+      });
+
+      if (initOptions) {
+        await client.methods.initialize(client.id, initOptions);
+      }
+
+      return createDocumentFacade(client);
+    },
+  };
+}
+
+function createSpreadsheetSDK(options: CreateOptions<FileType.Spreadsheet>): OfficeSDK<FileType.Spreadsheet> {
+  const { url, container } = connectIframe(options);
 
   return {
     url: url.toString(),
@@ -136,67 +239,98 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
     destroy: () => {
       container.remove();
     },
-    connect: async (): Promise<OfficeSDKMap[T]> => {
-      // Get the content window of the iframe,
-      // which can use @shimo/officesdk-rpc create method.
+    connect: async () => {
       const remoteWindow = await getContentWindow(container);
+      const client = await create({
+        remoteWindow,
+        proxy: createSpreadsheetProxy(),
+      });
 
-      if (fileType === FileType.Document) {
-        const client = await create({
-          remoteWindow,
-          proxy: createDocumentProxy(),
-        });
+      return createSpreadsheetFacade(client);
+    },
+  };
+}
 
-        // 因为 fileType 的判断在 connect 函数内进行的判断，所以类型无法进行准确的推断，这里直接 as 一下即可
-        return createDocumentFacade(client) as OfficeSDKMap[T];
-      }
+function createPresentationSDK(options: CreateOptions<FileType.Presentation>): OfficeSDK<FileType.Presentation> {
+  const { url, container } = connectIframe(options);
 
-      if (fileType === FileType.Spreadsheet) {
-        const client = await create({
-          remoteWindow,
-          proxy: createSpreadsheetProxy(),
-        });
+  return {
+    url: url.toString(),
+    iframe: container,
+    destroy: () => {
+      container.remove();
+    },
+    connect: async () => {
+      const remoteWindow = await getContentWindow(container);
+      const client = await create({
+        remoteWindow,
+        proxy: createPresentationProxy(),
+      });
 
-        return createSpreadsheetFacade(client) as OfficeSDKMap[T];
-      }
+      return createPresentationFacade(client);
+    },
+  };
+}
 
-      if (fileType === FileType.Presentation) {
-        const client = await create({
-          remoteWindow,
-          proxy: createPresentationProxy(),
-        });
+function createLiteDocSDK(options: CreateOptions<FileType.LiteDoc>): OfficeSDK<FileType.LiteDoc> {
+  const { url, container } = connectIframe(options);
 
-        return createPresentationFacade(client) as OfficeSDKMap[T];
-      }
+  return {
+    url: url.toString(),
+    iframe: container,
+    destroy: () => {
+      container.remove();
+    },
+    connect: async () => {
+      const remoteWindow = await getContentWindow(container);
+      const client = await create({
+        remoteWindow,
+        proxy: createLiteDocProxy(),
+      });
 
-      if (fileType === FileType.Pdf) {
-        const client = await create({
-          remoteWindow,
-          proxy: createPdfProxy(),
-        });
+      return createLTDocFacade(client);
+    },
+  };
+}
 
-        return createPdfFacade(client) as OfficeSDKMap[T];
-      }
+function createPdfSDK(options: CreateOptions<FileType.Pdf>): OfficeSDK<FileType.Pdf> {
+  const { url, container } = connectIframe(options);
 
-      if (fileType === FileType.LiteDoc) {
-        const client = await create({
-          remoteWindow,
-          proxy: createLiteDocProxy(),
-        });
+  return {
+    url: url.toString(),
+    iframe: container,
+    destroy: () => {
+      container.remove();
+    },
+    connect: async () => {
+      const remoteWindow = await getContentWindow(container);
+      const client = await create({
+        remoteWindow,
+        proxy: createPdfProxy(),
+      });
 
-        return createLTDocFacade(client) as OfficeSDKMap[T];
-      }
+      return createPdfFacade(client);
+    },
+  };
+}
 
-      if (fileType === FileType.DBTable) {
-        const client = await create({
-          remoteWindow,
-          proxy: createDatabaseTableProxy(),
-        });
+function createDatabaseTableSDK(options: CreateOptions<FileType.DBTable>): OfficeSDK<FileType.DBTable> {
+  const { url, container } = connectIframe(options);
 
-        return createDatabaseTableFacade(client) as OfficeSDKMap[T];
-      }
+  return {
+    url: url.toString(),
+    iframe: container,
+    destroy: () => {
+      container.remove();
+    },
+    connect: async () => {
+      const remoteWindow = await getContentWindow(container);
+      const client = await create({
+        remoteWindow,
+        proxy: createDatabaseTableProxy(),
+      });
 
-      throw new Error(`Unsupported file type: ${fileType}`);
+      return createDatabaseTableFacade(client);
     },
   };
 }

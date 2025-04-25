@@ -2,7 +2,7 @@ import { create } from '@shimo/officesdk-rpc';
 import type { RPCReturnMethods } from '@shimo/officesdk-rpc';
 
 import { createClientProxy } from './proxies';
-import type { TestMethods } from './proxies';
+import type { TestMethods, TestSettings } from './proxies';
 
 interface ClientOptions {
   output?: (message: string) => void;
@@ -49,9 +49,19 @@ export async function createClient(options: ClientOptions): Promise<RPCReturnMet
 
   output?.('Creating client...');
 
-  const { id, methods } = await create({
+  const { id, methods } = await create<TestMethods, TestSettings>({
     remoteWindow,
     proxy: createClientProxy(output),
+    settings: {
+      a: 1,
+      b: '2',
+      c: true,
+      d: {
+        e: 3,
+        f: '4',
+      },
+      g: ['5'],
+    },
   });
 
   output?.(`Client created, id: ${id}`);

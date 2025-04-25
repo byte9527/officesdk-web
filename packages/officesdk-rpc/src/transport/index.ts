@@ -11,6 +11,7 @@ export type { TransportableRemoteCallback, TransportableLocalOptions } from './t
 
 // Export RPC types
 export type {
+  RPCSettings,
   RPCMethod,
   RPCMap,
   PRCArray,
