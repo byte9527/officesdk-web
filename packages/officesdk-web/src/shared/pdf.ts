@@ -70,7 +70,7 @@ export interface PdfPages {
   /**
    * 获取指定页面
    */
-  getPage: (page: number) => Promise<PdfPage>;
+  getPage: (page: number) => Promise<PdfPage | null>;
 }
 
 /**
