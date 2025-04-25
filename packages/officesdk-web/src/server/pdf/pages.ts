@@ -14,6 +14,10 @@ export function createPdfPagesProxy(pages: PdfPages): PdfPages {
     },
     getPage: async (page) => {
       const pdfPage = await pages.getPage(page);
+      if (!pdfPage) {
+        return null;
+      }
+
       return createPdfPageProxy(pdfPage);
     },
   };
