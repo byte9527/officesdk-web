@@ -61,6 +61,7 @@ export type {
   PresentationZoom,
   SpreadsheetCell,
   SpreadsheetEditor,
+  SpreadsheetCellValue,
   SpreadsheetRange,
   SpreadsheetRangeType,
   SpreadsheetRangeValue,

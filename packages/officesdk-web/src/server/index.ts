@@ -58,6 +58,7 @@ export type {
   PresentationTextRangeValue,
   PresentationZoom,
   SpreadsheetCell,
+  SpreadsheetCellValue,
   SpreadsheetEditor,
   SpreadsheetRange,
   SpreadsheetRangeType,

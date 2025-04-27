@@ -165,8 +165,27 @@ export type SpreadsheetCell = {
   /**
    * 获取单元格的值
    */
-  getCellValue: () => string;
+  getCellValue: () => SpreadsheetCellValue | null;
 };
+
+/**
+ * 单元格值类型
+ */
+export type SpreadsheetCellValue =
+  | {
+      type: 'primitive';
+      value: string | number | boolean;
+    }
+  | {
+      type: 'date';
+      value: number;
+    }
+  | {
+      type: 'calcError';
+      value: {
+        error: string;
+      };
+    };
 
 /**
  * 选区类型
