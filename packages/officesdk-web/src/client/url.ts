@@ -71,10 +71,9 @@ function getLang(lang?: string): string | null {
 export function generateUrl(options: UrlOptions): URL {
   const defaultPath = '/v1/api/file/page';
   const defaultMode = EditorModeType.Standard;
-  const defaultRole = EditorStandardRole.Viewer
+  const defaultRole = EditorStandardRole.Viewer;
 
-  const { endpoint, token, fileId,fileType, path = defaultPath,mode = defaultMode,
-    role = defaultRole } = options;
+  const { endpoint, token, fileId, fileType, path = defaultPath, mode = defaultMode, role = defaultRole } = options;
 
   let url: URL;
 
