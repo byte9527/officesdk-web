@@ -165,7 +165,7 @@ export type SpreadsheetCell = {
   /**
    * 获取单元格的值
    */
-  getCellValue: () => SpreadsheetCellValue;
+  getCellValue: () => SpreadsheetCellValue | null;
 };
 
 /**
@@ -174,7 +174,7 @@ export type SpreadsheetCell = {
 export type SpreadsheetCellValue =
   | {
       type: 'primitive';
-      value: string | number | boolean | null;
+      value: string | number | boolean;
     }
   | {
       type: 'date';
