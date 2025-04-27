@@ -19,6 +19,7 @@ export type {
   SpreadsheetWorkbook,
   SpreadsheetWorksheet,
   SpreadsheetCell,
+  SpreadsheetCellValue,
   SpreadsheetSelection,
   SpreadsheetRange,
   SpreadsheetRangeType,

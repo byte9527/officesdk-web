@@ -50,6 +50,7 @@ export type {
   SpreadsheetMethods,
   SpreadsheetEditor,
   SpreadsheetCell,
+  SpreadsheetCellValue,
   SpreadsheetRange,
   SpreadsheetRangeType,
   SpreadsheetRangeValue,
