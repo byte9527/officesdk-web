@@ -40,6 +40,10 @@ export interface UrlOptions {
    *  编辑器在 `standard` 模式下的权限模式
    */
   role?: EditorStandardRole;
+  /**
+   * 用户自定义参数
+   */
+  userQuery?: Record<string, string>
 }
 
 /**
@@ -73,7 +77,7 @@ export function generateUrl(options: UrlOptions): URL {
   const defaultMode = EditorModeType.Standard;
   const defaultRole = EditorStandardRole.Viewer;
 
-  const { endpoint, token, fileId, fileType, path = defaultPath, mode = defaultMode, role = defaultRole } = options;
+  const { endpoint, token, fileId, fileType, userQuery, path = defaultPath, mode = defaultMode, role = defaultRole } = options;
 
   let url: URL;
 
@@ -99,6 +103,10 @@ export function generateUrl(options: UrlOptions): URL {
     const lang = getLang(options.lang);
     if (lang) {
       url.searchParams.set(UrlParamKey.Language, lang);
+    }
+
+    if (userQuery) {
+     url.searchParams.set(UrlParamKey.UserQuery, encodeURIComponent(JSON.stringify(userQuery)));
     }
   } catch (error) {
     // TODO: 抛出自定义错误

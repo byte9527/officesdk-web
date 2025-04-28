@@ -60,6 +60,11 @@ export interface CreateOptions<T extends FileType> {
   root?: HTMLElement;
 
   /**
+   * 用户自定义参数
+   */
+  userQuery?: Record<string, string>
+
+  /**
    * 已加载 SDK 环境的 iframe 实例
    */
   iframe?: HTMLIFrameElement;
@@ -178,7 +183,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
 }
 
 function connectIframe(options: CreateOptions<any>): { url: string; container: HTMLIFrameElement } {
-  const { fileType, endpoint, token, fileId, path, root,mode, role, lang, iframe} = options;
+  const { fileType, endpoint, token, fileId, path, root,mode, role, lang, iframe, userQuery} = options;
 
   let url: URL;
   let container: HTMLIFrameElement;
@@ -187,7 +192,7 @@ function connectIframe(options: CreateOptions<any>): { url: string; container: H
     url = new URL(iframe.src);
     container = connectContainer({ iframe, root });
   } else {
-    url = generateUrl({ endpoint, token, fileId, path, mode, role, lang, fileType: mapToPreviewType(fileType) });
+    url = generateUrl({ endpoint, token, fileId, path, mode, role, lang, userQuery, fileType: mapToPreviewType(fileType) });
     container = createContainer({ source: url.toString(), root });
   }
 

@@ -5,4 +5,5 @@ export enum UrlParamKey {
   ModeType = 'modeType',
   ModeRole = 'modeRole',
   FileType = 'fileType',
+  UserQuery = 'userQuery'
 }
