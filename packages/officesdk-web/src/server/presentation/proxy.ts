@@ -1,4 +1,4 @@
-import type { RPCServerProxy } from '@shimo/officesdk-rpc';
+import type { RPCServerProxy } from '@officesdk/rpc';
 
 import type { EditorContext } from '../editor';
 import type { PresentationMethods, PresentationEditor, PresentationSDKOptions } from '../../shared';

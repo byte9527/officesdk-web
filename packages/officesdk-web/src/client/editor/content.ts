@@ -1,4 +1,4 @@
-import type { RPCReturnMethods, RPCReturnMapProxy } from '@shimo/officesdk-rpc';
+import type { RPCReturnMethods, RPCReturnMapProxy } from '@officesdk/rpc';
 import type { EditorContentMethods, EditorContent, EditorContentRecord } from '../../shared';
 
 export function createContentFacade(methods: RPCReturnMethods<EditorContentMethods>): RPCReturnMapProxy<EditorContent> {

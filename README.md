@@ -11,5 +11,5 @@ Based on the [penpal](https://github.com/Aaronius/penpal) library.
 
 
 ```bash
-npm install @shimo/officesdk-rpc
+npm install @officesdk/rpc
 ```

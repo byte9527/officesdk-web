@@ -7,7 +7,7 @@ import type {
   SpreadsheetRange,
   SpreadsheetRangeValue,
   SpreadsheetRangeType,
-} from '@shimo/officesdk-web';
+} from '@officesdk/web';
 
 function createCell(
   output: (message: string) => void,

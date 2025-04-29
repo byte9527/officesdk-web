@@ -1,5 +1,5 @@
-import { FileType } from '@shimo/officesdk-web';
-import { serveSDK } from '@shimo/officesdk-web/server';
+import { FileType } from '@officesdk/web';
+import { serveSDK } from '@officesdk/web/server';
 
 import { createOutput } from '../shared/output';
 import { createRenderContent } from '../shared/renderer';

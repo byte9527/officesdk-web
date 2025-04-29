@@ -1,4 +1,4 @@
-import type { Client, RPCReturnMapProxy } from '@shimo/officesdk-rpc';
+import type { Client, RPCReturnMapProxy } from '@officesdk/rpc';
 import type { PdfMethods, PdfPages, PdfSelection, PdfOutline } from '../../shared';
 import { createSelectionFacade } from './selection';
 import { createPagesFacade } from './pages';

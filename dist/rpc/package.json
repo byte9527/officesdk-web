@@ -1,6 +1,6 @@
 {
-  "name": "@shimo/officesdk-rpc",
-  "version": "1.0.0-23",
+  "name": "@officesdk/rpc",
+  "version": "1.0.0",
   "description": "RPC library for the Office SDK",
   "main": "dist/index.js",
   "types": "./index.d.ts",
@@ -20,7 +20,7 @@
   ],
   "publishConfig": {
     "access": "public",
-     "registry": "http://registry.npm.shimo.run/"
+     "registry": "https://registry.npmjs.org/"
   },
   "author": {
     "name": "magicismight",

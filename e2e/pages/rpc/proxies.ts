@@ -1,5 +1,5 @@
-import { Token } from '@shimo/officesdk-rpc';
-import type { RPCClientProxy, RPCServerProxy } from '@shimo/officesdk-rpc';
+import { Token } from '@officesdk/rpc';
+import type { RPCClientProxy, RPCServerProxy } from '@officesdk/rpc';
 
 export type TestMethods = {
   testInvoke: () => string;

@@ -1,4 +1,4 @@
-import type { RPCReturnMethods } from '@shimo/officesdk-rpc';
+import type { RPCReturnMethods } from '@officesdk/rpc';
 
 import { createClient } from './client';
 import { createContainerFrame, createServerFrame } from '../shared/frames';

@@ -1,4 +1,4 @@
-import type { RPCReturnMethods, RPCReturnMapProxy } from '@shimo/officesdk-rpc';
+import type { RPCReturnMethods, RPCReturnMapProxy } from '@officesdk/rpc';
 import type { DocumentMethods, DocumentTOCs } from '../../shared';
 
 export function createTOCsFacade(methods: RPCReturnMethods<DocumentMethods>): RPCReturnMapProxy<DocumentTOCs> {

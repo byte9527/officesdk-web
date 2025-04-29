@@ -11,7 +11,7 @@
       "compilerOptions": {
         "baseUrl": ".", // 基于项目根目录
         "paths": {
-          "@shimo/officesdk-rpc": ["../../.dts/web/officesdk-rpc/src"]
+          "@officesdk/rpc": ["../../.dts/web/officesdk-rpc/src"]
         }
       }
     }

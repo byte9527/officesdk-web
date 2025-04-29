@@ -1,5 +1,5 @@
 {
-  "name": "@shimo/officesdk-web",
+  "name": "@officesdk/web",
   "private": true,
   "version": "1.0.0",
   "description": "Web JS SDK for the Office SDK",
@@ -10,6 +10,6 @@
     "rollup": "rollup -c"
   },
   "dependencies": {
-    "@shimo/officesdk-rpc": "workspace:*"
+    "@officesdk/rpc": "workspace:*"
   }
 }

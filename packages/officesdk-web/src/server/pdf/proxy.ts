@@ -1,4 +1,4 @@
-import type { RPCServerProxy } from '@shimo/officesdk-rpc';
+import type { RPCServerProxy } from '@officesdk/rpc';
 import type { PdfMethods, PdfEditor, PdfSDKOptions } from '../../shared';
 import { createPdfPagesProxy } from './pages';
 import { createPdfSelectionProxy } from './selection';

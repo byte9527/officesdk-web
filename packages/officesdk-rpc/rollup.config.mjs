@@ -14,7 +14,7 @@ export default [
     output: {
       file: `${baseDist}/index.js`,
       format: 'umd',
-      name: '@shimo/officesdk-rpc',
+      name: '@officesdk/rpc',
       sourcemap: false
     },
     plugins: [

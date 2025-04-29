@@ -1,4 +1,4 @@
-import { create } from '@shimo/officesdk-rpc';
+import { create } from '@officesdk/rpc';
 
 import { FileType, assertFileType } from '../shared';
 import { createDocumentProxy, createDocumentFacade, createDocumentOptions } from './document';

@@ -1,4 +1,4 @@
-import type { RPCReturnMethods, RPCReturnMapProxy } from '@shimo/officesdk-rpc';
+import type { RPCReturnMethods, RPCReturnMapProxy } from '@officesdk/rpc';
 import type { DocumentMethods, DocumentSelection, DocumentRange, DocumentRangeValue } from '../../shared';
 
 export function createSelectionFacade(

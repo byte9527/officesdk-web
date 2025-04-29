@@ -1,13 +1,13 @@
-# @shimo/officesdk-rpc
+# @officesdk/rpc
 
 A robust RPC (Remote Procedure Call) library for cross-window communication, purpose-built for Office SDK.
 
-[![npm version](https://img.shields.io/npm/v/@shimo/officesdk-rpc.svg)](https://www.npmjs.com/package/@shimo/officesdk-rpc)
-[![license](https://img.shields.io/npm/l/@shimo/officesdk-rpc.svg)](https://github.com/yourusername/officesdk/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/@officesdk/rpc.svg)](https://www.npmjs.com/package/@officesdk/rpc)
+[![license](https://img.shields.io/npm/l/@officesdk/rpc.svg)](https://github.com/yourusername/officesdk/blob/main/LICENSE)
 
 ## Introduction
 
-`@shimo/officesdk-rpc` is a powerful library specifically designed for handling cross-window/iframe communication with RPC (Remote Procedure Call) capabilities. It provides a comprehensive toolkit for establishing connections between different execution environments, serialising complex data structures, and performing remote method invocations.
+`@officesdk/rpc` is a powerful library specifically designed for handling cross-window/iframe communication with RPC (Remote Procedure Call) capabilities. It provides a comprehensive toolkit for establishing connections between different execution environments, serialising complex data structures, and performing remote method invocations.
 
 Particularly suitable for:
 - Communication between parent applications and embedded iframes
@@ -26,9 +26,9 @@ Particularly suitable for:
 ## Installation
 
 ```bash
-npm install @shimo/officesdk-rpc
+npm install @officesdk/rpc
 # or
-yarn add @shimo/officesdk-rpc
+yarn add @officesdk/rpc
 ```
 
 ## Basic Usage
@@ -36,7 +36,7 @@ yarn add @shimo/officesdk-rpc
 ### Client Example
 
 ```typescript
-import { create } from '@shimo/officesdk-rpc';
+import { create } from '@officesdk/rpc';
 
 // Define RPC method interface
 interface ServerMethods {
@@ -64,7 +64,7 @@ console.log(data);
 ### Server Example
 
 ```typescript
-import { serve } from '@shimo/officesdk-rpc';
+import { serve } from '@officesdk/rpc';
 
 // Implement server methods
 const methods = {
@@ -96,7 +96,7 @@ await server.connect();
 The `Token` class handles complex data serialisation, enabling reference types to be passed between different execution environments.
 
 ```typescript
-import { Token } from '@shimo/officesdk-rpc';
+import { Token } from '@officesdk/rpc';
 
 const complexObject = {
   body: document.body,
@@ -129,7 +129,7 @@ server.connect()
 ### Handling Callbacks
 
 ```typescript
-import { create, serve } from '@shimo/officesdk-rpc';
+import { create, serve } from '@officesdk/rpc';
 
 // Server
 const server = serve({
@@ -162,7 +162,7 @@ unsubscribe();
 ### Error Handling
 
 ```typescript
-import { create, isPenpalConnectionTimeoutError } from '@shimo/officesdk-rpc';
+import { create, isPenpalConnectionTimeoutError } from '@officesdk/rpc';
 
 try {
   const client = create({ iframe });
@@ -238,7 +238,7 @@ The library exports various error types and error checking functions:
 
 ## Architecture
 
-The `@shimo/officesdk-rpc` library consists of the following main modules:
+The `@officesdk/rpc` library consists of the following main modules:
 
 - **core** - Core types and functionality, including schema definitions and token handling
 - **transport** - Responsible for data serialisation and RPC method definitions

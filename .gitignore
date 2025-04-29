@@ -21,3 +21,5 @@ dist/
 !dist/web/package.json
 !dist/rpc/package.json
 !dist/README.md
+
+.local

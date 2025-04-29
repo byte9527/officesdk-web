@@ -14,7 +14,7 @@ export default [
     output: {
       file: `${baseDist}/index.js`,
       format: 'umd',
-      name: '@shimo/officesdk-web',
+      name: '@officesdk/web',
       sourcemap: false
     },
     plugins: [

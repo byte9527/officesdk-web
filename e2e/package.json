@@ -7,8 +7,8 @@
     "build": "webpack --mode production"
   },
   "dependencies": {
-    "@shimo/officesdk-rpc": "file:../packages/officesdk-rpc",
-    "@shimo/officesdk-web": "file:../packages/officesdk-web"
+    "@officesdk/rpc": "file:../packages/officesdk-rpc",
+    "@officesdk/web": "file:../packages/officesdk-web"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
