@@ -4,6 +4,8 @@
   "description": "Web JS SDK for the Office SDK",
   "main": "dist/index.js",
   "types": "./index.d.ts",
+  "unpkg": "./umd/index.js",
+  "jsdelivr": "./umd/index.js",
   "exports": {
     ".": {
       "import": "./esm/index.js",
@@ -14,9 +16,11 @@
       "require": "./cjs/server/index.js"
     }
   },
-   "typesVersions": {
+  "typesVersions": {
     "*": {
-      "server": ["esm/server/index.d.ts"]
+      "server": [
+        "esm/server/index.d.ts"
+      ]
     }
   },
   "dependencies": {

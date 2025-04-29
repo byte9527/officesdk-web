@@ -4,7 +4,6 @@
   "description": "RPC library for the Office SDK",
   "main": "dist/index.js",
   "types": "./index.d.ts",
-  "unpkg": "./umd/index.js",
   "exports": {
     ".": {
       "import": "./esm/index.js",

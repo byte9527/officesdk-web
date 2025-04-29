@@ -18,14 +18,6 @@ build_rpc_esm() {
   npx tsc -p packages/officesdk-rpc/tsconfig.json  --module esnext --outDir ./dist/rpc/esm
 }
 
-# 构建officesdk-rpc UMD
-build_rpc_umd() {
-  echo "Building officesdk-rpc module (umd)..."
-  cd ./packages/officesdk-rpc
-  npx rollup -c
-  cd ../..
-}
-
 # 生成officesdk-rpc的类型声明
 generate_dts_rpc() {
   echo "Generating DTS for officesdk-rpc..."
@@ -37,7 +29,6 @@ build_rpc() {
   echo "Building officesdk-rpc module..."
   build_rpc_cjs
   build_rpc_esm
-  # build_rpc_umd
   generate_dts_rpc
 }
 
@@ -84,7 +75,7 @@ build_web() {
   echo "Building officesdk-web module..."
   build_web_cjs
   build_web_esm
-  # build_web_umd
+  build_web_umd
   generate_dts_web
 }
 
