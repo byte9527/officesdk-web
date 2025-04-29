@@ -61,7 +61,8 @@ jobs:
 
       - name: Bump package versions
         run: |
-          VERSION=${{ steps.version.outputs.version || '1.0.0'  }}
+          VERSION="${{ steps.version.outputs.version }}"
+          VERSION=${VERSION:-"1.0.0"}
 
           echo "🔧 Updating version to $VERSION"
 
