@@ -83,59 +83,59 @@ jobs:
           git tag v${{ steps.version.outputs.version }}
           git push origin v${{ steps.version.outputs.version }}
 
-      - name: Publish RPC Package
-        run: |
-          cd dist/rpc
-          if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
-            npm publish --tag beta --access public
-          else
-            npm publish --access public
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Publish RPC Package
+      #   run: |
+      #     cd dist/rpc
+      #     if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
+      #       npm publish --tag beta --access public
+      #     else
+      #       npm publish --access public
+      #     fi
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish WEB Package
-        run: |
-          cd dist/web
-          if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
-            npm publish --tag beta --access public
-          else
-            npm publish --access public
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Publish WEB Package
+      #   run: |
+      #     cd dist/web
+      #     if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
+      #       npm publish --tag beta --access public
+      #     else
+      #       npm publish --access public
+      #     fi
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Notify on success
-        if: success()
-        run: |
-          VERSION=${{ steps.version.outputs.version }}
-          TIMESTAMP=$(($(date +%s%N)/1000000))
-          SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
-          ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
+      # - name: Notify on success
+      #   if: success()
+      #   run: |
+      #     VERSION=${{ steps.version.outputs.version }}
+      #     TIMESTAMP=$(($(date +%s%N)/1000000))
+      #     SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
+      #     ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
 
-          curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
-            -H 'Content-Type: application/json' \
-            -d '{
-              "msgtype": "markdown",
-              "markdown": {
-                "title": "✅ CI 构建成功",
-                "text": "### ✅ 构建并发布成功\n- 版本号：'"$VERSION"'\n- 仓库：[${{ github.repository }}]\n- [查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-              }
-            }'
+      #     curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
+      #       -H 'Content-Type: application/json' \
+      #       -d '{
+      #         "msgtype": "markdown",
+      #         "markdown": {
+      #           "title": "✅ CI 构建成功",
+      #           "text": "### ✅ 构建并发布成功\n- 版本号：'"$VERSION"'\n- 仓库：[${{ github.repository }}]\n- [查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+      #         }
+      #       }'
 
-      - name: Notify on failure
-        if: failure()
-        run: |
-          TIMESTAMP=$(($(date +%s%N)/1000000))
-          SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
-          ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
+      # - name: Notify on failure
+      #   if: failure()
+      #   run: |
+      #     TIMESTAMP=$(($(date +%s%N)/1000000))
+      #     SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
+      #     ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
 
-          curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
-            -H 'Content-Type: application/json' \
-            -d '{
-              "msgtype": "markdown",
-              "markdown": {
-                "title": "❌ CI 构建失败",
-                "text": "### ❌ 构建失败\n- 仓库：[${{ github.repository }}]\n- 分支：`${{ github.ref_name }}`\n- [查看构建日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-              }
-            }'
+      #     curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
+      #       -H 'Content-Type: application/json' \
+      #       -d '{
+      #         "msgtype": "markdown",
+      #         "markdown": {
+      #           "title": "❌ CI 构建失败",
+      #           "text": "### ❌ 构建失败\n- 仓库：[${{ github.repository }}]\n- 分支：`${{ github.ref_name }}`\n- [查看构建日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+      #         }
+      #       }'
