@@ -44,17 +44,25 @@ jobs:
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "tagged=true" >> $GITHUB_OUTPUT
           else
-            BASE_VERSION=$(node -p "require('./package.json').version")
             VERSIONS=$(npm view @officesdk/rpc versions --json || echo "[]")
             echo "📦 existing versions: $VERSIONS"
 
-            LATEST_BETA=$(echo "$VERSIONS" | jq -r '.[]' | grep "^${BASE_VERSION}-beta\." | sed -E 's/.*-beta\.([0-9]+)/\1/' | sort -nr | head -n1)
-            NEXT_BETA=0
-            if [[ "$LATEST_BETA" =~ ^[0-9]+$ ]]; then
+            LATEST_VERSION=$(echo "$VERSIONS" | jq -r '.[]' | sort -rV | head -n1)
+
+            if [[ "$LATEST_VERSION" == *"-beta."* ]]; then
+              BASE_VERSION=$(echo "$LATEST_VERSION" | sed -E 's/-beta\.[0-9]+$//')
+              LATEST_BETA=$(echo "$LATEST_VERSION" | sed -E 's/.*-beta\.([0-9]+)$/\1/')
               NEXT_BETA=$((LATEST_BETA + 1))
+              VERSION="${BASE_VERSION}-beta.${NEXT_BETA}"
+            else
+              MAJOR=$(echo "$LATEST_VERSION" | cut -d. -f1)
+              MINOR=$(echo "$LATEST_VERSION" | cut -d. -f2)
+              PATCH=$(echo "$LATEST_VERSION" | cut -d. -f3)
+              NEXT_PATCH=$((PATCH + 1))
+              VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}-beta.0"
             fi
 
-            VERSION="${BASE_VERSION}-beta.${NEXT_BETA}"
+            echo "📦 computed version: $VERSION"
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "tagged=false" >> $GITHUB_OUTPUT
           fi
