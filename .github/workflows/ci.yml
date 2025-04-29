@@ -84,12 +84,24 @@ jobs:
           git push origin v${{ steps.version.outputs.version }}
 
       - name: Publish RPC Package
-        run: cd dist/rpc && npm publish $([[ "${{ steps.version.outputs.tagged }}" == "false" ]] && echo "--tag beta" || echo "--access public")
+        run: |
+          cd dist/rpc
+          if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
+            npm publish --tag beta --access public
+          else
+            npm publish --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish WEB Package
-        run: cd dist/web && npm publish $([[ "${{ steps.version.outputs.tagged }}" == "false" ]] && echo "--tag beta" || echo "--access public")
+        run: |
+          cd dist/web
+          if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
+            npm publish --tag beta --access public
+          else
+            npm publish --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
