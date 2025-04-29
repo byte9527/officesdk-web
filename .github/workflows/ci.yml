@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - feat-*
+      - feature-*
     tags:
       - 'v*'
 
@@ -80,6 +82,9 @@ jobs:
           
           jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
           jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
+
+      - name: Some step
+        run: exit 1 
 
       - name: Commit bumped versions
         run: |
