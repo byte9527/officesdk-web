@@ -1,6 +1,6 @@
 {
   "name": "@officesdk/rpc",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.1-beta.0",
   "description": "RPC library for the Office SDK",
   "main": "dist/index.js",
   "types": "./index.d.ts",
@@ -19,7 +19,7 @@
   ],
   "publishConfig": {
     "access": "public",
-     "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/"
   },
   "author": {
     "name": "magicismight",
