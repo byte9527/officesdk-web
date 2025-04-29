@@ -1,6 +1,6 @@
 {
   "name": "@officesdk/rpc",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.1",
   "description": "RPC library for the Office SDK",
   "main": "dist/index.js",
   "types": "./index.d.ts",
