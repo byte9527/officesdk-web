@@ -81,7 +81,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json dist/rpc/package.json dist/web/package.json
+          git add -f package.json dist/rpc/package.json dist/web/package.json
           git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
           git push
 
