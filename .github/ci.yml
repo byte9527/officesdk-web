@@ -1,0 +1,121 @@
+name: Build & Publish
+
+on:
+  push:
+    branches:
+      - main
+      - 'feat-*'
+      - 'feature-*'
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build project
+        run: yarn build
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tagged=true" >> $GITHUB_OUTPUT
+          else
+            BASE_VERSION=$(node -p "require('./package.json').version")
+            VERSIONS=$(npm view @officesdk/rpc versions --json || echo "[]")
+            echo "📦 existing versions: $VERSIONS"
+
+            LATEST_BETA=$(echo "$VERSIONS" | jq -r '.[]' | grep "^${BASE_VERSION}-beta\." | sed -E 's/.*-beta\.([0-9]+)/\1/' | sort -nr | head -n1)
+            NEXT_BETA=0
+            if [[ "$LATEST_BETA" =~ ^[0-9]+$ ]]; then
+              NEXT_BETA=$((LATEST_BETA + 1))
+            fi
+
+            VERSION="${BASE_VERSION}-beta.${NEXT_BETA}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tagged=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Bump package versions
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+
+          echo "🔧 Updating version to $VERSION"
+
+          jq --arg v "$VERSION" '.version = $v' package.json > tmp.root.json && mv tmp.root.json package.json
+          jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
+          jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
+
+      - name: Commit bumped versions
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json dist/rpc/package.json dist/web/package.json
+          git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
+          git push
+
+      - name: Tag release (only for stable)
+        if: steps.version.outputs.tagged == 'true'
+        run: |
+          git tag v${{ steps.version.outputs.version }}
+          git push origin v${{ steps.version.outputs.version }}
+
+      - name: Publish RPC Package
+        run: cd dist/rpc && npm publish $([[ "${{ steps.version.outputs.tagged }}" == "false" ]] && echo "--tag beta" || echo "--access public")
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish WEB Package
+        run: cd dist/web && npm publish $([[ "${{ steps.version.outputs.tagged }}" == "false" ]] && echo "--tag beta" || echo "--access public")
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Notify on success
+        if: success()
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          TIMESTAMP=$(($(date +%s%N)/1000000))
+          SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
+          ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
+
+          curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "msgtype": "markdown",
+              "markdown": {
+                "title": "✅ CI 构建成功",
+                "text": "### ✅ 构建并发布成功\n- 版本号：'"$VERSION"'\n- 仓库：[${{ github.repository }}]\n- [查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+              }
+            }'
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          TIMESTAMP=$(($(date +%s%N)/1000000))
+          SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
+          ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
+
+          curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "msgtype": "markdown",
+              "markdown": {
+                "title": "❌ CI 构建失败",
+                "text": "### ❌ 构建失败\n- 仓库：[${{ github.repository }}]\n- 分支：`${{ github.ref_name }}`\n- [查看构建日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+              }
+            }'
