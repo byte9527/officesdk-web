@@ -77,13 +77,13 @@ jobs:
           jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
           jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
 
-      # - name: Commit bumped versions
-      #   run: |
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "github-actions[bot]@users.noreply.github.com"
-      #     git add package.json dist/rpc/package.json dist/web/package.json
-      #     git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
-      #     git push
+      - name: Commit bumped versions
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json dist/rpc/package.json dist/web/package.json
+          git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
+          git push
 
       - name: Tag release (only for stable)
         if: steps.version.outputs.tagged == 'true'
