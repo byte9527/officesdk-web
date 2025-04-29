@@ -70,8 +70,7 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
 
           echo "🔧 Updating version to $VERSION"
-
-          jq --arg v "$VERSION" '.version = $v' package.json > tmp.root.json && mv tmp.root.json package.json
+          
           jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
           jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
 
@@ -79,7 +78,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f package.json dist/rpc/package.json dist/web/package.json
+          git add -f dist/rpc/package.json dist/web/package.json
           git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
           git push
 
