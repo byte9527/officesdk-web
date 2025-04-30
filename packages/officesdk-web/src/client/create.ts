@@ -15,6 +15,8 @@ import { createPdfProxy, createPdfFacade } from './pdf';
 import type { PdfFacade } from './pdf';
 import { generateUrl } from './url';
 import { createContainer, connectContainer, getContentWindow } from './container';
+import type { EditorModeType, EditorStandardRole } from '../shared';
+import { mapToPreviewType } from '../shared/file';
 
 export type SDKSettings = {
   [FileType.Document]: DocumentSettings;
@@ -58,6 +60,11 @@ export interface CreateOptions<T extends FileType> {
   root?: HTMLElement;
 
   /**
+   * 用户自定义参数
+   */
+  userQuery?: Record<string, string>
+
+  /**
    * 已加载 SDK 环境的 iframe 实例
    */
   iframe?: HTMLIFrameElement;
@@ -66,6 +73,14 @@ export interface CreateOptions<T extends FileType> {
    * 语言
    */
   lang?: 'zh-CN' | 'en-US';
+    /**
+   * 编辑器模式
+   */
+  mode?: EditorModeType;
+  /**
+   *  编辑器在 `standard` 模式下的权限模式
+   */
+  role?: EditorStandardRole;
 
   /**
    * 初始化设置
@@ -74,7 +89,7 @@ export interface CreateOptions<T extends FileType> {
   settings?: T extends keyof SDKSettings ? SDKSettings[T] : never;
 }
 
-type OfficeSDKMap = {
+export type OfficeSDKMap = {
   [FileType.Document]: DocumentFacade;
   [FileType.Spreadsheet]: SpreadsheetFacade;
   [FileType.Presentation]: PresentationFacade;
@@ -168,7 +183,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
 }
 
 function connectIframe(options: CreateOptions<any>): { url: string; container: HTMLIFrameElement } {
-  const { endpoint, token, fileId, path, root, iframe } = options;
+  const { fileType, endpoint, token, fileId, path, root,mode, role, lang, iframe, userQuery} = options;
 
   let url: URL;
   let container: HTMLIFrameElement;
@@ -177,7 +192,7 @@ function connectIframe(options: CreateOptions<any>): { url: string; container: H
     url = new URL(iframe.src);
     container = connectContainer({ iframe, root });
   } else {
-    url = generateUrl({ endpoint, token, fileId, path });
+    url = generateUrl({ endpoint, token, fileId, path, mode, role, lang, userQuery, fileType: mapToPreviewType(fileType) });
     container = createContainer({ source: url.toString(), root });
   }
 

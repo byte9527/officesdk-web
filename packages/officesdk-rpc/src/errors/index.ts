@@ -25,4 +25,4 @@ export type {
 } from './penpal';
 
 // Export server related errors
-export { throwClientNotAccessible, isClientNotAccessible } from './server';
+export { throwClientNotAccessible, isClientNotAccessible, ClientNotAccessible } from './server';

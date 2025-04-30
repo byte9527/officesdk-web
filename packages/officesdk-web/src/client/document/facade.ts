@@ -1,12 +1,7 @@
 import type { Client, RPCReturnMapProxy } from '@officesdk/rpc';
-import type {
-  DocumentMethods,
-  DocumentSelection,
-  EditorContent,
-  DocumentZoom,
+import type { DocumentMethods, DocumentSelection, EditorContent, DocumentZoom,
   DocumentTOCs,
-  DocumentOutline,
-} from '../../shared';
+  DocumentOutline } from '../../shared';
 import { createSelectionFacade } from './selection';
 import { createContentFacade } from '../editor/content';
 import { createZoomFacade } from './zoom';

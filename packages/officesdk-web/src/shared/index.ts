@@ -1,4 +1,6 @@
 export { FileType, assertFileType } from './file';
+export { EditorModeType, EditorStandardRole } from './editor';
+
 export type {
   EditorContent,
   EditorContentRecord,
@@ -32,6 +34,7 @@ export type {
   DocumentMenuOptions,
   DocumentSDKOptions,
 } from './document';
+
 export type { DatabaseTableMethods, DatabaseTableEditor, DatabaseTableSDKOptions } from './dbtable';
 export type { LiteDocMethods, LiteDocEditor, LiteDocSDKOptions } from './ltdoc';
 export type {

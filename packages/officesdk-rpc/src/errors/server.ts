@@ -3,7 +3,7 @@
  * The parent window which loaded the current window we take as client.
  * The current window which runs the office editor we take as server.
  */
-class ClientNotAccessible extends Error {
+export class ClientNotAccessible extends Error {
   static readonly errorName = 'ServerClientNotAccessible';
 
   constructor(public message: string) {

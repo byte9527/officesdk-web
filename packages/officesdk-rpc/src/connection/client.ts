@@ -133,7 +133,7 @@ export interface Client<TMethods extends RPCMethods> {
 export async function create<TMethods extends RPCMethods, TSettings>(
   options: ClientOptions<TMethods, TSettings>,
 ): Promise<Client<TMethods>> {
-  const { remoteWindow, allowedOrigins, timeout, settings } = options;
+  const { remoteWindow, allowedOrigins = ['*'], timeout, settings } = options;
 
   const serverRecordCache = serverMap.get(remoteWindow);
 

@@ -86,7 +86,7 @@ export interface Server {
 export async function serve<TMethods extends RPCMethods, TSettings>(
   options: ServerOptions<TMethods, TSettings>,
 ): Promise<Server> {
-  const { allowedOrigins, proxy } = options;
+  const { allowedOrigins = ['*'], proxy } = options;
 
   let messenger: WindowMessenger;
   try {

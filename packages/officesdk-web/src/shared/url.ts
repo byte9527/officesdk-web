@@ -1,5 +1,9 @@
 export enum UrlParamKey {
-  FileId = 'file_id',
+  FileId = 'fileID',
   Token = 'token',
   Language = 'lang',
+  ModeType = 'modeType',
+  ModeRole = 'modeRole',
+  FileType = 'fileType',
+  UserQuery = 'userQuery'
 }

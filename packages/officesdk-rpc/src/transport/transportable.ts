@@ -11,7 +11,7 @@ import type { SchemaValueCallback, SchemaValueRef, SchemaEntity } from '../core'
 import { fromEntries, entries } from '../utils';
 import { isToken, Token } from '../core/token';
 
-interface TransportableLocalOptions {
+export interface TransportableLocalOptions {
   /**
    * Name to identify the source of the data
    */

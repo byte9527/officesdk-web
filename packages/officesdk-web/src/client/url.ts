@@ -1,3 +1,4 @@
+import { EditorModeType, EditorStandardRole } from '../shared';
 import { UrlParamKey } from '../shared';
 
 export interface UrlOptions {
@@ -17,6 +18,10 @@ export interface UrlOptions {
    * 文件 ID
    */
   fileId: string;
+  /**
+   * 文件 类型
+   */
+  fileType: string;
 
   /**
    * 自定义页面路径
@@ -27,6 +32,18 @@ export interface UrlOptions {
    * 语言
    */
   lang?: string;
+  /**
+   * 编辑器模式
+   */
+  mode?: EditorModeType;
+  /**
+   *  编辑器在 `standard` 模式下的权限模式
+   */
+  role?: EditorStandardRole;
+  /**
+   * 用户自定义参数
+   */
+  userQuery?: Record<string, string>
 }
 
 /**
@@ -56,9 +73,11 @@ function getLang(lang?: string): string | null {
  * @returns
  */
 export function generateUrl(options: UrlOptions): URL {
-  const defaultPath = '/v1/file/page';
+  const defaultPath = '/v1/api/file/page';
+  const defaultMode = EditorModeType.Standard;
+  const defaultRole = EditorStandardRole.Viewer;
 
-  const { endpoint, token, fileId, path = defaultPath } = options;
+  const { endpoint, token, fileId, fileType, userQuery, path = defaultPath, mode = defaultMode, role = defaultRole } = options;
 
   let url: URL;
 
@@ -77,10 +96,17 @@ export function generateUrl(options: UrlOptions): URL {
 
     url.searchParams.set(UrlParamKey.FileId, fileId);
     url.searchParams.set(UrlParamKey.Token, token);
+    url.searchParams.set(UrlParamKey.FileType, fileType);
+    url.searchParams.set(UrlParamKey.ModeType, mode);
+    url.searchParams.set(UrlParamKey.ModeRole, role);
 
     const lang = getLang(options.lang);
     if (lang) {
       url.searchParams.set(UrlParamKey.Language, lang);
+    }
+
+    if (userQuery) {
+     url.searchParams.set(UrlParamKey.UserQuery, encodeURIComponent(JSON.stringify(userQuery)));
     }
   } catch (error) {
     // TODO: 抛出自定义错误

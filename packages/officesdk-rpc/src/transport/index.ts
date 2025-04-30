@@ -7,7 +7,7 @@
 
 // Export Transportable class and types
 export { Transportable } from './transportable';
-export type { TransportableRemoteCallback } from './transportable';
+export type { TransportableRemoteCallback, TransportableLocalOptions } from './transportable';
 
 // Export RPC types
 export type {

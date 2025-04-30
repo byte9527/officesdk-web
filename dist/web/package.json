@@ -3,6 +3,39 @@
   "version": "1.0.0",
   "description": "Web JS SDK for the Office SDK",
   "main": "dist/index.js",
+  "types": "./index.d.ts",
+  "unpkg": "./umd/index.js",
+  "jsdelivr": "./umd/index.js",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./cjs/index.js"
+    },
+    "./server": {
+      "import": "./esm/server/index.js",
+      "require": "./cjs/server/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "server": [
+        "esm/server/index.d.ts"
+      ]
+    }
+  },
+  "dependencies": {
+    "@officesdk/rpc": "1.0.0"
+  },
+  "files": [
+    "index.d.ts",
+    "cjs",
+    "esm",
+    "umd"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "author": {
     "name": "magicismight",
     "email": "master@horcrux.cn",
@@ -25,7 +58,5 @@
     "ppt",
     "pdf"
   ],
-  "license": "MIT",
-  "files": [
-  ]
+  "license": "MIT"
 }
