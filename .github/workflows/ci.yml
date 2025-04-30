@@ -1,5 +1,5 @@
 env:
-  # 可选值，可手动触发输入 patch/minor/major 控制版本
+  # Optional value, can manually trigger input for patch/minor/major to control version bump
   VERSION_BUMP: ${{ github.event.inputs.version_bump || 'patch' }} 
 
 on:
@@ -28,17 +28,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 检出代码仓库
+      # Check out the code repository
       - uses: actions/checkout@v3
 
-      # 设置 Node.js 环境
+      # Set up Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org/'
 
-      # 缓存 Yarn 依赖
+      # Cache Yarn dependencies
       - name: Cache Yarn
         uses: actions/cache@v3
         with:
@@ -47,97 +47,97 @@ jobs:
             .yarn/install-state.gz
           key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
-      # 检查 Node.js 版本
+      # Check Node.js version
       - name: Check Node version
         run: node --version
 
-      # 检查 Yarn 版本
+      # Check Yarn version
       - name: Check Yarn version
         run: yarn --version
 
-      # 安装项目依赖
+      # Install project dependencies
       - name: Install dependencies
         run: yarn install --immutable
 
-      # 构建项目
+      # Build the project
       - name: Build project
         run: yarn build
 
-      # 处理版本号和标签
+      # Determine version number and tag
       - name: Determine version
         id: version
         run: |
-          # 如果当前触发的是一个带有版本号的 Git 标签
+          # If the current trigger is a Git tag with a version number
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-            # 从标签中提取版本号
+            # Extract the version number from the tag
             VERSION="${GITHUB_REF#refs/tags/v}"
-            # 设置 npm 发布的标签为 "latest"
+            # Set the npm publish tag to "latest"
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "npm_tag=latest" >> $GITHUB_OUTPUT
-            # 标记为已打标签的版本
+            # Mark as a tagged version
             echo "tagged=true" >> $GITHUB_OUTPUT
           else
-            # 获取当前 npm 上已发布的所有版本
+            # Fetch all published versions from npm
             VERSIONS=$(npm view @officesdk/rpc versions --json || echo "[]")
             echo "📦 existing versions: $VERSIONS"
-            # 找到最新的版本号
+            # Find the latest version
             LATEST_VERSION=$(echo "$VERSIONS" | jq -r '.[]' | sort -rV | head -n1)
-            # 如果没有找到任何版本，默认从 "0.0.0" 开始
+            # If no version is found, default to "0.0.0"
             if [[ -z "$LATEST_VERSION" ]]; then
               LATEST_VERSION="0.0.0"
             fi
 
-            # 如果当前分支是 main，则使用 beta 标签，否则使用 alpha 标签
+            # Use "beta" tag for main branch, otherwise use "alpha"
             if [[ "$GITHUB_REF" == refs/heads/main ]]; then
               PRE_TAG="beta"
             else
               PRE_TAG="alpha"
             fi
 
-            # 如果最新版本已经是预发布版本（带有 alpha 或 beta 标签）
+            # If the latest version is already a pre-release (with alpha or beta tag)
             if [[ "$LATEST_VERSION" == *"-${PRE_TAG}."* ]]; then
-              # 提取基础版本号和当前预发布版本号
+              # Extract the base version and current pre-release number
               BASE_VERSION=$(echo "$LATEST_VERSION" | sed -E "s/-${PRE_TAG}\.[0-9]+$//")
               LATEST_NUM=$(echo "$LATEST_VERSION" | sed -E "s/.*-${PRE_TAG}\.([0-9]+)$/\1/")
-              # 增加预发布版本号
+              # Increment the pre-release number
               NEXT_NUM=$((LATEST_NUM + 1))
               VERSION="${BASE_VERSION}-${PRE_TAG}.${NEXT_NUM}"
             else
-              # 如果不是预发布版本，则根据 VERSION_BUMP 决定如何更新版本号
+              # If not a pre-release, update the version based on VERSION_BUMP
               MAJOR=$(echo "$LATEST_VERSION" | cut -d. -f1)
               MINOR=$(echo "$LATEST_VERSION" | cut -d. -f2)
               PATCH=$(echo "$LATEST_VERSION" | cut -d. -f3)
 
               case "${VERSION_BUMP}" in
                 major)
-                  # 增加主版本号，次版本号和补丁号归零
+                  # Increment major version, reset minor and patch
                   MAJOR=$((MAJOR + 1))
                   MINOR=0
                   PATCH=0
                   ;;
                 minor)
-                  # 增加次版本号，补丁号归零
+                  # Increment minor version, reset patch
                   MINOR=$((MINOR + 1))
                   PATCH=0
                   ;;
                 patch|*)
-                  # 增加补丁号
+                  # Increment patch version
                   PATCH=$((PATCH + 1))
                   ;;
               esac
 
-              # 生成新的预发布版本号
+              # Generate a new pre-release version
               VERSION="${MAJOR}.${MINOR}.${PATCH}-${PRE_TAG}.0"
             fi
 
-            # 输出版本号和 npm 标签
+            # Output the version number and npm tag
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "npm_tag=$PRE_TAG" >> $GITHUB_OUTPUT
-            # 标记为未打标签的版本
+            # Mark as an untagged version
             echo "tagged=false" >> $GITHUB_OUTPUT
           fi
 
-      # 更新 package.json 文件中的版本号
+      # Update the version number in package.json files
       - name: Bump package versions
         run: |
           VERSION="${{ steps.version.outputs.version }}"
@@ -146,7 +146,7 @@ jobs:
           jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
           jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
 
-      # 提交版本变更到 Git 仓库
+      # Commit version changes to the Git repository
       - name: Commit bumped versions
         run: |
           git config user.name "github-actions[bot]"
@@ -155,7 +155,7 @@ jobs:
           git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
           git push
 
-      # 发布 RPC 包到 npm
+      # Publish the RPC package to npm
       - name: Publish RPC Package
         run: |
           cd dist/rpc
@@ -163,47 +163,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # 发布 WEB 包到 npm
+      # Publish the WEB package to npm
       - name: Publish WEB Package
         run: |
           cd dist/web
           npm publish --tag ${{ steps.version.outputs.npm_tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # 构建成功后发送通知
-      - name: Notify on success
-        if: success()
-        run: |
-          VERSION=${{ steps.version.outputs.version }}
-          TIMESTAMP=$(($(date +%s%N)/1000000))
-          SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
-          ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
-
-          curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
-            -H 'Content-Type: application/json' \
-            -d '{
-              "msgtype": "markdown",
-              "markdown": {
-                "title": "✅ CI 构建成功",
-                "text": "### ✅ 构建并发布成功\n- 版本号：'"$VERSION"'\n- 仓库：[${{ github.repository }}]\n- [查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-              }
-            }'
-
-      # 构建失败后发送通知
-      - name: Notify on failure
-        if: failure()
-        run: |
-          TIMESTAMP=$(($(date +%s%N)/1000000))
-          SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
-          ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
-
-          curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
-            -H 'Content-Type: application/json' \
-            -d '{
-              "msgtype": "markdown",
-              "markdown": {
-                "title": "❌ CI 构建失败",
-                "text": "### ❌ 构建失败\n- 仓库：[${{ github.repository }}]\n- 分支：`${{ github.ref_name }}`\n- [查看构建日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-              }
-            }'
