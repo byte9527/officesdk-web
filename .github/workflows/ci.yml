@@ -73,50 +73,50 @@ jobs:
             echo "tagged=false" >> $GITHUB_OUTPUT
           fi
 
-      # - name: Bump package versions
-      #   run: |
-      #     VERSION="${{ steps.version.outputs.version }}"
+      - name: Bump package versions
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
 
-      #     echo "🔧 Updating version to $VERSION"
+          echo "🔧 Updating version to $VERSION"
           
-      #     jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
-      #     jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
+          jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
+          jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
 
-      # - name: Commit bumped versions
-      #   run: |
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "github-actions[bot]@users.noreply.github.com"
-      #     git add -f dist/rpc/package.json dist/web/package.json
-      #     git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
-      #     git push
+      - name: Commit bumped versions
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f dist/rpc/package.json dist/web/package.json
+          git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
+          git push
 
-      # - name: Tag release (only for stable)
-      #   if: steps.version.outputs.tagged == 'true'
-      #   run: |
-      #     git tag v${{ steps.version.outputs.version }}
-      #     git push origin v${{ steps.version.outputs.version }}
+      - name: Tag release (only for stable)
+        if: steps.version.outputs.tagged == 'true'
+        run: |
+          git tag v${{ steps.version.outputs.version }}
+          git push origin v${{ steps.version.outputs.version }}
 
-      # - name: Publish RPC Package
-      #   run: |
-      #     cd dist/rpc
-      #     if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
-      #       npm publish --tag beta --access public
-      #     else
-      #       npm publish --access public
-      #     fi
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish RPC Package
+        run: |
+          cd dist/rpc
+          if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
+            npm publish --tag beta --access public
+          else
+            npm publish --access public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # - name: Publish WEB Package
-      #   run: |
-      #     cd dist/web
-      #     if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
-      #       npm publish --tag beta --access public
-      #     else
-      #       npm publish --access public
-      #     fi
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish WEB Package
+        run: |
+          cd dist/web
+          if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
+            npm publish --tag beta --access public
+          else
+            npm publish --access public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # - name: Notify on success
       #   if: success()
