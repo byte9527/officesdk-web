@@ -137,18 +137,18 @@ jobs:
       #       }'
 
       # - name: Notify on failure
-        if: failure()
-        run: |
-          TIMESTAMP=$(($(date +%s%N)/1000000))
-          SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
-          ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
+      #   if: failure()
+      #   run: |
+      #     TIMESTAMP=$(($(date +%s%N)/1000000))
+      #     SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
+      #     ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
 
-          curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
-            -H 'Content-Type: application/json' \
-            -d '{
-              "msgtype": "markdown",
-              "markdown": {
-                "title": "❌ CI 构建失败",
-                "text": "### ❌ 构建失败\n- 仓库：[${{ github.repository }}]\n- 分支：`${{ github.ref_name }}`\n- [查看构建日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-              }
-            }'
+      #     curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
+      #       -H 'Content-Type: application/json' \
+      #       -d '{
+      #         "msgtype": "markdown",
+      #         "markdown": {
+      #           "title": "❌ CI 构建失败",
+      #           "text": "### ❌ 构建失败\n- 仓库：[${{ github.repository }}]\n- 分支：`${{ github.ref_name }}`\n- [查看构建日志](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+      #         }
+      #       }'
