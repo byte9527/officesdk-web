@@ -1,4 +1,6 @@
-name: Build & Publish
+env:
+  # 可选值，可手动触发输入 patch/minor/major 控制版本
+  VERSION_BUMP: ${{ github.event.inputs.version_bump || 'patch' }} 
 
 on:
   push:
@@ -8,6 +10,18 @@ on:
       - 'feat-*'
     tags:
       - 'v*'
+  
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: "Version bump level"
+        required: false
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   build-and-publish:
@@ -54,6 +68,9 @@ jobs:
             VERSIONS=$(npm view @officesdk/rpc versions --json || echo "[]")
             echo "📦 existing versions: $VERSIONS"
             LATEST_VERSION=$(echo "$VERSIONS" | jq -r '.[]' | sort -rV | head -n1)
+            if [[ -z "$LATEST_VERSION" ]]; then
+              LATEST_VERSION="0.0.0"
+            fi
 
             if [[ "$GITHUB_REF" == refs/heads/main ]]; then
               PRE_TAG="beta"
@@ -70,8 +87,23 @@ jobs:
               MAJOR=$(echo "$LATEST_VERSION" | cut -d. -f1)
               MINOR=$(echo "$LATEST_VERSION" | cut -d. -f2)
               PATCH=$(echo "$LATEST_VERSION" | cut -d. -f3)
-              NEXT_PATCH=$((PATCH + 1))
-              VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}-${PRE_TAG}.0"
+
+              case "${VERSION_BUMP}" in
+                major)
+                  MAJOR=$((MAJOR + 1))
+                  MINOR=0
+                  PATCH=0
+                  ;;
+                minor)
+                  MINOR=$((MINOR + 1))
+                  PATCH=0
+                  ;;
+                patch|*)
+                  PATCH=$((PATCH + 1))
+                  ;;
+              esac
+
+              VERSION="${MAJOR}.${MINOR}.${PATCH}-${PRE_TAG}.0"
             fi
 
             echo "version=$VERSION" >> $GITHUB_OUTPUT
@@ -82,25 +114,24 @@ jobs:
       - name: Bump package versions
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-
           echo "🔧 Updating version to $VERSION"
-          
+
           jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
           jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
 
-      - name: Commit bumped versions
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f dist/rpc/package.json dist/web/package.json
-          git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
-          git push
+      # - name: Commit bumped versions
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git add -f dist/rpc/package.json dist/web/package.json
+      #     git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
+      #     git push
 
-      - name: Tag release (for stable only)
-        if: steps.version.outputs.tagged == 'true'
-        run: |
-          git tag v${{ steps.version.outputs.version }}
-          git push origin v${{ steps.version.outputs.version }}
+      # - name: Tag release (for stable only)
+      #   if: steps.version.outputs.tagged == 'true'
+      #   run: |
+      #     git tag v${{ steps.version.outputs.version }}
+      #     git push origin v${{ steps.version.outputs.version }}
 
       # - name: Publish RPC Package
       #   run: |
