@@ -2,11 +2,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import typescript from '@rollup/plugin-typescript';
 import terser from '@rollup/plugin-terser';
-import esbuild from 'rollup-plugin-esbuild';
 import alias from '@rollup/plugin-alias';
-
+import typescript from '@rollup/plugin-typescript';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,16 +24,12 @@ export default [
     plugins: [
       resolve(),
       commonjs(),
-      // typescript({ tsconfig: './tsconfig.rollup.json' }),
-      esbuild({
-        target: 'esnext', // 可根据需要改为 'es2015'
-        sourceMap: false,
+      typescript({
         tsconfig: './tsconfig.rollup.json',
+        target: 'es5',
       }),
       alias({
-        entries: [
-          { find: '@officesdk/rpc', replacement: path.resolve(__dirname, '../officesdk-rpc/src/index.ts') },
-        ],
+        entries: [{ find: '@officesdk/rpc', replacement: path.resolve(__dirname, '../../dist/rpc/esm/index.js') }],
       }),
       terser(),
     ],
