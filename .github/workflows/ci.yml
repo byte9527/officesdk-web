@@ -36,7 +36,6 @@ jobs:
       - name: Check Node version
         run: node --version
 
-
       - name: Install dependencies
         run: yarn install --immutable
 
@@ -74,73 +73,70 @@ jobs:
             echo "tagged=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Bump package versions
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
+      # - name: Bump package versions
+      #   run: |
+      #     VERSION="${{ steps.version.outputs.version }}"
 
-          echo "🔧 Updating version to $VERSION"
+      #     echo "🔧 Updating version to $VERSION"
           
-          jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
-          jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
+      #     jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
+      #     jq --arg v "$VERSION" '.version = $v | .dependencies["@officesdk/rpc"] = $v' dist/web/package.json > tmp.web.json && mv tmp.web.json dist/web/package.json
 
-      - name: Some step
-        run: exit 1 
+      # - name: Commit bumped versions
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git add -f dist/rpc/package.json dist/web/package.json
+      #     git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
+      #     git push
 
-      - name: Commit bumped versions
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f dist/rpc/package.json dist/web/package.json
-          git commit -m "chore(release): bump version to ${{ steps.version.outputs.version }} [skip ci]"
-          git push
+      # - name: Tag release (only for stable)
+      #   if: steps.version.outputs.tagged == 'true'
+      #   run: |
+      #     git tag v${{ steps.version.outputs.version }}
+      #     git push origin v${{ steps.version.outputs.version }}
 
-      - name: Tag release (only for stable)
-        if: steps.version.outputs.tagged == 'true'
-        run: |
-          git tag v${{ steps.version.outputs.version }}
-          git push origin v${{ steps.version.outputs.version }}
+      # - name: Publish RPC Package
+      #   run: |
+      #     cd dist/rpc
+      #     if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
+      #       npm publish --tag beta --access public
+      #     else
+      #       npm publish --access public
+      #     fi
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish RPC Package
-        run: |
-          cd dist/rpc
-          if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
-            npm publish --tag beta --access public
-          else
-            npm publish --access public
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Publish WEB Package
+      #   run: |
+      #     cd dist/web
+      #     if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
+      #       npm publish --tag beta --access public
+      #     else
+      #       npm publish --access public
+      #     fi
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish WEB Package
-        run: |
-          cd dist/web
-          if [[ "${{ steps.version.outputs.tagged }}" == "false" ]]; then
-            npm publish --tag beta --access public
-          else
-            npm publish --access public
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Notify on success
+      #   if: success()
+      #   run: |
+      #     VERSION=${{ steps.version.outputs.version }}
+      #     TIMESTAMP=$(($(date +%s%N)/1000000))
+      #     SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
+      #     ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
 
-      - name: Notify on success
-        if: success()
-        run: |
-          VERSION=${{ steps.version.outputs.version }}
-          TIMESTAMP=$(($(date +%s%N)/1000000))
-          SIGN=$(echo -n "$TIMESTAMP\n${{ secrets.DINGDING_SECRET }}" | openssl dgst -sha256 -hmac "${{ secrets.DINGDING_SECRET }}" -binary | base64)
-          ENCODED_SIGN=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$SIGN'''))")
+      #     curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
+      #       -H 'Content-Type: application/json' \
+      #       -d '{
+      #         "msgtype": "markdown",
+      #         "markdown": {
+      #           "title": "✅ CI 构建成功",
+      #           "text": "### ✅ 构建并发布成功\n- 版本号：'"$VERSION"'\n- 仓库：[${{ github.repository }}]\n- [查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+      #         }
+      #       }'
 
-          curl -X POST '${{ secrets.DINGDING_WEBHOOK }}&timestamp='"$TIMESTAMP"'&sign='"$ENCODED_SIGN" \
-            -H 'Content-Type: application/json' \
-            -d '{
-              "msgtype": "markdown",
-              "markdown": {
-                "title": "✅ CI 构建成功",
-                "text": "### ✅ 构建并发布成功\n- 版本号：'"$VERSION"'\n- 仓库：[${{ github.repository }}]\n- [查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-              }
-            }'
-
-      - name: Notify on failure
+      # - name: Notify on failure
         if: failure()
         run: |
           TIMESTAMP=$(($(date +%s%N)/1000000))
