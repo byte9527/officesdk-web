@@ -1678,6 +1678,7 @@ __metadata:
   resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=19f5e4&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     penpal: ^7.0.4
+  checksum: 35dffe4f76eaf31c1da6d6137b119fdfa303929e4be2f36ae5a5bb7f0f4e8be6354efe63f8358418c82c720df71540b30fb48ec5a8f5c2f52967171452c2e6fb
   languageName: node
   linkType: hard
 
