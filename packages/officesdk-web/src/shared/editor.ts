@@ -1405,7 +1405,7 @@ export declare interface SheetRange {
 
 export declare enum SheetRangeType {
     
-    Cells = 'cells',
+    Cells = "cells",
     
     Rows = "rows",
     
