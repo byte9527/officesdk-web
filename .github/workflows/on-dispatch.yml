@@ -15,9 +15,11 @@ jobs:
         run: |
           echo "${{ github.event.client_payload.message }}" > payload.log
 
-      - name: Overwrite editor.d.ts
+      - name: Overwrite editor.ts safely
         run: |
-          echo "${{ github.event.client_payload.message }}" > packages/officesdk-web/src/shared/editor.ts
+          cat << 'EOF' > packages/officesdk-web/src/shared/editor.ts
+          ${{ github.event.client_payload.message }}
+          EOF
 
       - name: Commit and push
         run: |
