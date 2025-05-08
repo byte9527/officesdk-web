@@ -2,24 +2,27 @@ name: Trigger CI via Dispatch
 
 on:
   repository_dispatch:
-    # 监听的事件类型（需与 API 请求中的 `event_type` 匹配）
-    types: ['gitlab_notification']
+    types: ['editor_type_updated']
 
 jobs:
-  run-ci:
+  update-editor-dts:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Log received payload
+      - name: Log received message
         run: |
-          echo "Event type: ${{ github.event.action }}"
-          echo "Full payload: ${{ toJson(github.event.client_payload) }}"
+          echo "${{ github.event.client_payload.message }}" > payload.log
 
-      - name: Custom CI Steps
-        env:
-          CUSTOM_KEY: ${{ github.event.client_payload.custom_key }}
+      - name: Overwrite editor.d.ts
         run: |
-          echo "Received custom key: $CUSTOM_KEY"
-          # 在此添加你的 CI 逻辑（如构建、测试、部署等）
+          echo "${{ github.event.client_payload.message }}" > packages/officesdk-web/src/shared/editor.ts
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add packages/officesdk-web/src/shared/editor.ts
+          git commit -m "chore: sync editor.ts from GitLab"
+          git push
