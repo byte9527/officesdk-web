@@ -3,7 +3,7 @@ name: Trigger CI via Dispatch
 on:
   repository_dispatch:
     # 监听的事件类型（需与 API 请求中的 `event_type` 匹配）
-    types: [your_event_type]
+    types: ['gitlab_notification']
 
 jobs:
   run-ci:
