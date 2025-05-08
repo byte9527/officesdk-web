@@ -1,3 +1,5 @@
+name: Build and Publish
+
 env:
   # 可选值，可手动触发输入 patch/minor/major 控制版本
   VERSION_BUMP: ${{ github.event.inputs.version_bump || 'patch' }} 
