@@ -31,7 +31,7 @@ tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k,inode6
 cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
 pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
 bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
-systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=461)
+systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=1905)
 hugetlbfs on /dev/hugepages type hugetlbfs (rw,nosuid,nodev,relatime,pagesize=2M)
 mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
 debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
@@ -128,7 +128,7 @@ tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k,inode6
 cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
 pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
 bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
-systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=461)
+systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=1905)
 hugetlbfs on /dev/hugepages type hugetlbfs (rw,nosuid,nodev,relatime,pagesize=2M)
 mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
 debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
@@ -1789,7 +1789,7 @@ tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k,inode6
 cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
 pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
 bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
-systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=461)
+systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=1905)
 hugetlbfs on /dev/hugepages type hugetlbfs (rw,nosuid,nodev,relatime,pagesize=2M)
 mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
 debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
@@ -2776,7 +2776,7 @@ export declare enum SheetRangeType {
     /**
      * 选中一个或多个单元格
      */
-    Cells = cells,
+    Cells = 'cells',
     /**
      * 选中一行或多行
      */
