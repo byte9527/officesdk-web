@@ -19,30 +19,7 @@ export declare abstract class AbstractedDiagramSDK {
      */
     abstract mount(root: HTMLElement): Promise<void>;
     /**
-     * 从根节点卸载 Diagram ，对应 /dev/sdb1 on / type ext4 (rw,relatime,discard,errors=remount-ro,commit=30)
-devtmpfs on /dev type devtmpfs (rw,nosuid,noexec,relatime,size=8184096k,nr_inodes=2046024,mode=755,inode64)
-proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
-sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
-securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
-tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,inode64)
-devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
-tmpfs on /run type tmpfs (rw,nosuid,nodev,size=3274692k,nr_inodes=819200,mode=755,inode64)
-tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k,inode64)
-cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
-pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
-bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
-systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=1905)
-hugetlbfs on /dev/hugepages type hugetlbfs (rw,nosuid,nodev,relatime,pagesize=2M)
-mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
-debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
-tracefs on /sys/kernel/tracing type tracefs (rw,nosuid,nodev,noexec,relatime)
-fusectl on /sys/fs/fuse/connections type fusectl (rw,nosuid,nodev,noexec,relatime)
-configfs on /sys/kernel/config type configfs (rw,nosuid,nodev,noexec,relatime)
-/dev/sdb16 on /boot type ext4 (rw,relatime,discard)
-/dev/sdb15 on /boot/efi type vfat (rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro)
-binfmt_misc on /proc/sys/fs/binfmt_misc type binfmt_misc (rw,nosuid,nodev,noexec,relatime)
-/dev/sda1 on /mnt type ext4 (rw,relatime,x-systemd.after=cloud-init.service,_netdev)
-tmpfs on /run/user/1001 type tmpfs (rw,nosuid,nodev,relatime,size=1637344k,nr_inodes=409336,mode=700,uid=1001,gid=118,inode64) 操作
+     * 从根节点卸载 Diagram ，对应 `mount` 操作
      */
     abstract unmount(): Promise<void>;
 }
@@ -116,30 +93,7 @@ export declare abstract class AbstractedPdfSDK {
      */
     abstract mount(root: HTMLElement): Promise<void>;
     /**
-     * 从根节点卸载 pdf ，对应 /dev/sdb1 on / type ext4 (rw,relatime,discard,errors=remount-ro,commit=30)
-devtmpfs on /dev type devtmpfs (rw,nosuid,noexec,relatime,size=8184096k,nr_inodes=2046024,mode=755,inode64)
-proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
-sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
-securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
-tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,inode64)
-devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
-tmpfs on /run type tmpfs (rw,nosuid,nodev,size=3274692k,nr_inodes=819200,mode=755,inode64)
-tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k,inode64)
-cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
-pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
-bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
-systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=1905)
-hugetlbfs on /dev/hugepages type hugetlbfs (rw,nosuid,nodev,relatime,pagesize=2M)
-mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
-debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
-tracefs on /sys/kernel/tracing type tracefs (rw,nosuid,nodev,noexec,relatime)
-fusectl on /sys/fs/fuse/connections type fusectl (rw,nosuid,nodev,noexec,relatime)
-configfs on /sys/kernel/config type configfs (rw,nosuid,nodev,noexec,relatime)
-/dev/sdb16 on /boot type ext4 (rw,relatime,discard)
-/dev/sdb15 on /boot/efi type vfat (rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro)
-binfmt_misc on /proc/sys/fs/binfmt_misc type binfmt_misc (rw,nosuid,nodev,noexec,relatime)
-/dev/sda1 on /mnt type ext4 (rw,relatime,x-systemd.after=cloud-init.service,_netdev)
-tmpfs on /run/user/1001 type tmpfs (rw,nosuid,nodev,relatime,size=1637344k,nr_inodes=409336,mode=700,uid=1001,gid=118,inode64) 操作
+     * 从根节点卸载 pdf ，对应 `mount` 操作
      */
     abstract unmount(): Promise<void>;
     /**
@@ -766,9 +720,9 @@ export declare interface DocxThemeFontsSchemeItem {
      * 其他单独字体配置
      * key 表示script值
      * 例如：
-     * <a:font script=Hans typeface=黑体/>
-     * <a:font script=Jpan typeface=HG明朝B/>
-     * <a:font script=Arab typeface=Times New Roman/>
+     * <a:font script="Hans" typeface="黑体"/>
+     * <a:font script="Jpan" typeface="HG明朝B"/>
+     * <a:font script="Arab" typeface="Times New Roman"/>
      */
     font: Record<string, DocxThemeFont>;
 }
@@ -1593,12 +1547,12 @@ export declare interface EditorMode {
      */
     getModeType: () => EditorModeType;
     /**
-     * 设置编辑器权限模式，仅在  模式下有效
+     * 设置编辑器权限模式，仅在 `standard` 模式下有效
      * @param permission
      */
     setStandardRole: (standardRole: EditorStandardRole) => Promise<void>;
     /**
-     * 获取当前编辑器权限模式，仅在  模式下有效
+     * 获取当前编辑器权限模式，仅在 `standard` 模式下有效
      */
     getStandardRole: () => EditorStandardRole;
 }
@@ -1609,7 +1563,7 @@ export declare interface EditorMode {
 export declare type EditorModeOptions = {
     type: 'standard';
     /**
-     * 当 mode 为  时，可以设置当前编辑器的权限模式
+     * 当 mode 为 `standard` 时，可以设置当前编辑器的权限模式
      */
     role?: EditorStandardRole;
 } | {
@@ -1620,9 +1574,9 @@ export declare type EditorModeOptions = {
 
 /**
  * 编辑器模式
- * -  标准模式，会根据用户权限配置不同的功能
- * -  预览模式，只能查看内容
- * -  演示模式，用作演示场景，演示模式下部分套件可以进行一些简单的编辑操作
+ * - `standard` 标准模式，会根据用户权限配置不同的功能
+ * - `preview` 预览模式，只能查看内容
+ * - `presentation` 演示模式，用作演示场景，演示模式下部分套件可以进行一些简单的编辑操作
  */
 export declare type EditorModeType = 'standard' | 'preview' | 'presentation';
 
@@ -1636,7 +1590,7 @@ export declare interface EditorOptions {
      */
     content: MaybePromiseValue<string | ArrayBuffer>;
     /**
-     * 初始化时的编辑模式，默认为 
+     * 初始化时的编辑模式，默认为 `preview`
      */
     mode?: EditorModeOptions;
     /**
@@ -1777,30 +1731,7 @@ export declare abstract class EditorSDK {
      */
     abstract mount(root: HTMLElement): Promise<void>;
     /**
-     * 从根节点卸载编辑器，对应 /dev/sdb1 on / type ext4 (rw,relatime,discard,errors=remount-ro,commit=30)
-devtmpfs on /dev type devtmpfs (rw,nosuid,noexec,relatime,size=8184096k,nr_inodes=2046024,mode=755,inode64)
-proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
-sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
-securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
-tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,inode64)
-devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
-tmpfs on /run type tmpfs (rw,nosuid,nodev,size=3274692k,nr_inodes=819200,mode=755,inode64)
-tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k,inode64)
-cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
-pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
-bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
-systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=1905)
-hugetlbfs on /dev/hugepages type hugetlbfs (rw,nosuid,nodev,relatime,pagesize=2M)
-mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
-debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
-tracefs on /sys/kernel/tracing type tracefs (rw,nosuid,nodev,noexec,relatime)
-fusectl on /sys/fs/fuse/connections type fusectl (rw,nosuid,nodev,noexec,relatime)
-configfs on /sys/kernel/config type configfs (rw,nosuid,nodev,noexec,relatime)
-/dev/sdb16 on /boot type ext4 (rw,relatime,discard)
-/dev/sdb15 on /boot/efi type vfat (rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro)
-binfmt_misc on /proc/sys/fs/binfmt_misc type binfmt_misc (rw,nosuid,nodev,noexec,relatime)
-/dev/sda1 on /mnt type ext4 (rw,relatime,x-systemd.after=cloud-init.service,_netdev)
-tmpfs on /run/user/1001 type tmpfs (rw,nosuid,nodev,relatime,size=1637344k,nr_inodes=409336,mode=700,uid=1001,gid=118,inode64) 操作
+     * 从根节点卸载编辑器，对应 `mount` 操作
      */
     abstract unmount(): Promise<void>;
     /**
@@ -1818,10 +1749,10 @@ tmpfs on /run/user/1001 type tmpfs (rw,nosuid,nodev,relatime,size=1637344k,nr_in
 }
 
 /**
- * 编辑器在  模式下的权限模式
- * - [?2004h)0[1;24r[m(B[4l[?7h[?25l[?25h[24;1H[?2004l 编辑模式
- * -  阅读模式
- * -  评论模式
+ * 编辑器在 `standard` 模式下的权限模式
+ * - `editor` 编辑模式
+ * - `viewer` 阅读模式
+ * - `reviewer` 评论模式
  */
 export declare type EditorStandardRole = 'editor' | 'viewer' | 'reviewer';
 
@@ -2073,7 +2004,10 @@ export declare interface HTTPProxy {
     /**
      * 发送请求，如果需要做请求、响应拦截，需要在 proxy.interceptors 中实现，
      * 套件内使用 proxy 发送请求的方式应该为类似如下方式:
-     * 
+     * ```ts
+     * const raw = await proxy.request(proxy.interceptors?.request?.intercept(requestConfig) ?? requestConfig);
+     * const response = proxy.interceptors?.response?.intercept(raw) ?? raw;
+     * ```
      *
      * 套件内如果需要通过其他方式发送请求，比如通过浏览器的 Image API 加载，可以使用 proxy.interceptors?.request?.intercept(requestConfig) 处理请求配置
      * @param config
@@ -2727,7 +2661,7 @@ export declare interface SheetRange {
     /**
      * 区域类型
      */
-    type: ;
+    type: `${SheetRangeType}`;
     /**
      * 区域的行开始位置
      */
@@ -2780,22 +2714,22 @@ export declare enum SheetRangeType {
     /**
      * 选中一行或多行
      */
-    Rows = rows,
+    Rows = "rows",
     /**
      * 选中一列或多列
      */
-    Columns = columns,
+    Columns = "columns",
     /**
      * 选中整个工作表
      */
-    Sheet = sheet
+    Sheet = "sheet"
 }
 
 export declare type SheetRangeValue = {
     /**
      * 单个或多个单元格
      */
-    type: ;
+    type: `${SheetRangeType.Cells}`;
     /**
      * 起始单元格的行号
      */
@@ -2816,7 +2750,7 @@ export declare type SheetRangeValue = {
     /**
      * 一列或多列
      */
-    type: ;
+    type: `${SheetRangeType.Rows}`;
     /**
      * 起始列号
      */
@@ -2829,7 +2763,7 @@ export declare type SheetRangeValue = {
     /**
      * 一行或多行
      */
-    type: ;
+    type: `${SheetRangeType.Columns}`;
     /**
      * 起始行号
      */
@@ -2842,7 +2776,7 @@ export declare type SheetRangeValue = {
     /**
      * 整个工作表
      */
-    type: ;
+    type: `${SheetRangeType.Sheet}`;
 };
 
 export declare interface SheetSDKOptions extends EditorOptions {
