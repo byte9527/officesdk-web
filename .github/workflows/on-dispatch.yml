@@ -1,0 +1,25 @@
+name: Trigger CI via Dispatch
+
+on:
+  repository_dispatch:
+    # 监听的事件类型（需与 API 请求中的 `event_type` 匹配）
+    types: [your_event_type]
+
+jobs:
+  run-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log received payload
+        run: |
+          echo "Event type: ${{ github.event.action }}"
+          echo "Full payload: ${{ toJson(github.event.client_payload) }}"
+
+      - name: Custom CI Steps
+        env:
+          CUSTOM_KEY: ${{ github.event.client_payload.custom_key }}
+        run: |
+          echo "Received custom key: $CUSTOM_KEY"
+          # 在此添加你的 CI 逻辑（如构建、测试、部署等）
