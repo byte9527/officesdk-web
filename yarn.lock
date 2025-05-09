@@ -1673,6 +1673,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@officesdk/editor-sdk-core@npm:^0.0.0-1":
+  version: 0.0.0-1
+  resolution: "@officesdk/editor-sdk-core@npm:0.0.0-1"
+  checksum: fa49fe52b1c2350f1d605aab163cb88fc512bfb7bcb57f7146da05b02dcd0adab4af287e03fa92f027ebba11463427ce2319f87041ff0934114ac597cfab5e6f
+  languageName: node
+  linkType: hard
+
 "@officesdk/rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
   resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=19f5e4&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
@@ -1692,10 +1699,10 @@ __metadata:
 
 "@officesdk/web@file:../packages/officesdk-web::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=736c8b&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=1898c4&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     "@officesdk/rpc": "workspace:*"
-  checksum: 58a90a2412bd3a0d7f81ef273666e48cd9fa42dacdaccc64277d98ee49bb0322d1b07d14b6745aa2169a88e41a87bfdeeabb77faa094dca8a2df75608b1d5b3d
+  checksum: 7dc67ac3a7aef0d50681c48321ba2b4949ca55cf4a95391c5bb0184aa8ca6a493f331d1c4ac7d25541cb45898156f16cc22eee24932c9e3216e4d3989b2f9f7e
   languageName: node
   linkType: hard
 
@@ -7602,6 +7609,7 @@ __metadata:
   dependencies:
     "@ianvs/prettier-plugin-sort-imports": ^4.4.1
     "@microsoft/api-extractor": ^7.43.7
+    "@officesdk/editor-sdk-core": ^0.0.0-1
     "@rollup/plugin-alias": ^5.1.1
     "@rollup/plugin-commonjs": ^28.0.3
     "@rollup/plugin-node-resolve": ^16.0.1
