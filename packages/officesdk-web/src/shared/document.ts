@@ -81,6 +81,12 @@ export type DocumentSelection = {
    * @returns
    */
   addRangeListener: (listener: (range: DocumentRangeValue | null) => void) => void;
+
+  /**
+   * 获取文档全部选区范围。
+   * @returns
+   */
+  getWholeRange: () => DocumentRange;
 };
 
 /**
