@@ -1673,10 +1673,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@officesdk/editor-sdk-core@npm:^0.0.0-1":
-  version: 0.0.0-1
-  resolution: "@officesdk/editor-sdk-core@npm:0.0.0-1"
-  checksum: fa49fe52b1c2350f1d605aab163cb88fc512bfb7bcb57f7146da05b02dcd0adab4af287e03fa92f027ebba11463427ce2319f87041ff0934114ac597cfab5e6f
+"@officesdk/editor-sdk-core@npm:^0.0.0-2":
+  version: 0.0.0-2
+  resolution: "@officesdk/editor-sdk-core@npm:0.0.0-2"
+  checksum: b6e59d30717cc2ed3f463b504f73f3093eada18d78fbdfb31376727799579f2e5b9c9d3795611ecc5a1b8f9cad9b756fb7bb5796649614e7c01b771af0d73366
   languageName: node
   linkType: hard
 
@@ -7609,7 +7609,7 @@ __metadata:
   dependencies:
     "@ianvs/prettier-plugin-sort-imports": ^4.4.1
     "@microsoft/api-extractor": ^7.43.7
-    "@officesdk/editor-sdk-core": ^0.0.0-1
+    "@officesdk/editor-sdk-core": ^0.0.0-2
     "@rollup/plugin-alias": ^5.1.1
     "@rollup/plugin-commonjs": ^28.0.3
     "@rollup/plugin-node-resolve": ^16.0.1
