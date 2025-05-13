@@ -18,5 +18,10 @@ export function createDocumentSelectionProxy(selection: DocumentSelection): Docu
     addRangeListener: (listener) => {
       return selection.addRangeListener(listener);
     },
+    getWholeRange: () => {
+      const range = selection.getWholeRange();
+
+      return createDocumentRangeProxy(range);
+    },
   };
 }

@@ -119,6 +119,12 @@ export interface PdfSelection {
    * @returns
    */
   addRangeListener: (listener: (value: PdfRangeValue | null) => void) => void;
+
+  /**
+   * 获取 pdf 全部选区范围。
+   * @returns
+   */
+  getWholeRange: () => PdfRange;
 }
 
 /**
