@@ -122,13 +122,12 @@ export async function serve<TMethods extends RPCMethods, TSettings>(
     return client;
   };
 
-  const ensureClientMethods = (): typeof methods => {
-    if (!methods) {
-      throw new Error('Methods not initialized');
-    }
-
-    return methods;
+  let methodsResolver: (methods: ReturnType<typeof proxy>) => void = () => {
+    throw new Error('Methods resolver not initialized');
   };
+  let methodsPromise: Promise<ReturnType<typeof proxy>> = new Promise((resolve) => {
+    methodsResolver = resolve;
+  });
 
   /**
    * Callback handler for server-to-client callbacks
@@ -156,8 +155,8 @@ export async function serve<TMethods extends RPCMethods, TSettings>(
     channel: OfficeSdkRpcChannel,
     methods: createConnectionServerProtocol({
       clients: connectionPool,
-      onInvoke: (clientId, method, schemas) => {
-        const methods = ensureClientMethods();
+      onInvoke: async (clientId, method, schemas) => {
+        const methods = await methodsPromise;
 
         if (!connectionPool.has(clientId)) {
           // TODO: Use custom error type
@@ -189,7 +188,9 @@ export async function serve<TMethods extends RPCMethods, TSettings>(
 
   const firstClientId = connectedClients[0];
   // Get the methods implementation
-  const methods = await proxy(firstClientId ? connectionPool.getSettings(firstClientId.clientId) : null);
+  const methods = proxy(firstClientId ? connectionPool.getSettings(firstClientId.clientId) : null);
+  // Resolve the promise with the methods implementation
+  methodsResolver(methods);
 
   // Register all client IDs in our pool
   connectedClients.forEach((client) => {
