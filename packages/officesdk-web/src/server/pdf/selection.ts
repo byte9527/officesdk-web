@@ -20,7 +20,6 @@ export function createPdfSelectionProxy(selection: PdfSelection): PdfSelection {
     },
     getWholeRange: () => {
       const range = selection.getWholeRange();
-
       return createPdfRangeProxy(range);
     },
   };

@@ -27,5 +27,9 @@ export function createSelectionFacade(methods: RPCReturnMethods<PdfMethods>): RP
       const selection = await getSelection();
       return selection.addRangeListener(listener);
     },
+    getWholeRange: async (): Promise<RPCReturnMapProxy<PdfRange>> => {
+      const selection = await getSelection();
+      return selection.getWholeRange();
+    },
   };
 }
