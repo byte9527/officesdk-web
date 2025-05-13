@@ -76,6 +76,13 @@ export const createClientProxy: (output?: (message: string) => void) => RPCClien
  */
 export const createServerProxy: (output?: (message: string) => void) => RPCServerProxy<TestMethods, TestOptions> =
   (output) => async (settings) => {
+    // 模拟 proxy 为异步的场景
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 100);
+    });
+
     settings?.h('hello');
 
     return {
