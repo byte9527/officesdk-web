@@ -1,39 +1,43 @@
-import type { DocumentEditor } from '@officesdk/web/server';
+import type { DocumentEditor, DocumentRange } from '@officesdk/web/server';
 
 export function mockDocumentEditor(output: (message: string) => void): DocumentEditor {
+  const createRange = (start: string, end: string): DocumentRange => {
+    return {
+      start,
+      end,
+      isCaret: false,
+      getText: () => {
+        output('document.selection.getText has been called');
+        return 'mocked-text';
+      },
+      setText: (text: string) => {
+        output(`document.selection.setText has been called with text: ${text}`);
+      },
+      getHtml: () => {
+        output('document.selection.getHtml has been called');
+        return '<p>mocked-html</p>';
+      },
+      setHtml: (html: string) => {
+        output(`document.selection.setHtml has been called with html: ${html}`);
+      },
+      getBounding: () => {
+        output('document.selection.getBounding has been called');
+        return {
+          left: 0,
+          top: 0,
+          right: 100,
+          bottom: 100,
+          start: 20,
+          end: 80,
+        };
+      },
+    };
+  };
+
   return {
     selection: {
       getRange: () => {
-        return {
-          start: 'mocked-start',
-          end: 'mocked-end',
-          isCaret: false,
-          getText: () => {
-            output('document.selection.getText has been called');
-            return 'mocked-text';
-          },
-          setText: (text: string) => {
-            output(`document.selection.setText has been called with text: ${text}`);
-          },
-          getHtml: () => {
-            output('document.selection.getHtml has been called');
-            return '<p>mocked-html</p>';
-          },
-          setHtml: (html: string) => {
-            output(`document.selection.setHtml has been called with html: ${html}`);
-          },
-          getBounding: () => {
-            output('document.selection.getBounding has been called');
-            return {
-              left: 0,
-              top: 0,
-              right: 100,
-              bottom: 100,
-              start: 20,
-              end: 80,
-            };
-          },
-        };
+        return createRange('mocked-start', 'mocked-end');
       },
       setRange: () => {
         output('document.selection.setRange has been called');
@@ -46,6 +50,10 @@ export function mockDocumentEditor(output: (message: string) => void): DocumentE
             end: 'changed-end',
           });
         });
+      },
+      getWholeRange: () => {
+        output('document.selection.getWholeRange has been called');
+        return createRange('whole-start', 'whole-end');
       },
     },
     zoom: {

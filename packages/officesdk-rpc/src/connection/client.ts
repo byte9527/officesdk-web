@@ -246,7 +246,7 @@ export async function create<TMethods extends RPCMethods, TSettings>(
      * @param args - Arguments to pass to the method
      * @returns A Promise resolving to the result from the server
      */
-    invoke: async <TName extends keyof TMethods>(
+    invoke: async <TName extends Extract<keyof TMethods, string>>(
       method: TName,
       args: RPCClientInvokeArgs<Parameters<TMethods[TName]>>,
     ) => {
@@ -255,8 +255,7 @@ export async function create<TMethods extends RPCMethods, TSettings>(
       // Serialize the arguments for transmission
       const schemas = await Promise.all(args.map((arg) => transportable.createSchemaEntity(arg)));
 
-      // TODO: Improve type safety for method name
-      const response = serverProxy.invoke(clientId, method as string, schemas);
+      const response = serverProxy.invoke(clientId, method, schemas);
 
       // Parse the response when it arrives
       return response.then((data) => {
