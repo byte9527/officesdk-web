@@ -28,9 +28,9 @@ export function createSelectionFacade(
       const selection = await getSelection();
       return selection.addRangeListener(listener);
     },
-    getWholeRange: async (): Promise<RPCReturnMapProxy<DocumentRange>>=> {
+    getWholeRange: async (): Promise<RPCReturnMapProxy<DocumentRange>> => {
       const selection = await getSelection();
       return selection.getWholeRange();
-    }
+    },
   };
 }

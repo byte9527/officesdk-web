@@ -1,6 +1,32 @@
 import type { PdfEditor } from '@officesdk/web/server';
 
 export function mockPdfEditor(output: (message: string) => void): PdfEditor {
+  const createRange = (start: string, end: string) => {
+    return {
+      start,
+      end,
+      getText: () => {
+        output('pdf.selection.range.getText has been called');
+        return 'mocked-text';
+      },
+      getHtml: () => {
+        output('pdf.selection.range.getHtml has been called');
+        return '<p>mocked-html</p>';
+      },
+      getBounding: () => {
+        output('pdf.selection.range.getBounding has been called');
+        return {
+          left: 0,
+          top: 0,
+          right: 100,
+          bottom: 100,
+          start: 20,
+          end: 80,
+        };
+      },
+    };
+  };
+
   return {
     pages: {
       getCurrentPageNumber: () => {
@@ -28,31 +54,7 @@ export function mockPdfEditor(output: (message: string) => void): PdfEditor {
     selection: {
       getRange: (value) => {
         output('pdf.selection.getRange has been called');
-        return value
-          ? {
-              start: value.start,
-              end: value.end,
-              getText: () => {
-                output('pdf.selection.range.getText has been called');
-                return 'mocked-text';
-              },
-              getHtml: () => {
-                output('pdf.selection.range.getHtml has been called');
-                return '<p>mocked-html</p>';
-              },
-              getBounding: () => {
-                output('pdf.selection.range.getBounding has been called');
-                return {
-                  left: 0,
-                  top: 0,
-                  right: 100,
-                  bottom: 100,
-                  start: 20,
-                  end: 80,
-                };
-              },
-            }
-          : null;
+        return value ? createRange(value.start, value.end) : null;
       },
       setRange: (value) => {
         output(`pdf.selection.setRange has been called with value: ${JSON.stringify(value)}`);
@@ -65,6 +67,11 @@ export function mockPdfEditor(output: (message: string) => void): PdfEditor {
             end: 'changed-end',
           });
         });
+      },
+      getWholeRange: () => {
+        output('pdf.selection.getWholeRange has been called');
+
+        return createRange('whole-start', 'whole-end');
       },
     },
     outline: {
