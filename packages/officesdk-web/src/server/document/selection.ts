@@ -3,8 +3,8 @@ import { createDocumentRangeProxy } from './range';
 
 export function createDocumentSelectionProxy(selection: DocumentSelection): DocumentSelection {
   return {
-    getRange: () => {
-      const range = selection.getRange();
+    getRange: (param) => {
+      const range = selection.getRange(param);
 
       if (!range) {
         return null;

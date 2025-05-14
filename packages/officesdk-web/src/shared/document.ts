@@ -65,7 +65,7 @@ export type DocumentSelection = {
    * 如果选区不存在，则返回 null。
    * @returns
    */
-  getRange: () => DocumentRange | null;
+  getRange: (range?: DocumentRangeValue) => DocumentRange | null;
 
   /**
    * 设置选区的区域范围，

@@ -16,9 +16,9 @@ export function createSelectionFacade(
   };
 
   return {
-    getRange: async (): Promise<RPCReturnMapProxy<DocumentRange> | null> => {
+    getRange: async (range?: DocumentRangeValue): Promise<RPCReturnMapProxy<DocumentRange> | null> => {
       const selection = await getSelection();
-      return selection.getRange();
+      return selection.getRange(range);
     },
     setRange: async (range: DocumentRangeValue | null): Promise<void> => {
       const selection = await getSelection();
