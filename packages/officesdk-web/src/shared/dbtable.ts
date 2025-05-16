@@ -1,4 +1,5 @@
 export type DatabaseTableMethods = {
+  ready: () => Promise<void>;
   // TODO:
 };
 
