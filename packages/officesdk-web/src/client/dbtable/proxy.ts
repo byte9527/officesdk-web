@@ -5,6 +5,8 @@ export function createDatabaseTableProxy(): RPCClientProxy<DatabaseTableMethods>
   return (context) => {
     // const { invoke } = context;
 
-    return {};
+    return {
+      ready: () => Promise.resolve(),
+    };
   };
 }

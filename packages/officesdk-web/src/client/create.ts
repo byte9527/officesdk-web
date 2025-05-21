@@ -330,6 +330,8 @@ function createDatabaseTableSDK(options: CreateOptions<FileType.DBTable>): Offic
         proxy: createDatabaseTableProxy(),
       });
 
+      await client.methods.ready();
+
       return createDatabaseTableFacade(client);
     },
   };
