@@ -229,6 +229,7 @@ function createDocumentSDK(options: CreateOptions<FileType.Document>): OfficeSDK
         settings: initOptions,
       });
 
+      await client.methods.ready();
       return createDocumentFacade(client);
     },
   };

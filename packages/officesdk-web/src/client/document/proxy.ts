@@ -10,6 +10,9 @@ export function createDocumentProxy(): RPCClientProxy<DocumentMethods> {
     const { invoke } = context;
 
     return {
+      ready: async () => {
+        return invoke('ready', []);
+      },
       getSelection: async () => {
         return invoke('getSelection', []);
       },

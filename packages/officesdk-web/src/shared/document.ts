@@ -7,6 +7,7 @@ import type { EditorContent, EditorOutline, EditorOutlineItem } from './editor';
  */
 
 export type DocumentMethods = {
+  ready: () => Promise<void>;
   /**
    * 获取选区接口
    */
@@ -53,6 +54,7 @@ export type DocumentOutlineItem = EditorOutlineItem<{
  * 文档编辑器实例接口
  */
 export interface DocumentEditor {
+  readonly ready: () => Promise<void>;
   readonly selection: DocumentSelection;
   readonly zoom: DocumentZoom;
   readonly TOCs: DocumentTOCs;

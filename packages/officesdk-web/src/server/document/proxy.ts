@@ -25,6 +25,10 @@ export function createDocumentProxy(
     const context = await createContext?.(editor);
 
     return {
+      ready: async (): Promise<void> => {
+        return editor.ready();
+      },
+
       getSelection: () => {
         return createDocumentSelectionProxy(editor.selection);
       },
