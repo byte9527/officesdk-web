@@ -8,6 +8,7 @@ import type { EditorMenuOptions, EditorMenuFeatureButtonConfig, EditorMenuEntryC
  * 这里只有类型定义，不包含任何实现。
  */
 export type PresentationMethods = {
+  ready: () => Promise<void>;
   /**
    * 获取选区接口
    */
@@ -33,6 +34,7 @@ export type PresentationMethods = {
  * 幻灯片编辑器实例接口
  */
 export interface PresentationEditor {
+  readonly ready: () => Promise<void>;
   readonly selection: PresentationSelection;
   readonly zoom: PresentationZoom;
   readonly slides: PresentationSlides;

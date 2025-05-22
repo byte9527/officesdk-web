@@ -279,6 +279,8 @@ function createPresentationSDK(options: CreateOptions<FileType.Presentation>): O
         settings: initOptions,
       });
 
+      await client.methods.ready();
+      
       return createPresentationFacade(client);
     },
   };
