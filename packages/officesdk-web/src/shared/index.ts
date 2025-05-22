@@ -65,6 +65,10 @@ export type {
   SpreadsheetSelection,
   SpreadsheetWorksheet,
   SpreadsheetSDKOptions,
+  SpreadsheetMenuFeatureButtonName,
+  SpreadsheetMenuEntryConfig,
+  SpreadsheetMenuFeatureButtonConfig,
+  SpreadsheetMenuOptions,
 } from './spreadsheet';
 export type {
   PdfMethods,

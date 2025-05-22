@@ -1,5 +1,5 @@
 import type { EditorContent } from './editor';
-
+import type { EditorMenuOptions, EditorMenuFeatureButtonConfig, EditorMenuEntryConfig } from '../shared';
 /**
  * Spreadsheet 远程调用的方法定义，
  * 作为契约，用于统一约束客户端和服务端的接口。
@@ -342,6 +342,27 @@ export type SpreadsheetSelection = {
   setRange: (value: SpreadsheetRangeValue | null) => void;
 };
 
+/**
+ * 幻灯片工具栏内置功能按钮
+ */
+export type SpreadsheetMenuFeatureButtonName = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll';
+
+/**
+ * 幻灯片工具栏一级菜单
+ */
+export type SpreadsheetMenuEntryConfig = EditorMenuEntryConfig<SpreadsheetMenuFeatureButtonName>;
+
+/**
+ * 幻灯片工具栏功能按钮
+ */
+export type SpreadsheetMenuFeatureButtonConfig = EditorMenuFeatureButtonConfig<SpreadsheetMenuFeatureButtonName>;
+
 export interface SpreadsheetSDKOptions {
   // TODO:
+  /**
+     * 菜单栏相关设置
+     */
+    menu?: SpreadsheetMenuOptions;
 }
+
+export type SpreadsheetMenuOptions = EditorMenuOptions<SpreadsheetMenuFeatureButtonName>;

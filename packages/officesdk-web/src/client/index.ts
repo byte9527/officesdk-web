@@ -14,7 +14,7 @@ export type { DatabaseTableFacade } from './dbtable';
 export type { DocumentFacade, DocumentSettings } from './document';
 
 // 表格
-export type { SpreadsheetFacade } from './spreadsheet';
+export type { SpreadsheetFacade, SpreadsheetSettings } from './spreadsheet';
 
 // 幻灯片
 export type { PresentationFacade, PresentationSettings } from './presentation';

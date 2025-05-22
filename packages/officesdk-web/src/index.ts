@@ -7,6 +7,7 @@ export type {
   DocumentFacade,
   DocumentSettings,
   SpreadsheetFacade,
+  SpreadsheetSettings,
   PdfFacade,
   PresentationFacade,
   PresentationSettings,

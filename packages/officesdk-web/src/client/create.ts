@@ -9,8 +9,8 @@ import { createLiteDocProxy, createLTDocFacade } from './ltdoc';
 import type { LTDocFacade } from './ltdoc';
 import { createPresentationProxy, createPresentationFacade, createPresentationOptions } from './presentation';
 import type { PresentationFacade, PresentationSettings } from './presentation';
-import { createSpreadsheetProxy, createSpreadsheetFacade } from './spreadsheet';
-import type { SpreadsheetFacade } from './spreadsheet';
+import { createSpreadsheetProxy, createSpreadsheetFacade, createSpreadsheetOptions } from './spreadsheet';
+import type { SpreadsheetFacade, SpreadsheetSettings } from './spreadsheet';
 import { createPdfProxy, createPdfFacade } from './pdf';
 import type { PdfFacade } from './pdf';
 import { generateUrl } from './url';
@@ -21,6 +21,7 @@ import { mapToPreviewType } from '../shared/file';
 export type SDKSettings = {
   [FileType.Document]: DocumentSettings;
   [FileType.Presentation]: PresentationSettings;
+  [FileType.Spreadsheet]: SpreadsheetSettings;
 };
 
 /**
@@ -147,6 +148,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
   if (fileType === FileType.Spreadsheet) {
     return createSpreadsheetSDK({
       fileType,
+      settings,
       ...others,
     }) as OfficeSDK<T>;
   }
@@ -233,6 +235,9 @@ function createDocumentSDK(options: CreateOptions<FileType.Document>): OfficeSDK
 }
 
 function createSpreadsheetSDK(options: CreateOptions<FileType.Spreadsheet>): OfficeSDK<FileType.Spreadsheet> {
+   const { settings } = options;
+  const initOptions = createSpreadsheetOptions(settings);
+
   const { url, container } = connectIframe(options);
 
   return {
@@ -246,6 +251,7 @@ function createSpreadsheetSDK(options: CreateOptions<FileType.Spreadsheet>): Off
       const client = await create({
         remoteWindow,
         proxy: createSpreadsheetProxy(),
+        settings: initOptions,
       });
 
       return createSpreadsheetFacade(client);

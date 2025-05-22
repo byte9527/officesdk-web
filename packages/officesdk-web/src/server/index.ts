@@ -71,6 +71,10 @@ export type {
   SpreadsheetSelection,
   SpreadsheetWorkbook,
   SpreadsheetWorksheet,
+  SpreadsheetMenuFeatureButtonName,
+  SpreadsheetMenuEntryConfig,
+  SpreadsheetMenuFeatureButtonConfig,
+  SpreadsheetMenuOptions,
 } from '../shared';
 
 export { FileType } from '../shared';
