@@ -17,7 +17,7 @@ export type { DocumentFacade, DocumentSettings } from './document';
 export type { SpreadsheetFacade } from './spreadsheet';
 
 // 幻灯片
-export type { PresentationFacade } from './presentation';
+export type { PresentationFacade, PresentationSettings } from './presentation';
 
 // PDF
 export type { PdfFacade } from './pdf';

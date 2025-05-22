@@ -7,8 +7,8 @@ import { createDatabaseTableProxy, createDatabaseTableFacade } from './dbtable';
 import type { DatabaseTableFacade } from './dbtable';
 import { createLiteDocProxy, createLTDocFacade } from './ltdoc';
 import type { LTDocFacade } from './ltdoc';
-import { createPresentationProxy, createPresentationFacade } from './presentation';
-import type { PresentationFacade } from './presentation';
+import { createPresentationProxy, createPresentationFacade, createPresentationOptions } from './presentation';
+import type { PresentationFacade, PresentationSettings } from './presentation';
 import { createSpreadsheetProxy, createSpreadsheetFacade } from './spreadsheet';
 import type { SpreadsheetFacade } from './spreadsheet';
 import { createPdfProxy, createPdfFacade } from './pdf';
@@ -20,6 +20,7 @@ import { mapToPreviewType } from '../shared/file';
 
 export type SDKSettings = {
   [FileType.Document]: DocumentSettings;
+  [FileType.Presentation]: PresentationSettings;
 };
 
 /**
@@ -153,6 +154,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
   if (fileType === FileType.Presentation) {
     return createPresentationSDK({
       fileType,
+      settings,
       ...others,
     }) as OfficeSDK<T>;
   }
@@ -252,6 +254,9 @@ function createSpreadsheetSDK(options: CreateOptions<FileType.Spreadsheet>): Off
 }
 
 function createPresentationSDK(options: CreateOptions<FileType.Presentation>): OfficeSDK<FileType.Presentation> {
+  const { settings } = options;
+  const initOptions = createPresentationOptions(settings);
+  
   const { url, container } = connectIframe(options);
 
   return {
@@ -265,6 +270,7 @@ function createPresentationSDK(options: CreateOptions<FileType.Presentation>): O
       const client = await create({
         remoteWindow,
         proxy: createPresentationProxy(),
+        settings: initOptions,
       });
 
       return createPresentationFacade(client);
@@ -330,7 +336,7 @@ function createDatabaseTableSDK(options: CreateOptions<FileType.DBTable>): Offic
         proxy: createDatabaseTableProxy(),
       });
 
-      await client.methods.ready();
+      // await client.methods.ready();
 
       return createDatabaseTableFacade(client);
     },

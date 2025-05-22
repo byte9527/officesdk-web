@@ -9,6 +9,7 @@ export type {
   SpreadsheetFacade,
   PdfFacade,
   PresentationFacade,
+  PresentationSettings,
   LTDocFacade,
   DatabaseTableFacade,
   OfficeSDKMap,

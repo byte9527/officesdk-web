@@ -48,6 +48,10 @@ export type {
   PresentationSlide,
   PresentationSlides,
   PresentationSDKOptions,
+  PresentationMenuFeatureButtonName,
+  PresentationMenuEntryConfig,
+  PresentationMenuFeatureButtonConfig,
+  PresentationMenuOptions
 } from './presentation';
 export type {
   SpreadsheetMethods,
