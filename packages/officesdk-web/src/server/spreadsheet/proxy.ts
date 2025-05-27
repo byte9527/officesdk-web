@@ -27,6 +27,9 @@ export function createSpreadsheetProxy(
     console.log('context', context);
 
     return {
+      ready: async (): Promise<void> => {
+        return editor.ready();
+      },
       /**
        * 获取工作簿接口
        */

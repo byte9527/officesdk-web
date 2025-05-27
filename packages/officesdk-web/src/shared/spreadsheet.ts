@@ -6,6 +6,7 @@ import type { EditorMenuOptions, EditorMenuFeatureButtonConfig, EditorMenuEntryC
  * 这里只有类型定义，不包含任何实现。
  */
 export type SpreadsheetMethods = {
+  ready: () => Promise<void>;
   /**
    * 获取工作簿接口
    */
@@ -36,6 +37,7 @@ export type SpreadsheetMethods = {
  * 电子表格编辑器实例接口
  */
 export interface SpreadsheetEditor {
+  readonly ready: () => Promise<void>;
   readonly workbook: SpreadsheetWorkbook;
   readonly activeSheet: SpreadsheetWorksheet;
   readonly activeCell: SpreadsheetCell | null;

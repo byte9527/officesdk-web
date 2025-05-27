@@ -255,6 +255,8 @@ function createSpreadsheetSDK(options: CreateOptions<FileType.Spreadsheet>): Off
         settings: initOptions,
       });
 
+
+      await client.methods.ready();
       return createSpreadsheetFacade(client);
     },
   };
