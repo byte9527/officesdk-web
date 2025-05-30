@@ -1673,12 +1673,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@officesdk/editor-sdk-core@npm:^0.0.0-11":
+  version: 0.0.0-11
+  resolution: "@officesdk/editor-sdk-core@npm:0.0.0-11"
+  checksum: 5df38f48c7e511765c860402ed0ec7d752998c423de2bdf561945a2991c215402685b686b02ab906cb792fa4f16e764d5a42d7a1877069b8eccb8576211f0255
+  languageName: node
+  linkType: hard
+
 "@officesdk/rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=19f5e4&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=e76fb2&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     penpal: ^7.0.4
-  checksum: 35dffe4f76eaf31c1da6d6137b119fdfa303929e4be2f36ae5a5bb7f0f4e8be6354efe63f8358418c82c720df71540b30fb48ec5a8f5c2f52967171452c2e6fb
+  checksum: 1d782304431c109417080dc291e362cfa0d14ab7da8696436037721b18535c263e90dabe96533f0274b40aa1896dcb04e1496d59d3d3649720c5b556a4402fb1
   languageName: node
   linkType: hard
 
@@ -1692,9 +1699,10 @@ __metadata:
 
 "@officesdk/web@file:../packages/officesdk-web::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=e7976a&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=56f9f4&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     "@officesdk/rpc": "workspace:*"
+  checksum: 3fe9912afcc4f10065976e6622993987c68f249e29f5c7ff9152809986d421fd5e1d803dfe9ec79cbca6ce892682480d3ebc469540cb9f54dd7d211e4dcdcdcd
   languageName: node
   linkType: hard
 
@@ -7601,6 +7609,7 @@ __metadata:
   dependencies:
     "@ianvs/prettier-plugin-sort-imports": ^4.4.1
     "@microsoft/api-extractor": ^7.43.7
+    "@officesdk/editor-sdk-core": ^0.0.0-11
     "@rollup/plugin-alias": ^5.1.1
     "@rollup/plugin-commonjs": ^28.0.3
     "@rollup/plugin-node-resolve": ^16.0.1

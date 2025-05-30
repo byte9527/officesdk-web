@@ -32,6 +32,9 @@ export function createDocumentProxy(): RPCClientProxy<DocumentMethods> {
       getOutline: async () => {
         return invoke('getOutline', []);
       },
+      getWindow: async () => {
+        return invoke('getWindow', [])
+      }
     };
   };
 }

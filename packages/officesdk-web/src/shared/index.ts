@@ -35,6 +35,11 @@ export type {
   DocumentSDKOptions,
 } from './document';
 
+export type {
+  DocxWindowScrollParams as DocumentWindowScrollParams,
+  DocxWindow as DocumentWindow,
+} from '@officesdk/editor-sdk-core'
+
 export type { DatabaseTableMethods, DatabaseTableEditor, DatabaseTableSDKOptions } from './dbtable';
 export type { LiteDocMethods, LiteDocEditor, LiteDocSDKOptions } from './ltdoc';
 export type {
