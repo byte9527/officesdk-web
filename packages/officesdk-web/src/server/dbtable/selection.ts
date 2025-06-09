@@ -20,23 +20,23 @@ export function createDatabaseTableSelectionProxy(selection: DatabaseTableSelect
     getSelectionType: () => {
       return selection.getSelectionType();
     },
-    selectRange: (selectionValue: { viewRow: number; viewCol: number; rowCount: number; colCount: number } | null) => {
+    selectRange: (selectionValue: { row: number; column: number; rowCount: number; columnCount: number } | null) => {
       return selection.selectRange(selectionValue);
     },
     selectRow: (row: number) => {
       return selection.selectRow(row);
     },
-    selectCol: (col: number) => {
-      return selection.selectCol(col);
+    selectColumn: (column: number) => {
+      return selection.selectColumn(column);
     },
-    selectCell: (row: number, col: number) => {
-      return selection.selectCell(row, col);
+    selectCell: (row: number, column: number) => {
+      return selection.selectCell(row, column);
     },
-    selectMultipleRow: (rows: number[]) => {
-      return selection.selectMultipleRow(rows);
+    selectMultipleRows: (rows: number[]) => {
+      return selection.selectMultipleRows(rows);
     },
-    selectMultipleCol: (col: number, colCount: number) => {
-      return selection.selectMultipleCol(col, colCount);
+    selectMultipleColumns: (column: number, columnCount: number) => {
+      return selection.selectMultipleColumns(column, columnCount);
     },
   };
 }

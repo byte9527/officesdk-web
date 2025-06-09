@@ -40,7 +40,7 @@ export enum DatabaseTableSelectionType {
   /**
    * Multiple non-contiguous rows selection
    */
-  MultipleRow = 'MultipleRow',
+  MultipleRows = 'MultipleRows',
   /**
    * Rectangular range selection (multiple cells)
    */
@@ -48,7 +48,7 @@ export enum DatabaseTableSelectionType {
   /**
    * Multiple contiguous columns selection
    */
-  MultipleColumn = 'MultipleColumn',
+  MultipleColumns = 'MultipleColumns',
 }
 
 /**
@@ -63,11 +63,11 @@ export type DatabaseTableSelectionValue =
       /**
        * Zero-based row index in the current view
        */
-      viewRow: number;
+      row: number;
       /**
        * Zero-based column index in the current view
        */
-      viewCol: number;
+      column: number;
     }
   | {
       /**
@@ -77,7 +77,7 @@ export type DatabaseTableSelectionValue =
       /**
        * Zero-based row index in the current view
        */
-      viewRow: number;
+      row: number;
     }
   | {
       /**
@@ -87,7 +87,7 @@ export type DatabaseTableSelectionValue =
       /**
        * Zero-based column index in the current view
        */
-      viewCol: number;
+      column: number;
     }
   | {
       /**
@@ -99,25 +99,25 @@ export type DatabaseTableSelectionValue =
       /**
        * Multiple non-contiguous rows selection
        */
-      type: DatabaseTableSelectionType.MultipleRow;
+      type: DatabaseTableSelectionType.MultipleRows;
       /**
        * Array of zero-based row indices in the current view
        */
-      viewRows: number[];
+      rows: number[];
     }
   | {
       /**
        * Multiple contiguous columns selection
        */
-      type: DatabaseTableSelectionType.MultipleColumn;
+      type: DatabaseTableSelectionType.MultipleColumns;
       /**
        * Starting zero-based column index in the current view
        */
-      viewCol: number;
+      column: number;
       /**
        * Number of columns selected
        */
-      colCount: number;
+      columnCount: number;
     }
   | {
       /**
@@ -127,11 +127,11 @@ export type DatabaseTableSelectionValue =
       /**
        * Starting zero-based row index in the current view
        */
-      viewRow: number;
+      row: number;
       /**
        * Starting zero-based column index in the current view
        */
-      viewCol: number;
+      column: number;
       /**
        * Number of rows in the selection
        */
@@ -139,7 +139,7 @@ export type DatabaseTableSelectionValue =
       /**
        * Number of columns in the selection
        */
-      colCount: number;
+      columnCount: number;
     };
 
 /**
@@ -165,11 +165,11 @@ export type DatabaseTableSelection = {
       /**
        * Starting zero-based row index in the current view
        */
-      viewRow: number;
+      row: number;
       /**
        * Starting zero-based column index in the current view
        */
-      viewCol: number;
+      column: number;
       /**
        * Number of rows in the selection
        */
@@ -177,41 +177,41 @@ export type DatabaseTableSelection = {
       /**
        * Number of columns in the selection
        */
-      colCount: number;
+      columnCount: number;
     } | null,
   ) => void;
 
   /**
    * Selects a single row
-   * @param viewRow - Zero-based row index in the current view
+   * @param row - Zero-based row index in the current view
    */
-  selectRow: (viewRow: number) => void;
+  selectRow: (row: number) => void;
 
   /**
    * Selects a single column
-   * @param viewCol - Zero-based column index in the current view
+   * @param column - Zero-based column index in the current view
    */
-  selectCol: (viewCol: number) => void;
+  selectColumn: (column: number) => void;
 
   /**
    * Selects a single cell
-   * @param viewRow - Zero-based row index in the current view
-   * @param viewCol - Zero-based column index in the current view
+   * @param row - Zero-based row index in the current view
+   * @param column - Zero-based column index in the current view
    */
-  selectCell: (viewRow: number, viewCol: number) => void;
+  selectCell: (row: number, column: number) => void;
 
   /**
    * Selects multiple non-contiguous rows
-   * @param viewRows - Array of zero-based row indices in the current view
+   * @param rows - Array of zero-based row indices in the current view
    */
-  selectMultipleRow: (viewRows: number[]) => void;
+  selectMultipleRows: (rows: number[]) => void;
 
   /**
    * Selects multiple contiguous columns
-   * @param viewCol - Starting zero-based column index in the current view
-   * @param colCount - Number of columns to select
+   * @param column - Starting zero-based column index in the current view
+   * @param columnCount - Number of columns to select
    */
-  selectMultipleCol: (viewCol: number, colCount: number) => void;
+  selectMultipleColumns: (column: number, columnCount: number) => void;
 };
 
 /**

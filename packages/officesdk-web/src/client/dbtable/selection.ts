@@ -30,10 +30,10 @@ export function createDBTableSelectionFacade(methods: RPCReturnMethods<DatabaseT
     },
     selectRange: async (
       range: {
-        viewRow: number;
-        viewCol: number;
+        row: number;
+        column: number;
         rowCount: number;
-        colCount: number;
+        columnCount: number;
       } | null,
     ): Promise<void> => {
       const selection = await getDBTableSelection();
@@ -43,21 +43,21 @@ export function createDBTableSelectionFacade(methods: RPCReturnMethods<DatabaseT
       const selection = await getDBTableSelection();
       return selection.selectRow(row);
     },
-    selectCol: async (col: number): Promise<void> => {
+    selectColumn: async (column: number): Promise<void> => {
       const selection = await getDBTableSelection();
-      return selection.selectCol(col);
+      return selection.selectColumn(column);
     },
     selectCell: async (row: number, column: number): Promise<void> => {
       const selection = await getDBTableSelection();
       return selection.selectCell(row, column);
     },
-    selectMultipleRow: async (rows: number[]): Promise<void> => {
+    selectMultipleRows: async (rows: number[]): Promise<void> => {
       const selection = await getDBTableSelection();
-      return selection.selectMultipleRow(rows);
+      return selection.selectMultipleRows(rows);
     },
-    selectMultipleCol: async (col: number, colCount: number): Promise<void> => {
+    selectMultipleColumns: async (column: number, columnCount: number): Promise<void> => {
       const selection = await getDBTableSelection();
-      return selection.selectMultipleCol(col, colCount);
+      return selection.selectMultipleColumns(column, columnCount);
     },
   };
 }
