@@ -12,11 +12,6 @@ export type DatabaseTableMethods = {
   getDBTableSelection: () => DatabaseTableSelection;
 
   /**
-   * Saves all pending changes to the database table
-   */
-  saveChanges: () => Promise<void>;
-
-  /**
    * Returns the editor content
    */
   getContent: () => EditorContent;

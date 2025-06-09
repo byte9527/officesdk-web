@@ -15,11 +15,6 @@ export interface DatabaseTableFacade {
   readonly selection: RPCReturnMapProxy<DatabaseTableSelection>;
 
   /**
-   * Save changes
-   */
-  saveChanges: () => Promise<void>;
-
-  /**
    * Get content
    */
   readonly content: ReturnType<typeof createContentFacade>;
@@ -37,9 +32,6 @@ export function createDatabaseTableFacade(client: Client<DatabaseTableMethods>):
     },
     get selection() {
       return selection;
-    },
-    saveChanges: async (): Promise<void> => {
-      return methods.saveChanges();
     },
     get content() {
       return content;

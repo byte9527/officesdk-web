@@ -31,10 +31,6 @@ export function createDatabaseTableProxy(
         return createDatabaseTableSelectionProxy(editor.selection);
       },
 
-      saveChanges: async () => {
-        return editor.saveChanges();
-      },
-
       getContent: () => {
         if (!context?.content) {
           throw new Error('Context content is not provided');

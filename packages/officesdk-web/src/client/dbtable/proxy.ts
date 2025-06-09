@@ -10,10 +10,6 @@ export function createDatabaseTableProxy(): RPCClientProxy<DatabaseTableMethods>
         return invoke('getActiveDBSheet', []);
       },
 
-      saveChanges: async () => {
-        return invoke('saveChanges', []);
-      },
-
       getDBTableSelection: async () => {
         return invoke('getDBTableSelection', []);
       },
