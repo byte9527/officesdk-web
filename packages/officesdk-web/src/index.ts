@@ -70,4 +70,8 @@ export type {
   SpreadsheetSelection,
   SpreadsheetWorkbook,
   SpreadsheetWorksheet,
+  DatabaseTableSelection,
+  DatabaseTableSelectionType,
+  DatabaseTableSelectionValue,
+  DatabaseTableSheet,
 } from './shared';

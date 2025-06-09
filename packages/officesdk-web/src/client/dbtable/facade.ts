@@ -1,12 +1,48 @@
-import type { Client } from '@officesdk/rpc';
-import type { DatabaseTableMethods } from '../../shared';
+import type { Client, RPCReturnMapProxy } from '@officesdk/rpc';
+import type { DatabaseTableMethods, DatabaseTableSheet, DatabaseTableSelection } from '../../shared';
+import { createContentFacade } from '../editor/content';
+import { createDBTableSelectionFacade } from './selection';
 
 export interface DatabaseTableFacade {
-  // TODO:
+  /**
+   * Current activeDBSheet
+   */
+  readonly activeDBSheet: Promise<RPCReturnMapProxy<DatabaseTableSheet>>;
+
+  /**
+   * Current selection
+   */
+  readonly selection: RPCReturnMapProxy<DatabaseTableSelection>;
+
+  /**
+   * Save changes
+   */
+  saveChanges: () => Promise<void>;
+
+  /**
+   * Get content
+   */
+  readonly content: ReturnType<typeof createContentFacade>;
 }
 
 export function createDatabaseTableFacade(client: Client<DatabaseTableMethods>): DatabaseTableFacade {
+  const { methods } = client;
+
+  const content = createContentFacade(methods);
+  const selection = createDBTableSelectionFacade(methods);
+
   return {
-    // TODO:
+    get activeDBSheet() {
+      return methods.getActiveDBSheet();
+    },
+    get selection() {
+      return selection;
+    },
+    saveChanges: async (): Promise<void> => {
+      return methods.saveChanges();
+    },
+    get content() {
+      return content;
+    },
   };
 }

@@ -2,6 +2,9 @@ import type { RPCServerProxy } from '@officesdk/rpc';
 
 import type { EditorContext } from '../editor';
 import type { DatabaseTableMethods, DatabaseTableEditor, DatabaseTableSDKOptions } from '../../shared';
+import { createEditorContentProxy } from '../editor/content';
+import { createDatabaseTableSheetProxy } from './worksheet';
+import { createDatabaseTableSelectionProxy } from './selection';
 
 export type DatabaseTableEditorFactory = (options: DatabaseTableSDKOptions | null) => Promise<DatabaseTableEditor>;
 
@@ -19,7 +22,25 @@ export function createDatabaseTableProxy(
     const editor = await createEditor(options);
     const context = await createContext?.(editor);
 
-    console.log('context', context);
-    return {};
+    return {
+      getActiveDBSheet: () => {
+        return createDatabaseTableSheetProxy(editor.activeDBTable);
+      },
+
+      getDBTableSelection: () => {
+        return createDatabaseTableSelectionProxy(editor.selection);
+      },
+
+      saveChanges: async () => {
+        return editor.saveChanges();
+      },
+
+      getContent: () => {
+        if (!context?.content) {
+          throw new Error('Context content is not provided');
+        }
+        return createEditorContentProxy(context.content);
+      },
+    };
   };
 }
