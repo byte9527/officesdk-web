@@ -75,6 +75,11 @@ export type {
   SpreadsheetMenuEntryConfig,
   SpreadsheetMenuFeatureButtonConfig,
   SpreadsheetMenuOptions,
+  DatabaseTableSelection,
+  DatabaseTableSelectionType,
+  DatabaseTableSelectionValue,
+  DatabaseTableMethods,
+  DatabaseTableSheet,
 } from '../shared';
 
 export { FileType } from '../shared';

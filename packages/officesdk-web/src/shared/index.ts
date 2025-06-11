@@ -38,9 +38,17 @@ export type {
 export type {
   DocxWindowScrollParams as DocumentWindowScrollParams,
   DocxWindow as DocumentWindow,
-} from '@officesdk/editor-sdk-core'
+} from '@officesdk/editor-sdk-core';
 
-export type { DatabaseTableMethods, DatabaseTableEditor, DatabaseTableSDKOptions } from './dbtable';
+export type {
+  DatabaseTableMethods,
+  DatabaseTableEditor,
+  DatabaseTableSDKOptions,
+  DatabaseTableSelection,
+  DatabaseTableSheet,
+  DatabaseTableSelectionType,
+  DatabaseTableSelectionValue,
+} from './dbtable';
 export type { LiteDocMethods, LiteDocEditor, LiteDocSDKOptions } from './ltdoc';
 export type {
   PresentationMethods,
@@ -56,7 +64,7 @@ export type {
   PresentationMenuFeatureButtonName,
   PresentationMenuEntryConfig,
   PresentationMenuFeatureButtonConfig,
-  PresentationMenuOptions
+  PresentationMenuOptions,
 } from './presentation';
 export type {
   SpreadsheetMethods,
