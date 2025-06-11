@@ -38,7 +38,7 @@ export type EditorContent = {
    * @param listener
    * @returns
    */
-  addContentListener: (listener: (record: EditorContentRecord) => void) => void;
+  addContentListener: (listener: (record: EditorContentRecord) => void) => () => void;
 };
 
 /**
