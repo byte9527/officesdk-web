@@ -23,7 +23,7 @@ export function mapToPreviewType(type: FileType) {
     [FileType.Pdf]: 'pdf',
     [FileType.Presentation]: 'presentation',
     //  TODO: 轻文档和应用表格
-    [FileType.DBTable]: 'unsupported',
+    [FileType.DBTable]: 'table',
     [FileType.LiteDoc]: 'unsupported',
   }
 
