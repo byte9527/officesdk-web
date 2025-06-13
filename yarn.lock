@@ -1682,10 +1682,9 @@ __metadata:
 
 "@officesdk/rpc@file:../packages/officesdk-rpc::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=e76fb2&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=13b27d&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     penpal: ^7.0.4
-  checksum: 1d782304431c109417080dc291e362cfa0d14ab7da8696436037721b18535c263e90dabe96533f0274b40aa1896dcb04e1496d59d3d3649720c5b556a4402fb1
   languageName: node
   linkType: hard
 
