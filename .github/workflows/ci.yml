@@ -57,7 +57,7 @@ jobs:
 
       # Install project dependencies
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install 
 
       # Build the project
       - name: Build project
@@ -159,7 +159,7 @@ jobs:
       - name: Publish RPC Package
         run: |
           cd dist/rpc
-          npm publish --tag ${{ steps.version.outputs.npm_tag }} --access public
+          # npm publish --tag ${{ steps.version.outputs.npm_tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -167,6 +167,6 @@ jobs:
       - name: Publish WEB Package
         run: |
           cd dist/web
-          npm publish --tag ${{ steps.version.outputs.npm_tag }} --access public
+          # npm publish --tag ${{ steps.version.outputs.npm_tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
