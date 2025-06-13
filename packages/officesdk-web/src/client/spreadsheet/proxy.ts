@@ -7,6 +7,9 @@ export function createSpreadsheetProxy(): RPCClientProxy<SpreadsheetMethods> {
     const { invoke } = context;
 
     return {
+      ready: async () => {
+        return invoke('ready', []);
+      },
       getWorkbook: async () => {
         return invoke('getWorkbook', []);
       },

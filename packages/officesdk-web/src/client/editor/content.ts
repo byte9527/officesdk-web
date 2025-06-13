@@ -19,9 +19,10 @@ export function createContentFacade(methods: RPCReturnMethods<EditorContentMetho
       await content.save();
     },
 
-    addContentListener: async (listener: (record: EditorContentRecord) => void): Promise<void> => {
+    addContentListener: async (listener: (record: EditorContentRecord) => void) => {
       const content = await getContent();
-      await content.addContentListener(listener);
+      const value = await content.addContentListener(listener);
+      return value
     },
   };
 }

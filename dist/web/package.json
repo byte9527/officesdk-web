@@ -1,6 +1,6 @@
 {
   "name": "@officesdk/web",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "Web JS SDK for the Office SDK",
   "main": "dist/index.js",
   "types": "./index.d.ts",
@@ -24,7 +24,8 @@
     }
   },
   "dependencies": {
-    "@officesdk/rpc": "1.0.0"
+    "@officesdk/editor-sdk-core": "^0.0.0-11",
+    "@officesdk/rpc": "1.0.5"
   },
   "files": [
     "index.d.ts",

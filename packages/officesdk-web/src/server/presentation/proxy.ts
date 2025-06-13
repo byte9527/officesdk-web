@@ -26,6 +26,9 @@ export function createPresentationProxy(
     console.log('context', context);
 
     return {
+      ready: async ():Promise<void> => {
+         return editor.ready();
+      },
       /**
        * 获取选区接口
        */

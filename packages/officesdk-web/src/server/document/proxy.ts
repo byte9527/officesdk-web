@@ -7,6 +7,7 @@ import { createEditorContentProxy } from '../editor/content';
 import { createDocumentZoomProxy } from './zoom';
 import { createDocumentTOCsProxy } from './tocs';
 import { createDocumentOutlineProxy } from './outline';
+import { createDocumentWindowProxy } from './window';
 
 export type DocumentEditorFactory = (options: DocumentSDKOptions | null) => Promise<DocumentEditor>;
 
@@ -25,6 +26,10 @@ export function createDocumentProxy(
     const context = await createContext?.(editor);
 
     return {
+      ready: async (): Promise<void> => {
+        return editor.ready();
+      },
+
       getSelection: () => {
         return createDocumentSelectionProxy(editor.selection);
       },
@@ -48,6 +53,9 @@ export function createDocumentProxy(
       getOutline: () => {
         return createDocumentOutlineProxy(editor.outline);
       },
+      getWindow: () => {
+        return createDocumentWindowProxy(editor.window)
+      }
     };
   };
 }

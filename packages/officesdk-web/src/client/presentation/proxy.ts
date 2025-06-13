@@ -10,6 +10,9 @@ export function createPresentationProxy(): RPCClientProxy<PresentationMethods> {
     const { invoke } = context;
 
     return {
+      ready: async () => {
+        return invoke('ready', []);
+      },
       /**
        * 获取选区接口
        */

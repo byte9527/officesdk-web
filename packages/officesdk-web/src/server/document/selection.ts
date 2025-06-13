@@ -3,8 +3,8 @@ import { createDocumentRangeProxy } from './range';
 
 export function createDocumentSelectionProxy(selection: DocumentSelection): DocumentSelection {
   return {
-    getRange: () => {
-      const range = selection.getRange();
+    getRange: (param) => {
+      const range = selection.getRange(param);
 
       if (!range) {
         return null;
@@ -17,6 +17,11 @@ export function createDocumentSelectionProxy(selection: DocumentSelection): Docu
     },
     addRangeListener: (listener) => {
       return selection.addRangeListener(listener);
+    },
+    getWholeRange: () => {
+      const range = selection.getWholeRange();
+
+      return createDocumentRangeProxy(range);
     },
   };
 }

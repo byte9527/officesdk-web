@@ -18,5 +18,9 @@ export function createPdfSelectionProxy(selection: PdfSelection): PdfSelection {
     addRangeListener: (listener) => {
       return selection.addRangeListener(listener);
     },
+    getWholeRange: () => {
+      const range = selection.getWholeRange();
+      return createPdfRangeProxy(range);
+    },
   };
 }

@@ -1,7 +1,6 @@
 export { FileType, assertFileType } from './file';
 export { EditorModeType, EditorStandardRole } from './editor';
 
-
 export type {
   EditorContent,
   EditorContentRecord,
@@ -16,6 +15,7 @@ export type {
   EditorMenuFeatureButtonConfig,
   EditorMenuOptions,
 } from './editor';
+
 export type {
   DocumentMethods,
   DocumentEditor,
@@ -36,7 +36,20 @@ export type {
   DocumentSDKOptions,
 } from './document';
 
-export type { DatabaseTableMethods, DatabaseTableEditor, DatabaseTableSDKOptions } from './dbtable';
+export type {
+  DocxWindowScrollParams as DocumentWindowScrollParams,
+  DocxWindow as DocumentWindow,
+} from '@officesdk/editor-sdk-core/docx';
+
+export type {
+  DatabaseTableMethods,
+  DatabaseTableEditor,
+  DatabaseTableSDKOptions,
+  DatabaseTableSelection,
+  DatabaseTableSheet,
+  DatabaseTableSelectionType,
+  DatabaseTableSelectionValue,
+} from './dbtable';
 export type { LiteDocMethods, LiteDocEditor, LiteDocSDKOptions } from './ltdoc';
 export type {
   PresentationMethods,
@@ -49,6 +62,10 @@ export type {
   PresentationSlide,
   PresentationSlides,
   PresentationSDKOptions,
+  PresentationMenuFeatureButtonName,
+  PresentationMenuEntryConfig,
+  PresentationMenuFeatureButtonConfig,
+  PresentationMenuOptions,
 } from './presentation';
 export type {
   SpreadsheetMethods,
@@ -62,6 +79,10 @@ export type {
   SpreadsheetSelection,
   SpreadsheetWorksheet,
   SpreadsheetSDKOptions,
+  SpreadsheetMenuFeatureButtonName,
+  SpreadsheetMenuEntryConfig,
+  SpreadsheetMenuFeatureButtonConfig,
+  SpreadsheetMenuOptions,
 } from './spreadsheet';
 export type {
   PdfMethods,

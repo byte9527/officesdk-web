@@ -67,7 +67,7 @@ export type RPCClientInvokeArgs<T extends any[]> = {
  * The return value is wrapped in a proxy to maintain proper type transformations.
  * This type can also be used in callback flows.
  */
-export type RPCClientInvoke<TMethods extends RPCMethods> = <TName extends keyof TMethods>(
+export type RPCClientInvoke<TMethods extends RPCMethods> = <TName extends Extract<keyof TMethods, string>>(
   method: TName,
   args: RPCClientInvokeArgs<Parameters<TMethods[TName]>>,
 ) => Promise<RPCReturnValueProxy<ReturnType<TMethods[TName]>>>;

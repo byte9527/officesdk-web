@@ -23,7 +23,7 @@ function createCell(
     },
     getCellValue: () => {
       output('spreadsheet.cell.getCellValue has been called');
-      return 'mock cell value';
+      return null;
     },
   };
 }

@@ -16,9 +16,9 @@ export function createSelectionFacade(
   };
 
   return {
-    getRange: async (): Promise<RPCReturnMapProxy<DocumentRange> | null> => {
+    getRange: async (range?: DocumentRangeValue): Promise<RPCReturnMapProxy<DocumentRange> | null> => {
       const selection = await getSelection();
-      return selection.getRange();
+      return selection.getRange(range);
     },
     setRange: async (range: DocumentRangeValue | null): Promise<void> => {
       const selection = await getSelection();
@@ -27,6 +27,10 @@ export function createSelectionFacade(
     addRangeListener: async (listener: (range: DocumentRangeValue | null) => void): Promise<void> => {
       const selection = await getSelection();
       return selection.addRangeListener(listener);
+    },
+    getWholeRange: async (): Promise<RPCReturnMapProxy<DocumentRange>> => {
+      const selection = await getSelection();
+      return selection.getWholeRange();
     },
   };
 }

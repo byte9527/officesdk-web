@@ -57,6 +57,10 @@ export type {
   PresentationTextRange,
   PresentationTextRangeValue,
   PresentationZoom,
+  PresentationMenuFeatureButtonName,
+  PresentationMenuEntryConfig,
+  PresentationMenuFeatureButtonConfig,
+  PresentationMenuOptions,
   SpreadsheetCell,
   SpreadsheetCellValue,
   SpreadsheetEditor,
@@ -67,6 +71,15 @@ export type {
   SpreadsheetSelection,
   SpreadsheetWorkbook,
   SpreadsheetWorksheet,
+  SpreadsheetMenuFeatureButtonName,
+  SpreadsheetMenuEntryConfig,
+  SpreadsheetMenuFeatureButtonConfig,
+  SpreadsheetMenuOptions,
+  DatabaseTableSelection,
+  DatabaseTableSelectionType,
+  DatabaseTableSelectionValue,
+  DatabaseTableMethods,
+  DatabaseTableSheet,
 } from '../shared';
 
 export { FileType } from '../shared';

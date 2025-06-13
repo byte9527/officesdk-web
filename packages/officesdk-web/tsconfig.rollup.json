@@ -1,9 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "declaration": false
+    "declaration": false,
+    "target": "ES5"
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../officesdk-rpc/**/*.ts"
   ]
 }

@@ -1,5 +1,11 @@
-import type { EditorMenuOptions, EditorMenuFeatureButtonConfig, EditorMenuEntryConfig } from '../shared';
+import type {
+  EditorMenuOptions,
+  EditorMenuFeatureButtonConfig,
+  EditorMenuEntryConfig,
+  DocumentWindow,
+} from '../shared';
 import type { EditorContent, EditorOutline, EditorOutlineItem } from './editor';
+
 /**
  * Document 远程调用的方法定义，
  * 作为契约，用于统一约束客户端和服务端的接口。
@@ -7,6 +13,7 @@ import type { EditorContent, EditorOutline, EditorOutlineItem } from './editor';
  */
 
 export type DocumentMethods = {
+  ready: () => Promise<void>;
   /**
    * 获取选区接口
    */
@@ -32,6 +39,11 @@ export type DocumentMethods = {
    *  传统文档目录大纲接口
    */
   getOutline: () => DocumentOutline;
+
+  /**
+   * 文档窗口接口
+   */
+  getWindow: () => DocumentWindow;
   // TODO: 初始化流程控制，初始化各类异常
 };
 
@@ -53,10 +65,12 @@ export type DocumentOutlineItem = EditorOutlineItem<{
  * 文档编辑器实例接口
  */
 export interface DocumentEditor {
+  readonly ready: () => Promise<void>;
   readonly selection: DocumentSelection;
   readonly zoom: DocumentZoom;
   readonly TOCs: DocumentTOCs;
   readonly outline: DocumentOutline;
+  readonly window: DocumentWindow
 }
 
 export type DocumentSelection = {
@@ -65,7 +79,7 @@ export type DocumentSelection = {
    * 如果选区不存在，则返回 null。
    * @returns
    */
-  getRange: () => DocumentRange | null;
+  getRange: (range?: DocumentRangeValue) => DocumentRange | null;
 
   /**
    * 设置选区的区域范围，
@@ -81,6 +95,12 @@ export type DocumentSelection = {
    * @returns
    */
   addRangeListener: (listener: (range: DocumentRangeValue | null) => void) => void;
+
+  /**
+   * 获取文档全部选区范围。
+   * @returns
+   */
+  getWholeRange: () => DocumentRange;
 };
 
 /**
