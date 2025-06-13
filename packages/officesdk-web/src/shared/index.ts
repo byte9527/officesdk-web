@@ -15,6 +15,7 @@ export type {
   EditorMenuFeatureButtonConfig,
   EditorMenuOptions,
 } from './editor';
+
 export type {
   DocumentMethods,
   DocumentEditor,
@@ -38,7 +39,7 @@ export type {
 export type {
   DocxWindowScrollParams as DocumentWindowScrollParams,
   DocxWindow as DocumentWindow,
-} from '@officesdk/editor-sdk-core';
+} from '@officesdk/editor-sdk-core/docx';
 
 export type {
   DatabaseTableMethods,

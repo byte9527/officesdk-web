@@ -1,4 +1,5 @@
 import type { PresentationSDKOptions, EditorMenuCustomButton } from '../../shared';
+import type { PresentationToolbarOptions } from '@officesdk/editor-sdk-core/presentation'
 
 export interface PresentationSettings {
   /**
@@ -7,15 +8,15 @@ export interface PresentationSettings {
   menu?: {
     custom?: EditorMenuCustomButton[];
   };
+  toolbar?: {
+    features?: PresentationToolbarOptions['features']
+  }
 }
 
 export function createPresentationOptions(settings?: PresentationSettings): PresentationSDKOptions | null {
-  // 如果没有有效的初始化设置，直接返回 null
-  if (!settings?.menu?.custom?.length) {
-    return null;
-  }
 
   return {
-    menu: settings.menu,
+    menu: settings?.menu,
+    toolbar: settings?.toolbar
   };
 }

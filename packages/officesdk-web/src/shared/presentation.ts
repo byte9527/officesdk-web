@@ -1,7 +1,7 @@
 import type { EditorContent } from './editor';
-import type { EditorMenuOptions, EditorMenuFeatureButtonConfig, EditorMenuEntryConfig } from '../shared';
-
-
+import type { EditorMenuFeatureButtonConfig, EditorMenuEntryConfig } from '../shared';
+import type { PresentationMenuOptions, PresentationToolbarOptions } from '@officesdk/editor-sdk-core/presentation';
+export type { PresentationMenuOptions } from '@officesdk/editor-sdk-core/presentation';
 /**
  * Presentation 远程调用的方法定义，
  * 作为契约，用于统一约束客户端和服务端的接口。
@@ -257,7 +257,6 @@ export interface PresentationSlides {
   setSelectedSlides: (ids: string[]) => void;
 }
 
-
 /**
  * 幻灯片工具栏内置功能按钮
  */
@@ -275,9 +274,8 @@ export type PresentationMenuFeatureButtonConfig = EditorMenuFeatureButtonConfig<
 
 export interface PresentationSDKOptions {
   /**
-     * 菜单栏相关设置
-     */
-    menu?: PresentationMenuOptions;
+   * 菜单栏相关设置
+   */
+  menu?: Pick<PresentationMenuOptions, 'custom'>;
+  toolbar?: Pick<PresentationToolbarOptions, 'features'>;
 }
-
-export type PresentationMenuOptions = EditorMenuOptions<PresentationMenuFeatureButtonName>;
