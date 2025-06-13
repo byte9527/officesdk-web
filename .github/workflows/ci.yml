@@ -57,7 +57,7 @@ jobs:
 
       # Install project dependencies
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install
 
       # Build the project
       - name: Build project
