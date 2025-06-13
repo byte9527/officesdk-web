@@ -1673,10 +1673,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@officesdk/editor-sdk-core@npm:^0.0.0-11":
-  version: 0.0.0-11
-  resolution: "@officesdk/editor-sdk-core@npm:0.0.0-11"
-  checksum: 5df38f48c7e511765c860402ed0ec7d752998c423de2bdf561945a2991c215402685b686b02ab906cb792fa4f16e764d5a42d7a1877069b8eccb8576211f0255
+"@officesdk/editor-sdk-core@npm:^0.0.0-12":
+  version: 0.0.0-12
+  resolution: "@officesdk/editor-sdk-core@npm:0.0.0-12"
+  checksum: 5c534d5254d9b778f65f12fa30084da96a428ccf1d48e343f083040dc48edd209b0966125a0bc53b3dc85b8e8a5bd74d10fd698de40eeb294c19e73b671f1c4e
   languageName: node
   linkType: hard
 
@@ -1685,6 +1685,7 @@ __metadata:
   resolution: "@officesdk/rpc@file:../packages/officesdk-rpc#../packages/officesdk-rpc::hash=13b27d&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     penpal: ^7.0.4
+  checksum: 0041fab027b49435b083f4b02caeb0e85b68b87699375e993e5d426d58546c6106ea0676d7c64a83267e82868a6bc10b98366b2dd7667cf59cd47a1114bfdaf1
   languageName: node
   linkType: hard
 
@@ -1698,10 +1699,10 @@ __metadata:
 
 "@officesdk/web@file:../packages/officesdk-web::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=d265ed&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=52a7b9&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     "@officesdk/rpc": "workspace:*"
-  checksum: 0a6362821f0eea1c693866c144bfc623236638a793c16d123433b6ec0b0a7be0d7e023690ef359b9d2260dfdee14aa645214e62d343903f32a214712ccd818d9
+  checksum: c18e48e0e4bdbebcee77f37120599f244e73393d39c9f845e328351d41649590095faeff53d98b3a0c191497f6f7c92706c47dd2bcac12784f037d1290fa74bd
   languageName: node
   linkType: hard
 
@@ -7608,7 +7609,7 @@ __metadata:
   dependencies:
     "@ianvs/prettier-plugin-sort-imports": ^4.4.1
     "@microsoft/api-extractor": ^7.43.7
-    "@officesdk/editor-sdk-core": ^0.0.0-11
+    "@officesdk/editor-sdk-core": ^0.0.0-12
     "@rollup/plugin-alias": ^5.1.1
     "@rollup/plugin-commonjs": ^28.0.3
     "@rollup/plugin-node-resolve": ^16.0.1
