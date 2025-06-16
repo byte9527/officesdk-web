@@ -48,25 +48,25 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       # Check Node.js version
-      - name: Check Node version
-        run: node --version
+      # - name: Check Node version
+      #   run: node --version
 
       # Check Yarn version
-      - name: Check Yarn version
-        run: yarn --version
+      # - name: Check Yarn version
+      #   run: yarn --version
 
       # Install project dependencies
-      - name: Install dependencies
-        run: yarn install 
+      # - name: Install dependencies
+      #   run: yarn install 
 
       # Build the project
-      - name: Build project
-        run: yarn build
+      # - name: Build project
+      #   run: yarn build
 
 
       # Publish the RPC package to npm
       - name: Publish RPC Package
         run: |
-          bash ./scripts/publish-core.sh
+          bash ./scripts/publish-rpc.sh
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

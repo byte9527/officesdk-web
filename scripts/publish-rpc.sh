@@ -84,6 +84,7 @@ cd ../../dist/rpc
  # If the current trigger is a Git tag with a version number
 
 NEXT_VERSION=$(get_version)
+echo "next_version: $NEXT_VERSION"
 
 # Update the version number in package.json files
 jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
