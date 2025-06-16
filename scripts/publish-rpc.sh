@@ -68,18 +68,20 @@ get_version() {
 }
 
 # Define the RPC directory relative to the script's location
-RPC_DIR="./packages/officesdk-rpc"
+# RPC_DIR="./packages/officesdk-rpc"
 
-# Navigate to the package directory
-cd "$RPC_DIR" || { echo "Directory packages/rpc does not exist."; exit 1; }
+# # Navigate to the package directory
+# cd "$RPC_DIR" || { echo "Directory packages/officesdk-rpc does not exist."; exit 1; }
 
 # Check if there are any changes in the directory
-if git diff --quiet; then
-    echo "No changes detected in packages/rpc. No need to publish."
-    exit 0
+if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^packages/rpc/'; then
+  echo "Changes detected in packages/officesdk-rpc."
+else
+  echo "No changes detected in packages/officesdk-rpc. Skipping publish."
+  exit 0
 fi
 
-cd ../../dist/rpc
+# cd ./dist/rpc
 
  # If the current trigger is a Git tag with a version number
 
