@@ -61,12 +61,12 @@ jobs:
         run: yarn --version
 
       # Install project dependencies
-      # - name: Install dependencies
-      #   run: yarn install 
+      - name: Install dependencies
+        run: yarn install 
 
       # Build the project
-      # - name: Build project
-      #   run: yarn build
+      - name: Build project
+        run: yarn build
 
 
       # Publish the RPC package to npm
