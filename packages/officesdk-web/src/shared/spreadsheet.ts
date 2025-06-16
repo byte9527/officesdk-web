@@ -1,6 +1,6 @@
 import type { EditorContent } from './editor';
 import type { EditorMenuOptions, EditorMenuFeatureButtonConfig, EditorMenuEntryConfig } from '../shared';
-import type { SheetToolbarOptions } from '@officesdk/editor-sdk-core/sheet';
+import type { SheetToolbarOptions, SheetMenuFeatureButtonName } from '@officesdk/editor-sdk-core/sheet';
 /**
  * Spreadsheet 远程调用的方法定义，
  * 作为契约，用于统一约束客户端和服务端的接口。
@@ -348,7 +348,7 @@ export type SpreadsheetSelection = {
 /**
  * 幻灯片工具栏内置功能按钮
  */
-export type SpreadsheetMenuFeatureButtonName = 'undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'selectAll';
+export type SpreadsheetMenuFeatureButtonName = SheetMenuFeatureButtonName;
 
 /**
  * 幻灯片工具栏一级菜单
