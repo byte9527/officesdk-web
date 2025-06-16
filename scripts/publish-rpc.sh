@@ -1,4 +1,4 @@
-```bash
+
 #!/bin/bash
 echo "version_bump: $VERSION_BUMP"
 
@@ -94,5 +94,5 @@ jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv
 echo "Package @officesdk/rpc version $PACKAGE_VERSION published as $RELEASE_TYPE release."
 echo $NODE_AUTH_TOKEN
 # npm publish --//registry.npmjs.org/:_authToken=$NPM_TOKEN
-```
+
 
