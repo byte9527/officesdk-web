@@ -68,7 +68,7 @@ get_version() {
 }
 
 # Define the RPC directory relative to the script's location
-RPC_DIR="./packages/rpc"
+RPC_DIR="./packages/officesdk-rpc"
 
 # Navigate to the package directory
 cd "$RPC_DIR" || { echo "Directory packages/rpc does not exist."; exit 1; }
