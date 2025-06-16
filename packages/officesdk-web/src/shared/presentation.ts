@@ -1,6 +1,6 @@
-import type { EditorContent } from './editor';
+import type { EditorContent, EditorMenuCustomButton } from './editor';
 import type { EditorMenuFeatureButtonConfig, EditorMenuEntryConfig } from '../shared';
-import type { PresentationMenuOptions, PresentationToolbarOptions } from '@officesdk/editor-sdk-core/presentation';
+import type { PresentationToolbarOptions } from '@officesdk/editor-sdk-core/presentation';
 export type { PresentationMenuOptions } from '@officesdk/editor-sdk-core/presentation';
 /**
  * Presentation 远程调用的方法定义，
@@ -274,8 +274,15 @@ export type PresentationMenuFeatureButtonConfig = EditorMenuFeatureButtonConfig<
 
 export interface PresentationSDKOptions {
   /**
-   * 菜单栏相关设置
+   * 自定义菜单
    */
-  menu?: Pick<PresentationMenuOptions, 'custom'>;
-  toolbar?: Pick<PresentationToolbarOptions, 'features'>;
+  menu?: {
+    custom?: EditorMenuCustomButton[];
+  };
+  /**
+   * 工具栏设置
+   */
+  toolbar?: {
+    features?: PresentationToolbarOptions['features']
+  }
 }

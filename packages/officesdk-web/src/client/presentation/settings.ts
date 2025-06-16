@@ -8,6 +8,9 @@ export interface PresentationSettings {
   menu?: {
     custom?: EditorMenuCustomButton[];
   };
+  /**
+   * Toolbar related settings
+   */
   toolbar?: {
     features?: PresentationToolbarOptions['features']
   }

@@ -16,6 +16,13 @@ export type {
   OfficeSDKMap,
   createContentFacade,
   SDKSettings,
+  DocumentCreateOptions,
+  PresentationCreateOptions,
+  SpreadsheetCreateOptions,
+  DBTableCreateOptions,
+  LiteDocCreateOptions,
+  PdfCreateOptions,
+  BaseCreateOptions,
 } from './client';
 export type {
   DocumentEditor,

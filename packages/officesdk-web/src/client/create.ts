@@ -23,13 +23,12 @@ export type SDKSettings = {
   [FileType.Presentation]: PresentationSettings;
   [FileType.Spreadsheet]: SpreadsheetSettings;
 };
-
 /**
- * 初始化 Office SDK 的配置项，
+ * 初始化 Office SDK 的基础配置项，
  * 需要传入 endpoint、 token、 fileId 用于连接服务端并鉴权，
  * 以及指定 fileType 用于初始化 SDK 操作接口。
  */
-export interface CreateOptions<T extends FileType> {
+export interface BaseCreateOptions {
   /**
    * 连接的 endpoint
    */
@@ -51,11 +50,6 @@ export interface CreateOptions<T extends FileType> {
   path?: string;
 
   /**
-   * SDK 的文件类型
-   */
-  fileType: T;
-
-  /**
    * 加载 SDK iframe 的根节点，这个是个可选配置，
    * 也可以在创建实例后再将 sdk.iframe 加载到页面任意位置。
    */
@@ -64,7 +58,7 @@ export interface CreateOptions<T extends FileType> {
   /**
    * 用户自定义参数
    */
-  userQuery?: Record<string, string>
+  userQuery?: Record<string, string>;
 
   /**
    * 已加载 SDK 环境的 iframe 实例
@@ -75,7 +69,7 @@ export interface CreateOptions<T extends FileType> {
    * 语言
    */
   lang?: 'zh-CN' | 'en-US';
-    /**
+  /**
    * 编辑器模式
    */
   mode?: EditorModeType;
@@ -83,13 +77,46 @@ export interface CreateOptions<T extends FileType> {
    *  编辑器在 `standard` 模式下的权限模式
    */
   role?: EditorStandardRole;
-
-  /**
-   * 初始化设置
-   * TODO: settings 只有在没有传入 iframe 的时候才会生效，需要在类型上做区分
-   */
-  settings?: T extends keyof SDKSettings ? SDKSettings[T] : never;
 }
+
+export interface DocumentCreateOptions extends BaseCreateOptions {
+  fileType: FileType.Document;
+  settings?: DocumentSettings;
+}
+export interface SpreadsheetCreateOptions extends BaseCreateOptions {
+  fileType: FileType.Spreadsheet;
+  settings?: SpreadsheetSettings;
+}
+export interface PresentationCreateOptions extends BaseCreateOptions {
+  fileType: FileType.Presentation;
+  settings?: PresentationSettings;
+}
+export interface PdfCreateOptions extends BaseCreateOptions {
+  fileType: FileType.Pdf;
+  // TODO: To be completed
+  settings?: unknown;
+}
+export interface DBTableCreateOptions extends BaseCreateOptions {
+  fileType: FileType.DBTable;
+  // TODO: To be completed
+  settings?: unknown;
+}
+export interface LiteDocCreateOptions extends BaseCreateOptions {
+  fileType: FileType.LiteDoc;
+  // TODO: To be completed
+  settings?: unknown;
+}
+
+/**
+ * 初始化 Office SDK 的配置项
+ */
+export type CreateOptions =
+  | DocumentCreateOptions
+  | PresentationCreateOptions
+  | SpreadsheetCreateOptions
+  | DBTableCreateOptions
+  | PdfCreateOptions
+  | LiteDocCreateOptions;
 
 export type OfficeSDKMap = {
   [FileType.Document]: DocumentFacade;
@@ -132,7 +159,7 @@ export interface OfficeSDK<T extends FileType> {
 /**
  * 创建 Office SDK 实例
  */
-export function createSDK<T extends FileType>(options: CreateOptions<T>): OfficeSDK<T> {
+export function createSDK<T extends FileType>(options: CreateOptions): OfficeSDK<T> {
   const { fileType, settings, ...others } = options;
 
   assertFileType(fileType);
@@ -148,7 +175,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
   if (fileType === FileType.Spreadsheet) {
     return createSpreadsheetSDK({
       fileType,
-      settings,
+      settings: settings,
       ...others,
     }) as OfficeSDK<T>;
   }
@@ -156,7 +183,7 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
   if (fileType === FileType.Presentation) {
     return createPresentationSDK({
       fileType,
-      settings,
+      settings: settings,
       ...others,
     }) as OfficeSDK<T>;
   }
@@ -186,8 +213,8 @@ export function createSDK<T extends FileType>(options: CreateOptions<T>): Office
   throw new Error(`Unsupported file type: ${fileType}`);
 }
 
-function connectIframe(options: CreateOptions<any>): { url: string; container: HTMLIFrameElement } {
-  const { fileType, endpoint, token, fileId, path, root,mode, role, lang, iframe, userQuery} = options;
+function connectIframe(options: CreateOptions): { url: string; container: HTMLIFrameElement } {
+  const { fileType, endpoint, token, fileId, path, root, mode, role, lang, iframe, userQuery } = options;
 
   let url: URL;
   let container: HTMLIFrameElement;
@@ -196,7 +223,17 @@ function connectIframe(options: CreateOptions<any>): { url: string; container: H
     url = new URL(iframe.src);
     container = connectContainer({ iframe, root });
   } else {
-    url = generateUrl({ endpoint, token, fileId, path, mode, role, lang, userQuery, fileType: mapToPreviewType(fileType) });
+    url = generateUrl({
+      endpoint,
+      token,
+      fileId,
+      path,
+      mode,
+      role,
+      lang,
+      userQuery,
+      fileType: mapToPreviewType(fileType),
+    });
     container = createContainer({ source: url.toString(), root });
   }
 
@@ -206,7 +243,7 @@ function connectIframe(options: CreateOptions<any>): { url: string; container: H
   };
 }
 
-function createDocumentSDK(options: CreateOptions<FileType.Document>): OfficeSDK<FileType.Document> {
+function createDocumentSDK(options: DocumentCreateOptions): OfficeSDK<FileType.Document> {
   const { settings } = options;
 
   const initOptions = createDocumentOptions(settings);
@@ -235,8 +272,8 @@ function createDocumentSDK(options: CreateOptions<FileType.Document>): OfficeSDK
   };
 }
 
-function createSpreadsheetSDK(options: CreateOptions<FileType.Spreadsheet>): OfficeSDK<FileType.Spreadsheet> {
-   const { settings } = options;
+function createSpreadsheetSDK(options: SpreadsheetCreateOptions): OfficeSDK<FileType.Spreadsheet> {
+  const { settings } = options;
   const initOptions = createSpreadsheetOptions(settings);
 
   const { url, container } = connectIframe(options);
@@ -255,17 +292,16 @@ function createSpreadsheetSDK(options: CreateOptions<FileType.Spreadsheet>): Off
         settings: initOptions,
       });
 
-
       await client.methods.ready();
       return createSpreadsheetFacade(client);
     },
   };
 }
 
-function createPresentationSDK(options: CreateOptions<FileType.Presentation>): OfficeSDK<FileType.Presentation> {
+function createPresentationSDK(options: PresentationCreateOptions): OfficeSDK<FileType.Presentation> {
   const { settings } = options;
   const initOptions = createPresentationOptions(settings);
-  
+
   const { url, container } = connectIframe(options);
 
   return {
@@ -283,13 +319,13 @@ function createPresentationSDK(options: CreateOptions<FileType.Presentation>): O
       });
 
       await client.methods.ready();
-      
+
       return createPresentationFacade(client);
     },
   };
 }
 
-function createLiteDocSDK(options: CreateOptions<FileType.LiteDoc>): OfficeSDK<FileType.LiteDoc> {
+function createLiteDocSDK(options: LiteDocCreateOptions): OfficeSDK<FileType.LiteDoc> {
   const { url, container } = connectIframe(options);
 
   return {
@@ -310,7 +346,7 @@ function createLiteDocSDK(options: CreateOptions<FileType.LiteDoc>): OfficeSDK<F
   };
 }
 
-function createPdfSDK(options: CreateOptions<FileType.Pdf>): OfficeSDK<FileType.Pdf> {
+function createPdfSDK(options: PdfCreateOptions): OfficeSDK<FileType.Pdf> {
   const { url, container } = connectIframe(options);
 
   return {
@@ -331,7 +367,7 @@ function createPdfSDK(options: CreateOptions<FileType.Pdf>): OfficeSDK<FileType.
   };
 }
 
-function createDatabaseTableSDK(options: CreateOptions<FileType.DBTable>): OfficeSDK<FileType.DBTable> {
+function createDatabaseTableSDK(options: DBTableCreateOptions): OfficeSDK<FileType.DBTable> {
   const { url, container } = connectIframe(options);
 
   return {

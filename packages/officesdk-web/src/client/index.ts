@@ -1,6 +1,17 @@
 export { createSDK } from './create';
 export type { SDKSettings } from './create';
-export type { CreateOptions, OfficeSDK, OfficeSDKMap } from './create';
+export type {
+  CreateOptions,
+  DocumentCreateOptions,
+  PresentationCreateOptions,
+  SpreadsheetCreateOptions,
+  DBTableCreateOptions,
+  LiteDocCreateOptions,
+  PdfCreateOptions,
+  BaseCreateOptions,
+  OfficeSDK,
+  OfficeSDKMap,
+} from './create';
 
 export type { createContentFacade } from './editor/content';
 
