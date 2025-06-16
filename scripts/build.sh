@@ -92,6 +92,11 @@ build_web_api() {
   run_api_web
 }
 
+# Delete rpc/dist。
+delete_rpc_dist() {
+  rm -rf ./packages/officesdk-rpc/dist
+} 
+
 # Main build task
 build() {
   clean
@@ -99,6 +104,8 @@ build() {
   build_rpc_api
   build_web
   build_web_api
+
+  delete_rpc_dist
 }
 
 # Run the main build task

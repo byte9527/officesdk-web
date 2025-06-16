@@ -2,9 +2,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
-import alias from '@rollup/plugin-alias';
 import typescript from '@rollup/plugin-typescript';
+import terser from '@rollup/plugin-terser';
+import esbuild from 'rollup-plugin-esbuild';
+import alias from '@rollup/plugin-alias';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
