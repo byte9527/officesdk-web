@@ -1,4 +1,5 @@
 import type { SpreadsheetSDKOptions, EditorMenuCustomButton } from '../../shared';
+import type { SheetToolbarOptions } from '@officesdk/editor-sdk-core/sheet';
 
 export interface SpreadsheetSettings {
   /**
@@ -7,15 +8,17 @@ export interface SpreadsheetSettings {
   menu?: {
     custom?: EditorMenuCustomButton[];
   };
+  /**
+   * Toolbar related settings
+   */
+  toolbar?: {
+    features?: SheetToolbarOptions['features'];
+  };
 }
 
 export function createSpreadsheetOptions(settings?: SpreadsheetSettings): SpreadsheetSDKOptions | null {
-  // 如果没有有效的初始化设置，直接返回 null
-  if (!settings?.menu?.custom?.length) {
-    return null;
-  }
-
   return {
-    menu: settings.menu,
+    menu: settings?.menu,
+    toolbar: settings?.toolbar,
   };
 }
