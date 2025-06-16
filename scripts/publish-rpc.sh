@@ -1,6 +1,6 @@
 ```bash
 #!/bin/bash
-echo "npm-token: $NODE_AUTH_TOKEN"
+echo "version_bump: $VERSION_BUMP"
 
 get_version() {
   if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
