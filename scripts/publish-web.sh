@@ -88,8 +88,6 @@ else
   exit 0
 fi
 
-cd ./dist/web
-
  # If the current trigger is a Git tag with a version number
 NEXT_VERSION=$(get_version)
 echo "next_version: $NEXT_VERSION"
@@ -99,6 +97,8 @@ jq --arg v "$NEXT_VERSION" '.version = $v' dist/web/package.json > tmp.web.json 
 # Publish the package
 
 RELEASE_TAG=$(get_tag)
+
+cd ./dist/web
 npm publish --//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN  --tag "$RELEASE_TAG"
 echo "Package @officesdk/web version $PACKAGE_VERSION published as $RELEASE_TAG ."
 
