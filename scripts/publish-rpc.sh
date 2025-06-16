@@ -74,7 +74,7 @@ get_version() {
 # cd "$RPC_DIR" || { echo "Directory packages/officesdk-rpc does not exist."; exit 1; }
 
 # Check if there are any changes in the directory
-if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^packages/rpc/'; then
+if git diff --name-only $GIT_BEFORE $GIT_AFTER | grep -q '^packages/rpc/'; then
   echo "Changes detected in packages/officesdk-rpc."
 else
   echo "No changes detected in packages/officesdk-rpc. Skipping publish."
