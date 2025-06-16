@@ -68,6 +68,7 @@ get_version() {
 }
 
 # Define the RPC directory relative to the script's location
+pwd
 RPC_DIR="../packages/rpc"
 
 # Navigate to the package directory
