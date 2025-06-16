@@ -1,6 +1,7 @@
 
 #!/bin/bash
 echo "version_bump: $VERSION_BUMP"
+echo "GITHUB_REF = $GITHUB_REF"
 
 get_version() {
   if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
@@ -67,11 +68,17 @@ get_version() {
   fi
 }
 
-# Define the RPC directory relative to the script's location
-# RPC_DIR="./packages/officesdk-rpc"
+get_tag() {
+  REF=${GITHUB_REF:-$(git symbolic-ref -q HEAD || git describe --tags)}
 
-# # Navigate to the package directory
-# cd "$RPC_DIR" || { echo "Directory packages/officesdk-rpc does not exist."; exit 1; }
+  if [[ "$REF" == refs/tags/* ]]; then
+    echo "latest"
+  elif [[ "$REF" == refs/heads/master ]]; then
+    echo "beta"
+  else
+    echo "alpha"
+  fi
+}
 
 # Check if there are any changes in the directory
 if git diff --name-only "$GIT_BEFORE" "$GIT_AFTER" | grep -q '^packages/officesdk-rpc/'; then
@@ -81,20 +88,18 @@ else
   exit 0
 fi
 
-# cd ./dist/rpc
+cd ./dist/rpc
 
  # If the current trigger is a Git tag with a version number
-
 NEXT_VERSION=$(get_version)
 echo "next_version: $NEXT_VERSION"
 
 # Update the version number in package.json files
-jq --arg v "$VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
+jq --arg v "$NEXT_VERSION" '.version = $v' dist/rpc/package.json > tmp.rpc.json && mv tmp.rpc.json dist/rpc/package.json
 # Publish the package
-# npm publish --tag "$RELEASE_TYPE"
 
-echo "Package @officesdk/rpc version $PACKAGE_VERSION published as $RELEASE_TYPE release."
-echo $NODE_AUTH_TOKEN
-# npm publish --//registry.npmjs.org/:_authToken=$NPM_TOKEN
+RELEASE_TAG=$(get_tag)
+# npm publish --//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN  --tag "$RELEASE_TAG"
+echo "Package @officesdk/rpc version $PACKAGE_VERSION published as $RELEASE_TAG ."
 
 

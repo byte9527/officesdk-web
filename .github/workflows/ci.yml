@@ -1,6 +1,9 @@
 env:
   # Optional value, can manually trigger input for patch/minor/major to control version bump
   VERSION_BUMP: ${{ github.event.inputs.version_bump || 'patch' }} 
+  NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  GIT_BEFORE: ${{ github.event.before }}
+  GIT_AFTER: ${{ github.sha }}
 
 on:
   push:
@@ -50,12 +53,12 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       # Check Node.js version
-      # - name: Check Node version
-      #   run: node --version
+      - name: Check Node version
+        run: node --version
 
       # Check Yarn version
-      # - name: Check Yarn version
-      #   run: yarn --version
+      - name: Check Yarn version
+        run: yarn --version
 
       # Install project dependencies
       # - name: Install dependencies
@@ -70,7 +73,6 @@ jobs:
       - name: Publish RPC Package
         run: |
           bash ./scripts/publish-rpc.sh
+          bash ./scripts/publish-web.sh
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GIT_BEFORE: ${{ github.event.before }}
-          GIT_AFTER: ${{ github.sha }}
+         
