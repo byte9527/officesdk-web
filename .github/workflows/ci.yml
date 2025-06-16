@@ -74,5 +74,5 @@ jobs:
         run: |
           bash ./scripts/publish-rpc.sh
           bash ./scripts/publish-web.sh
-        env:
+
          
