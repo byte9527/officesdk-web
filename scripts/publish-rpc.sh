@@ -102,4 +102,4 @@ RELEASE_TAG=$(get_tag)
 # npm publish --//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN  --tag "$RELEASE_TAG"
 echo "Package @officesdk/rpc version $PACKAGE_VERSION published as $RELEASE_TAG ."
 
-
+cd ../..

@@ -73,6 +73,12 @@ jobs:
       - name: Publish RPC Package
         run: |
           bash ./scripts/publish-rpc.sh
+
+      # Publish the web package to npm
+      - name: Publish WEB Package
+        run: |
           bash ./scripts/publish-web.sh
+      
+      
 
          
