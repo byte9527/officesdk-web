@@ -1699,10 +1699,10 @@ __metadata:
 
 "@officesdk/web@file:../packages/officesdk-web::locator=%40officesdk%2Fe2e%40workspace%3Ae2e":
   version: 1.0.0
-  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=407c59&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
+  resolution: "@officesdk/web@file:../packages/officesdk-web#../packages/officesdk-web::hash=406285&locator=%40officesdk%2Fe2e%40workspace%3Ae2e"
   dependencies:
     "@officesdk/rpc": "workspace:*"
-  checksum: 49e468b77d13878f69e0110476d67ce34234966b56a8ad48b76443c19bd14b06de3b910e3e49af99db8a5552ca212c37b3f49bb442d62f7112cc6a085d56fb76
+  checksum: 067b672fa8bc0054881a46a4c87e6fa74dbb630ff16289689957d592e40285da5e9f36bce84ebdff3e001d786191c6839945afbeabfbcdf9d3c75416cfcebac7
   languageName: node
   linkType: hard
 
