@@ -1,3 +1,4 @@
+import type { DocxMenuOptions } from '@officesdk/editor-sdk-core/docx';
 import type {
   EditorMenuOptions,
   EditorMenuFeatureButtonConfig,
@@ -70,7 +71,7 @@ export interface DocumentEditor {
   readonly zoom: DocumentZoom;
   readonly TOCs: DocumentTOCs;
   readonly outline: DocumentOutline;
-  readonly window: DocumentWindow
+  readonly window: DocumentWindow;
 }
 
 export type DocumentSelection = {
@@ -377,7 +378,10 @@ export type DocumentMenuFeatureButtonConfig = EditorMenuFeatureButtonConfig<Docu
 
 export interface DocumentSDKOptions {
   /**
-   * 菜单栏相关设置
+   * menu settings
    */
-  menu?: DocumentMenuOptions;
+  menu?: {
+    custom?: DocxMenuOptions['custom'];
+    features?: DocxMenuOptions['features'];
+  };
 }

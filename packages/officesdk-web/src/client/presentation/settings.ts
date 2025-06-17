@@ -1,12 +1,13 @@
-import type { PresentationSDKOptions, EditorMenuCustomButton } from '../../shared';
-import type { PresentationToolbarOptions } from '@officesdk/editor-sdk-core/presentation'
+import type { PresentationSDKOptions } from '../../shared';
+import type { PresentationMenuOptions, PresentationToolbarOptions } from '@officesdk/editor-sdk-core/presentation'
 
 export interface PresentationSettings {
   /**
    * 自定义菜单
    */
   menu?: {
-    custom?: EditorMenuCustomButton[];
+    custom?: PresentationMenuOptions['custom'];
+    features?: PresentationMenuOptions['features']
   };
   /**
    * Toolbar related settings

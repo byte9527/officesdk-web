@@ -74,7 +74,7 @@
   },
   "packageManager": "yarn@3.7.0",
   "dependencies": {
-    "@officesdk/editor-sdk-core": "^0.0.0-13",
+    "@officesdk/editor-sdk-core": "^0.0.0-14",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-terser": "^0.4.4",
     "esbuild": "^0.25.3",

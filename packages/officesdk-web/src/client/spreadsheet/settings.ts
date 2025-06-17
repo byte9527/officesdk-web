@@ -1,12 +1,13 @@
-import type { SpreadsheetSDKOptions, EditorMenuCustomButton } from '../../shared';
-import type { SheetToolbarOptions } from '@officesdk/editor-sdk-core/sheet';
+import type { SpreadsheetSDKOptions } from '../../shared';
+import type { SheetMenuOptions, SheetToolbarOptions } from '@officesdk/editor-sdk-core/sheet';
 
 export interface SpreadsheetSettings {
   /**
-   * 自定义菜单
+   * menu settings
    */
   menu?: {
-    custom?: EditorMenuCustomButton[];
+    custom?: SheetMenuOptions['custom'];
+    features?: SheetMenuOptions['features']
   };
   /**
    * Toolbar related settings

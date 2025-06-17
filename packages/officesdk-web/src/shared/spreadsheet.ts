@@ -1,6 +1,6 @@
 import type { EditorContent } from './editor';
 import type { EditorMenuOptions, EditorMenuFeatureButtonConfig, EditorMenuEntryConfig } from '../shared';
-import type { SheetToolbarOptions, SheetMenuFeatureButtonName } from '@officesdk/editor-sdk-core/sheet';
+import type { SheetToolbarOptions, SheetMenuFeatureButtonName, SheetMenuOptions } from '@officesdk/editor-sdk-core/sheet';
 /**
  * Spreadsheet 远程调用的方法定义，
  * 作为契约，用于统一约束客户端和服务端的接口。
@@ -365,7 +365,10 @@ export interface SpreadsheetSDKOptions {
   /**
    * 菜单栏相关设置
    */
-  menu?: SpreadsheetMenuOptions;
+  menu?: {
+      custom?: SheetMenuOptions['custom'];
+      features?: SheetMenuOptions['features']
+    };
   /**
    * Toolbar related settings
    */
