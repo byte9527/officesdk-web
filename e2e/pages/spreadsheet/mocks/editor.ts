@@ -245,6 +245,9 @@ export function mockSpreadsheetEditor(output: (message: string) => void): Spread
   };
 
   return {
+    async ready() {
+      return 
+    },
     workbook: mockWorkbook,
     activeSheet: mockWorksheet1,
     activeCell: mockedCell1,

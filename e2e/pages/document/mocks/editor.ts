@@ -35,6 +35,9 @@ export function mockDocumentEditor(output: (message: string) => void): DocumentE
   };
 
   return {
+    async ready() {
+      return;
+    },
     selection: {
       getRange: () => {
         return createRange('mocked-start', 'mocked-end');

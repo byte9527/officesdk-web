@@ -2,6 +2,9 @@ import type { PresentationEditor, PresentationTextRangeValue } from '@officesdk/
 
 export function mockPresentationEditor(output: (message: string) => void): PresentationEditor {
   return {
+    async ready() {
+      return 
+    },
     slides: {
       getCurrentSlide: () => {
         output('presentation.slides.getCurrentSlide has been called');
